@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e ' *)",
+      "WebFetch(domain:pubmed.ncbi.nlm.nih.gov)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "WebFetch(domain:doi.org)",
+      "WebFetch(domain:bmcoralhealth.biomedcentral.com)",
+      "WebFetch(domain:revistasinvestigacion.unmsm.edu.pe)",
+      "WebFetch(domain:linkinghub.elsevier.com)",
+      "WebFetch(domain:revistas.ucc.edu.co)",
+      "WebFetch(domain:www.mdpi.com)",
+      "WebFetch(domain:link.springer.com)",
+      "WebFetch(domain:www.sciencedirect.com)",
+      "WebFetch(domain:api.crossref.org)",
+      "WebSearch",
+      "WebFetch(domain:eutils.ncbi.nlm.nih.gov)"
+    ]
+  }
+}

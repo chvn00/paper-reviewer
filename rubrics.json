@@ -1,0 +1,32 @@
+{
+  "weights": {
+    "TitleAbstractKeywordsReviewer": 0.08,
+    "StructureReviewer": 0.08,
+    "MethodologyReviewer": 0.2,
+    "StatisticsReviewer": 0.12,
+    "FiguresTablesEquationsReviewer": 0.08,
+    "ResultsReviewer": 0.15,
+    "DiscussionConclusionsReviewer": 0.1,
+    "WritingReviewer": 0.08,
+    "ReferencesReviewer": 0.07,
+    "EthicsLimitationsReviewer": 0.04
+  },
+  "decision_thresholds": {
+    "Accept": 4.5,
+    "Minor Revision": 3.5,
+    "Major Revision": 2.5,
+    "Reject": 0.0
+  },
+  "criteria": {
+    "Originality & Novelty": "Title specificity, abstract clarity, keyword relevance, and contribution visibility.",
+    "Manuscript Structure": "Logical organization, section balance, objective-method-result-conclusion coherence.",
+    "Methodology & Equations": "Research design, reproducibility, experimental rigor, mathematical validity.",
+    "Statistical Analysis": "Appropriate tests, effect sizes, confidence intervals, assumptions, and significance reporting.",
+    "Results & Evidence": "Empirical support, quantitative precision, baseline comparison, and consistency.",
+    "Discussion & Conclusions": "Interpretation, limitations, implications, and conclusions supported by results.",
+    "Figures & Tables": "Presentation quality, caption clarity, coherence with claims, and equation/table/figure support.",
+    "Scientific Writing": "Clarity, concision, academic tone, grammar, terminology, and paragraph flow.",
+    "References & Citations": "Relevance, recency, seminal coverage, citation consistency, and literature gaps.",
+    "Ethics & Transparency": "Ethics approval, data availability, conflicts, funding, limitations, and reproducibility."
+  }
+}

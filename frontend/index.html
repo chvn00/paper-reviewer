@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CHVN Paper Reviewer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/styles.css"/>
+</head>
+<body>
+
+<!-- ── Login overlay (shown when ACCESS_TOKEN is required) ─────────────────── -->
+<div id="loginOverlay" style="display:none; position:fixed; inset:0; z-index:9999;
+     background:rgba(15,23,42,0.92); align-items:center; justify-content:center;">
+  <div style="background:#1e293b; border:1px solid #334155; border-radius:16px;
+              padding:2.5rem 2rem; width:360px; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+    <div style="font-size:2.2rem; margin-bottom:0.5rem;">🧠</div>
+    <div style="font-family:'Syne',sans-serif; font-size:1.3rem; font-weight:700;
+                color:#f1f5f9; margin-bottom:0.25rem;">CHVN Paper Reviewer</div>
+    <div style="color:#94a3b8; font-size:0.85rem; margin-bottom:1.5rem;">Acceso privado — grupo cerrado</div>
+    <input id="tokenInput" type="password" placeholder="Token de acceso..."
+           onkeydown="if(event.key==='Enter') submitToken()"
+           style="width:100%; padding:0.7rem 1rem; border-radius:8px; border:1px solid #475569;
+                  background:#0f172a; color:#f1f5f9; font-size:0.95rem; margin-bottom:0.75rem;
+                  box-sizing:border-box; outline:none;"/>
+    <button onclick="submitToken()"
+            style="width:100%; padding:0.7rem; border-radius:8px; border:none;
+                   background:#2563eb; color:#fff; font-weight:700; font-size:0.95rem;
+                   cursor:pointer;">Entrar</button>
+    <div id="loginMsg" style="color:#f59e0b; font-size:0.8rem; margin-top:0.75rem; min-height:1em;"></div>
+  </div>
+</div>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-logo">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+        <rect width="40" height="40" rx="10" fill="url(#lg)"/>
+        <defs>
+          <linearGradient id="lg" x1="0" y1="0" x2="40" y2="40">
+            <stop offset="0%" stop-color="#1e3a5f"/>
+            <stop offset="100%" stop-color="#0f2040"/>
+          </linearGradient>
+        </defs>
+        <rect x="9" y="6" width="15" height="19" rx="2" fill="#1a3a6e" stroke="#3b7dd8" stroke-width="1"/>
+        <line x1="12" y1="11" x2="21" y2="11" stroke="#6da8f0" stroke-width="1.2" stroke-linecap="round"/>
+        <line x1="12" y1="14" x2="21" y2="14" stroke="#6da8f0" stroke-width="1.2" stroke-linecap="round"/>
+        <line x1="12" y1="17" x2="18" y2="17" stroke="#6da8f0" stroke-width="1.2" stroke-linecap="round"/>
+        <circle cx="28" cy="28" r="9" fill="#0f1729"/>
+        <circle cx="28" cy="28" r="8" fill="#16a34a"/>
+        <polyline points="24,28 27,31 33,24" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <span class="brand-name">CHVN</span>
+      <span class="brand-tag">Paper Reviewer</span>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <button class="nav-item active" data-panel="upload" onclick="showPanel('upload')">
+      <span class="nav-icon">📄</span><span>Upload Paper</span>
+    </button>
+    <button class="nav-item" data-panel="agents" onclick="showPanel('agents')">
+      <span class="nav-icon">🤖</span><span>Agent Reviews</span>
+    </button>
+    <button class="nav-item" data-panel="report" onclick="showPanel('report')">
+      <span class="nav-icon">📊</span><span>Final Report</span>
+    </button>
+    <button class="nav-item" data-panel="history" onclick="showPanel('history')">
+      <span class="nav-icon">🕘</span><span>History</span>
+    </button>
+    <button class="nav-item" data-panel="config" onclick="showPanel('config')">
+      <span class="nav-icon">⚙️</span><span>Model Config</span>
+    </button>
+  </nav>
+
+  <div class="sidebar-session" id="sidebarSession" style="display:none">
+    <div class="session-label">Active Paper</div>
+    <div class="session-file" id="sidebarFilename">—</div>
+    <div class="session-meta" id="sidebarMeta">—</div>
+    <div class="session-badges" id="sidebarBadges"></div>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="health-row">
+      <div class="health-dot" id="healthDot"></div>
+      <span class="health-label" id="healthLabel">Checking...</span>
+      <button class="health-refresh" onclick="checkHealth()">↻</button>
+    </div>
+    <div class="version-tag">v3.0 · Sequential Mode</div>
+  </div>
+</aside>
+
+<main class="main-content">
+
+  <!-- ══════════════════════ UPLOAD -->
+  <section class="panel active" id="panel-upload">
+
+    <div class="page-hero">
+      <div class="hero-label">AI-Powered · Offline · Q1 Standards</div>
+      <h1 class="hero-title">Upload Your Scientific Paper 🧠</h1>
+      <p class="hero-sub">IEEE · Elsevier · Springer · LaTeX · ACM · Up to 20 MB</p>
+    </div>
+
+    <div class="drop-zone" id="dropZone"
+         ondrop="handleDrop(event)" ondragover="handleDragOver(event)"
+         ondragleave="handleDragLeave(event)"
+         onclick="document.getElementById('fileInput').click()">
+      <div class="drop-inner">
+        <div class="drop-icon-wrap">
+          <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+            <circle cx="26" cy="26" r="26" fill="#1c2a42"/>
+            <path d="M26 16v14M19 23l7-7 7 7" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M16 38h20" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="drop-title">Drop PDF here</div>
+        <div class="drop-sub">or click anywhere to browse</div>
+      </div>
+      <input type="file" id="fileInput" accept=".pdf" style="display:none" onchange="handleFileSelect(event)"/>
+    </div>
+
+    <div class="file-preview" id="filePreview" style="display:none">
+      <div class="file-row">
+        <div class="file-pdf-icon">PDF</div>
+        <div class="file-details">
+          <div class="file-name" id="previewName"></div>
+          <div class="file-meta" id="previewMeta"></div>
+        </div>
+        <button class="btn-remove" onclick="clearFile()">✕</button>
+      </div>
+    </div>
+
+    <div id="parseResults" style="display:none">
+      <div class="parse-grid">
+        <div class="parse-card">
+          <div class="parse-card-label">Format & Sections</div>
+          <div id="formatBadge" class="fmt-badge"></div>
+          <div class="chips-row" id="sectionsGrid"></div>
+        </div>
+        <div class="parse-card">
+          <div class="parse-card-label">Content Detected</div>
+          <div class="chips-row" id="featureBadges"></div>
+        </div>
+      </div>
+      <div class="detected-fields" id="detectedFields"></div>
+      <div class="warnings-box" id="warningsBox" style="display:none"></div>
+    </div>
+
+    <div id="modeSelector" style="display:none">
+      <div class="section-label">Target Journal</div>
+      <div class="rubric-row">
+        <div class="rubric-field">
+          <label class="rubric-label">Publisher</label>
+          <select class="rubric-select" id="publisherSelect">
+            <option value="">General (no specific publisher)</option>
+            <option value="ieee">IEEE</option>
+            <option value="elsevier">Elsevier / ScienceDirect</option>
+            <option value="mdpi">MDPI</option>
+            <option value="emerald">Emerald</option>
+            <option value="sage">SAGE</option>
+            <option value="taylor">Taylor &amp; Francis</option>
+          </select>
+        </div>
+        <div class="rubric-field">
+          <label class="rubric-label">Paper Type</label>
+          <select class="rubric-select" id="paperTypeSelect">
+            <option value="">Full Article (default)</option>
+            <option value="short_communication">Short Communication</option>
+            <option value="letter">Letter</option>
+            <option value="review">Review Article</option>
+            <option value="conference">Conference Paper</option>
+            <option value="case_study">Case Study</option>
+            <option value="conceptual">Conceptual Paper</option>
+            <option value="technical_note">Technical Note</option>
+          </select>
+        </div>
+      </div>
+      <div class="section-label">Review Mode</div>
+      <div class="mode-grid">
+        <label class="mode-card active-mode" id="modeCardFast">
+          <input type="radio" name="mode" value="fast" checked/>
+          <div class="mode-top"><span class="mode-emoji">⚡</span><span class="mode-name">Fast</span></div>
+          <div class="mode-time">~4 min</div>
+          <div class="mode-desc">20K chars · Major issues only · Quick screening</div>
+        </label>
+        <label class="mode-card" id="modeCardBalanced">
+          <input type="radio" name="mode" value="balanced"/>
+          <div class="mode-top"><span class="mode-emoji">⚖️</span><span class="mode-name">Balanced</span></div>
+          <div class="mode-time">~6 min</div>
+          <div class="mode-desc">40K chars · Revisión completa · Recomendado</div>
+        </label>
+        <label class="mode-card" id="modeCardDeep">
+          <input type="radio" name="mode" value="deep"/>
+          <div class="mode-top"><span class="mode-emoji">🔬</span><span class="mode-name">Deep</span></div>
+          <div class="mode-time">~10 min</div>
+          <div class="mode-desc">48K chars · Análisis exhaustivo · Antes de enviar</div>
+        </label>
+      </div>
+    </div>
+
+    <div class="action-row" id="actionBar" style="display:none">
+      <button class="btn-run" id="runBtn" onclick="startReview()">
+        <span class="btn-run-icon">▶</span> Run Multi-Agent Review
+      </button>
+      <button class="btn-stop" id="stopBtn" onclick="stopReview()" style="display:none">
+        ⏹ Stop & Save
+      </button>
+      <button class="btn-new-review" id="newReviewBtn" onclick="clearSession()" style="display:none">
+        + New Review
+      </button>
+      <button class="btn-clear" onclick="clearSession()">✕ Clear</button>
+    </div>
+
+    <div class="progress-card" id="progressSection" style="display:none">
+      <div class="progress-top">
+        <div class="progress-status">
+          <span class="progress-dot"></span>
+          <span id="progressLabel">Initializing...</span>
+        </div>
+        <div class="progress-right">
+          <span class="timer-display" id="timerDisplay">00:00</span>
+          <span class="progress-pct" id="progressPct">0%</span>
+        </div>
+      </div>
+      <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="pipeline-row" id="agentPipeline"></div>
+    </div>
+
+  </section>
+
+  <!-- ══════════════════════ AGENTS -->
+  <section class="panel" id="panel-agents">
+    <div class="page-hero compact">
+      <h1 class="hero-title small">Agent <em>Reviews</em></h1>
+      <p class="hero-sub">Specialized analysis · Holistic methodology evaluation</p>
+    </div>
+    <div class="agents-grid" id="agentsGrid">
+      <div class="empty-state"><div class="empty-icon">🤖</div><p>Run a review to see agent results</p></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════ REPORT -->
+  <section class="panel" id="panel-report">
+    <div class="report-header-row">
+      <div class="page-hero compact">
+        <h1 class="hero-title small">Final <em>Report</em></h1>
+        <p class="hero-sub">Consolidated editorial assessment · Q1 journal standards</p>
+      </div>
+      <button class="btn-download" id="downloadBtn" onclick="downloadReport()" style="display:none">
+        ⬇ Download PDF
+      </button>
+    </div>
+    <div id="suggestionGate" class="suggestion-gate" style="display:none"></div>
+    <div id="reportContent">
+      <div class="empty-state"><div class="empty-icon">📊</div><p>Complete a review to generate the report</p></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════ HISTORY -->
+  <section class="panel" id="panel-history">
+    <div class="report-header-row">
+      <div class="page-hero compact">
+        <h1 class="hero-title small">Review <em>History</em></h1>
+        <p class="hero-sub">Completed paper reviews · modes · scores · saved reports</p>
+      </div>
+      <button class="btn-clear" onclick="loadHistory()">↻ Refresh</button>
+    </div>
+    <div id="historyContent">
+      <div class="empty-state"><div class="empty-icon">🕘</div><p>No completed reviews yet</p></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════ CONFIG -->
+  <section class="panel" id="panel-config">
+    <div class="page-hero compact">
+      <h1 class="hero-title small">Model <em>Configuration</em></h1>
+      <p class="hero-sub">Changes apply to next review session</p>
+    </div>
+
+    <div class="config-grid">
+      <div class="config-card">
+        <div class="config-field">
+          <label class="cfg-label">Active Model
+            <span class="tip" data-tip="Select the Ollama model. phi3:mini works on CPU (Dell). llama3.2 is faster on Mac Apple Silicon. Click ↻ to refresh installed models.">?</span>
+          </label>
+          <div class="model-row">
+            <select class="cfg-select" id="cfgModelSelect" onchange="onModelSelect()">
+              <option>Loading...</option>
+            </select>
+            <button class="btn-sm" onclick="loadAvailableModels()">↻</button>
+          </div>
+          <input class="cfg-input" id="cfgModel" type="text" value="phi3:mini" placeholder="Or type model name"/>
+        </div>
+        <div class="config-field">
+          <label class="cfg-label">Ollama URL
+            <span class="tip" data-tip="Where Ollama listens. Default: localhost:11434. Only change if using a different port or remote machine.">?</span>
+          </label>
+          <input class="cfg-input" id="cfgUrl" type="text" value="http://localhost:11434"/>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-field">
+          <label class="cfg-label">Temperature: <span class="cfg-val" id="tempVal">0.2</span>
+            <span class="tip" data-tip="LOW (0.1–0.3): precise and consistent — best for peer review. HIGH (0.7–1.0): creative but may hallucinate. Keep at 0.2 for review tasks.">?</span>
+          </label>
+          <input class="cfg-slider" id="cfgTemp" type="range" min="0" max="1" step="0.05" value="0.2"
+                 oninput="document.getElementById('tempVal').textContent=this.value"/>
+          <div class="slider-ends"><span>Precise</span><span>Creative</span></div>
+        </div>
+        <div class="config-field">
+          <label class="cfg-label">Top-P: <span class="cfg-val" id="topPVal">0.9</span>
+            <span class="tip" data-tip="LOW (0.5–0.7): focused vocabulary. HIGH (0.9–1.0): broader word choices. Keep at 0.9 for reviews.">?</span>
+          </label>
+          <input class="cfg-slider" id="cfgTopP" type="range" min="0.1" max="1" step="0.05" value="0.9"
+                 oninput="document.getElementById('topPVal').textContent=this.value"/>
+          <div class="slider-ends"><span>Focused</span><span>Broad</span></div>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-field">
+          <label class="cfg-label">Max Tokens: <span class="cfg-val" id="tokensVal">700</span>
+            <span class="tip" data-tip="Max response length per agent. LOW (400–600): faster. HIGH (900–1200): more detailed but slower. 700 is recommended for phi3:mini on CPU to avoid timeouts.">?</span>
+          </label>
+          <input class="cfg-slider" id="cfgTokens" type="range" min="256" max="8192" step="256" value="4096"
+                 oninput="document.getElementById('tokensVal').textContent=this.value"/>
+          <div class="slider-ends"><span>256 · Faster</span><span>8192 · Detailed</span></div>
+        </div>
+        <div class="config-field">
+          <label class="cfg-label">Context Length: <span class="cfg-val" id="ctxVal">4096</span>
+            <span class="tip" data-tip="Tokens the model can process at once. phi3:mini: max 4096. llama3.2: up to 8192. Higher uses more RAM.">?</span>
+          </label>
+          <input class="cfg-slider" id="cfgCtx" type="range" min="1024" max="65536" step="1024" value="49152"
+                 oninput="document.getElementById('ctxVal').textContent=this.value"/>
+          <div class="slider-ends"><span>1024</span><span>65536</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cfg-actions">
+      <button class="btn-run sm" onclick="saveConfig()">💾 Save</button>
+      <button class="btn-clear" onclick="resetConfig()">↺ Reset</button>
+      <span class="cfg-saved" id="configStatus"></span>
+    </div>
+
+    <div class="section-label" style="margin-top:28px">Model Reference</div>
+    <table class="model-table">
+      <thead><tr><th>Model</th><th>Device</th><th>Speed</th><th>Quality</th><th>RAM</th><th>Install</th></tr></thead>
+      <tbody>
+        <tr class="highlighted"><td><strong>phi3:mini</strong></td><td>Dell CPU</td><td>⚡⚡</td><td>★★★</td><td>~4 GB</td><td><code>ollama pull phi3:mini</code></td></tr>
+        <tr><td>llama3.2</td><td>Mac M-chip</td><td>⚡⚡⚡</td><td>★★★★</td><td>~6 GB</td><td><code>ollama pull llama3.2</code></td></tr>
+        <tr><td>mistral</td><td>Any GPU</td><td>⚡⚡⚡</td><td>★★★★</td><td>~8 GB</td><td><code>ollama pull mistral</code></td></tr>
+        <tr><td>llama3.1:8b</td><td>GPU rec.</td><td>⚡⚡</td><td>★★★★★</td><td>~16 GB</td><td><code>ollama pull llama3.1:8b</code></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<div class="toast-container" id="toastContainer"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>
