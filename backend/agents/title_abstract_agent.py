@@ -11,84 +11,63 @@ SYSTEM_PROMPT = """You are a senior peer reviewer for a Q1 scientific journal (E
 Your task is to critically evaluate the Title, Abstract, and Keywords of a scientific manuscript.
 You must respond ONLY with a valid JSON object. Do not include any text before or after the JSON.
 Do not invent information. If something is not present, state "Not reported in the manuscript".
-Be critical and specific. Vague praise is not acceptable."""
+Be critical and specific — every item in strengths, weaknesses, and recommendations must be a
+complete, detailed sentence that a real reviewer would write. Minimum 3 items per category.
+Vague one-liners like "The abstract is good" are not acceptable."""
 
-USER_PROMPT_TEMPLATE = """Evaluate the Title, Abstract, and Keywords of the following manuscript.
-Also perform a HOLISTIC CONSISTENCY CHECK between the abstract and the paper body.
+USER_PROMPT_TEMPLATE = """You are reviewing the Title, Abstract, and Keywords of a scientific manuscript.
+Write detailed reviewer comments for each section. Every comment must start with [TITLE], [ABSTRACT], or [KEYWORDS].
 
-Apply these rubric criteria (IEEE + Elsevier + Emerald Q1 standards):
+EVALUATE THE TITLE:
+- Is it specific and informative? Does it avoid vague terms like "novel approach"?
+- Does it reflect the actual contribution of the paper?
+- Does it contain key terms that aid discoverability?
+- Is the length appropriate (not too long to scan, not too vague)?
 
-TITLE (score 0-5):
-- Specificity and informativeness (avoids vague terms like "novel approach")
-- Reflects the actual contribution
-- Appropriate length (10-20 words is a guideline, not a hard maximum)
-- Contains key terms for discoverability
+EVALUATE THE ABSTRACT:
+- Does it follow the structured format: Background → Objective → Methods → Results → Conclusions?
+- Does it state the research problem clearly?
+- Does it quantify results with numbers, or use vague phrases like "significantly improved"?
+- Is it standalone readable without needing the full paper?
+- Check consistency: do abstract claims match what the paper body actually delivers?
 
-ABSTRACT (score 0-5):
-- Follows structured format: Background, Objective, Methods, Results, Conclusions
-- States the research problem clearly
-- Quantifies results (does NOT use vague phrases like "significantly improved")
-- Does not contain references or undefined abbreviations
-- Standalone readability
-
-ABSTRACT HOLISTIC CHECK — CRITICAL:
-Compare the abstract claims against the actual paper body (Introduction, Results, Conclusions).
-Check:
-1. Does the abstract promise results/contributions that are NOT delivered in the paper?
-2. Does the paper contain important findings that are NOT mentioned in the abstract?
-3. Are the quantitative values in the abstract (COP, accuracy, efficiency, etc.) consistent with what is reported in the results?
-4. Does the abstract accurately describe the methodology actually used?
-5. Is the scope described in the abstract consistent with what the paper covers?
-Flag any discrepancies between abstract claims and actual paper content as MAJOR issues.
-
-KEYWORDS (score 0-5):
-- 4-8 keywords present
-- Not duplicating title words
-- Includes domain-specific indexing terms
-- Mix of specific and general terms
-
-COMMENT RULES:
-- Every item in strengths, weaknesses, comments, and recommendations must start with one of:
-  [TITLE], [ABSTRACT], or [KEYWORDS].
-- Score 0 only if title, abstract, and keywords are all missing.
-- If title, abstract, and keywords are present, score should normally be between 2.5 and 5.0.
-- Do not claim "15 words max"; only say the title can be shortened if it is genuinely hard to scan.
-- Be critical, but do not punish detection errors when the detected fields are shown below.
+EVALUATE THE KEYWORDS:
+- Are there 4-8 keywords?
+- Do they avoid simply repeating title words?
+- Do they include domain-specific indexing terms?
+- Do they cover both specific and general terms for database indexing?
 
 ---
 MANUSCRIPT TEXT:
 {text}
 ---
 
-Respond ONLY with this JSON structure:
+Respond ONLY with this JSON. Write at least 3 items in each of strengths, weaknesses, and specific_recommendations:
 {{
   "agent_name": "TitleAbstractKeywordsReviewer",
   "scope": "Title, Abstract, Keywords",
-  "title_assessment": {{
-    "detected_title": "<first line or best guess>",
-    "is_specific": true/false,
-    "reflects_contribution": true/false,
-    "issues": []
-  }},
-  "abstract_assessment": {{
-    "has_background": true/false,
-    "has_objective": true/false,
-    "has_methods": true/false,
-    "has_results": true/false,
-    "has_conclusions": true/false,
-    "quantifies_results": true/false,
-    "issues": []
-  }},
-  "keywords_assessment": {{
-    "keywords_found": [],
-    "count": 0,
-    "issues": []
-  }},
-  "strengths": [],
-  "weaknesses": [],
-  "major_comments": [],
-  "minor_comments": [],
-  "specific_recommendations": [],
+  "strengths": [
+    "[TITLE] ...",
+    "[ABSTRACT] ...",
+    "[KEYWORDS] ..."
+  ],
+  "weaknesses": [
+    "[TITLE] ...",
+    "[ABSTRACT] ...",
+    "[KEYWORDS] ..."
+  ],
+  "major_comments": [
+    "[ABSTRACT] <most critical issue that must be fixed before acceptance>"
+  ],
+  "minor_comments": [
+    "[TITLE] <minor wording or style issue>",
+    "[KEYWORDS] <minor indexing issue>"
+  ],
+  "specific_recommendations": [
+    "[TITLE] <concrete action the authors should take>",
+    "[ABSTRACT] <concrete action the authors should take>",
+    "[KEYWORDS] <concrete action the authors should take>"
+  ],
   "score": 0.0,
   "confidence": 0.0
 }}"""
@@ -121,18 +100,18 @@ class TitleAbstractKeywordsReviewerAgent(BaseReviewerAgent):
                 "[DETECTED FIELDS]\n"
                 f"TITLE: {title or 'Not detected'}\n"
                 f"KEYWORDS: {keywords or 'Not detected'}\n"
-                f"ABSTRACT: {abstract[:1600] or 'Not detected'}"
+                f"ABSTRACT:\n{abstract[:3000] or 'Not detected'}"
             )
 
         # Include body sections for holistic abstract consistency check
         for key in ["introduction", "results", "conclusions", "discussion"]:
             if key in sections and sections[key]:
-                parts.append(f"[{key.upper()} — for abstract consistency check]\n{sections[key][:600]}")
+                parts.append(f"[{key.upper()} — for abstract consistency check]\n{sections[key][:2000]}")
 
         if not parts:
             full = sections.get("_full_text", "")
-            parts.append(f"[FULL TEXT]\n{full[:2000]}")
-        return "\n\n".join(parts)[:4000]
+            parts.append(f"[FULL TEXT]\n{full[:4000]}")
+        return "\n\n".join(parts)
 
     async def run(self, sections: dict, mode: str = "fast", publisher: str = "", paper_type: str = "") -> dict:
         result = await super().run(sections, mode, publisher=publisher, paper_type=paper_type)
@@ -269,26 +248,6 @@ class TitleAbstractKeywordsReviewerAgent(BaseReviewerAgent):
         return self._normalize_result({
             "agent_name": self.agent_name,
             "scope": self.scope,
-            "title_assessment": {
-                "detected_title": title or "Not reported in the manuscript",
-                "is_specific": has_title and title_words >= 6,
-                "reflects_contribution": has_title,
-                "issues": ["Long title"] if title_words > 25 else [],
-            },
-            "abstract_assessment": {
-                "has_background": has_abstract,
-                "has_objective": has_abstract,
-                "has_methods": has_abstract,
-                "has_results": has_abstract,
-                "has_conclusions": has_abstract,
-                "quantifies_results": any(ch.isdigit() for ch in abstract),
-                "issues": [] if has_abstract else ["Abstract not detected or too short"],
-            },
-            "keywords_assessment": {
-                "keywords_found": keywords,
-                "count": len(keywords),
-                "issues": [] if has_keywords else ["Insufficient keywords detected"],
-            },
             "strengths": [
                 item for item, ok in [
                     ("[TITLE] Title detected and available for review.", has_title),
@@ -297,8 +256,8 @@ class TitleAbstractKeywordsReviewerAgent(BaseReviewerAgent):
                 ] if ok
             ],
             "weaknesses": weaknesses,
-            "major_comments": [],
-            "minor_comments": weaknesses[:3],
+            "major_comments": weaknesses[:1],
+            "minor_comments": weaknesses[1:3],
             "specific_recommendations": recommendations,
             "score": score,
             "confidence": 0.65,

@@ -13,85 +13,70 @@ CONDITIONAL: Activates only if figures/tables/equations detected.
 from backend.agents.base_agent import BaseReviewerAgent
 
 SYSTEM_PROMPT = """You are a senior peer reviewer and scientific editor for Q1 journals (IEEE/Elsevier/Emerald).
-You specialize in evaluating the quality, coherence, and scientific correctness of figures, tables, and equations.
-Your key question: Do the figures, tables, and equations MAKE SENSE in context?
-Do they support the claims made in the text? Are they self-explanatory?
-Respond ONLY with valid JSON. Do not invent figure or table content.
+Evaluate the quality and coherence of figures, tables, and equations.
+Your key question: Do figures, tables, and equations support the claims made in the text?
+OUTPUT RULES: Respond ONLY with a valid JSON object. Start your response with { and end with }.
+Do not add any text, explanation, or markdown before or after the JSON.
 Base your evaluation ONLY on what is described or referenced in the text."""
 
 USER_PROMPT_TEMPLATE = """Evaluate the figures, tables, and equations in this manuscript.
+Write specific, evidence-based comments — minimum 3 per category.
 
-Apply Q1 journal rubric (IEEE Clarity + Elsevier data reporting + Emerald presentation):
+FIGURES — evaluate and comment:
+- Do captions fully describe what the figure shows (self-explanatory)?
+- Are axes labeled with units?
+- Are figures referenced in the text before they appear?
+- Is the content coherent with what the text claims?
+- Are error bars or uncertainty ranges shown where expected?
 
-FIGURES CRITERIA (score 0-5):
-1. Each figure has a descriptive, self-explanatory caption
-2. Figures are referenced in text BEFORE they appear
-3. Axes labeled with units where applicable
-4. Figure content is coherent with what the text claims it shows
-5. The figure is necessary — not redundant with tables or text
-6. Error bars or uncertainty shown where applicable
-7. Comparison figures include all relevant baselines
-8. The figure makes sense: could a reader understand it without reading the full paper?
+TABLES — evaluate and comment:
+- Do tables have descriptive titles and complete column headers with units?
+- Is the data consistent with claims made in the text?
+- Are values precise and consistent across the paper?
 
-TABLES CRITERIA (score 0-5):
-1. Descriptive title and column headers present
-2. Units specified in headers
-3. Statistical significance indicated (*, **, p-values)
-4. Data in table is consistent with claims made in text
-5. No redundancy between tables and figures
-6. Values are precise and consistent across the paper
-7. The table makes sense: are the comparisons meaningful?
+EQUATIONS — evaluate and comment:
+- Are equations numbered sequentially?
+- Are all variables defined before or immediately after use?
+- Are equations dimensionally consistent?
+- Are equations referenced in the text when used?
 
-EQUATIONS CRITERIA (score 0-5):
-1. Equations are numbered sequentially
-2. All variables defined before or immediately after use
-3. Equations are dimensionally consistent
-4. Equations are properly introduced with context
-5. Mathematical notation is standard for the field
-6. Equations are referenced in text when used
-7. The equations make sense: do they correctly represent what the text describes?
-
-COHERENCE CHECK — CRITICAL:
-- Does the text make claims that figures/tables don't support?
-- Do figures show something different from what the text describes?
+COHERENCE CHECK:
+- Does the text make claims that figures/tables do not support?
 - Are there numerical inconsistencies between tables and text?
-- Do equations match the described algorithms/methods?
+- Do equations match the described methods?
 
-IMPORTANT:
-- If figures, tables, or equations are detected in the supplied manuscript facts, do not say they are absent.
-- Do not claim "No numerical values or data are presented in tables" unless the table excerpts are actually empty.
-- If only captions/references are visible, say "the extracted text does not expose table bodies" instead of assuming the tables lack data.
+NOTE: Do not say figures/tables are absent if they are listed in the detected facts above.
 
 ---
 MANUSCRIPT TEXT:
 {text}
 ---
 
-Respond ONLY with this JSON:
+Respond ONLY with this JSON. Write at least 3 items in each list:
 {{
   "agent_name": "FiguresTablesEquationsReviewer",
   "scope": "Figures, tables, equations — quality and coherence with text",
-  "figures_count_detected": 0,
-  "tables_count_detected": 0,
-  "equations_count_detected": 0,
-  "figures_self_explanatory": true,
-  "figures_referenced_before_appearance": true,
-  "figures_coherent_with_text": true,
-  "figures_issues": [],
-  "tables_headers_complete": true,
-  "tables_data_consistent_with_text": true,
-  "tables_issues": [],
-  "equations_numbered": true,
-  "equations_variables_defined": true,
-  "equations_coherent_with_methods": true,
-  "equations_issues": [],
-  "text_figure_inconsistencies": [],
-  "text_table_inconsistencies": [],
-  "strengths": [],
-  "weaknesses": [],
-  "major_comments": [],
-  "minor_comments": [],
-  "specific_recommendations": [],
+  "strengths": [
+    "<specific strength about figures, tables or equations>",
+    "<second strength>",
+    "<third strength>"
+  ],
+  "weaknesses": [
+    "<specific weakness with evidence from text>",
+    "<second weakness>",
+    "<third weakness>"
+  ],
+  "major_comments": [
+    "<critical issue that must be fixed>"
+  ],
+  "minor_comments": [
+    "<minor presentation or formatting issue>"
+  ],
+  "specific_recommendations": [
+    "<concrete action for figures>",
+    "<concrete action for tables>",
+    "<concrete action for equations>"
+  ],
   "score": 0.0,
   "confidence": 0.0
 }}"""

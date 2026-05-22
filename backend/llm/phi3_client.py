@@ -1,27 +1,43 @@
 """
-phi3_client.py — CHVN Paper Reviewer v4
------------------------------------------
-LLM client: Groq API (llama-3.3-70b-versatile by default).
-Falls back to env var GROQ_MODEL if set.
-Papers are processed via API — Groq does NOT store or train on API data.
+phi3_client.py — CHVN Paper Reviewer (Local Ollama mode)
+----------------------------------------------------------
+LLM backend: Ollama local API (http://localhost:11434)
+Sin API key. Sin rate limits. Sin datos a la nube.
+
+Modelos por modo:
+  fast     → qwen3:14b   (rápido, buena calidad)
+  balanced → qwen3:32b   (máxima calidad)
+  deep     → qwen3:32b   (máxima calidad, más tokens)
+
+Override: OLLAMA_MODEL_FAST / OLLAMA_MODEL_BALANCED / OLLAMA_MODEL_DEEP
 """
 
 import os
 import json
 import re
 import logging
+import httpx
 
 logger = logging.getLogger(__name__)
 
-GROQ_MODELS = [
-    "llama-3.3-70b-versatile",
-    "llama-3.1-70b-versatile",
-    "mixtral-8x7b-32768",
-    "llama-3.1-8b-instant",
+OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
+
+OLLAMA_MODELS = [
+    "qwen3:32b",
+    "qwen3:14b",
+    "qwen3:8b",
+    "gemma3:12b",
+    "llama3.2:latest",
 ]
 
+MODE_MODELS: dict = {
+    "fast":     os.environ.get("OLLAMA_MODEL_FAST",     "llama3.2"),
+    "balanced": os.environ.get("OLLAMA_MODEL_BALANCED", "llama3.2"),
+    "deep":     os.environ.get("OLLAMA_MODEL_DEEP",     "llama3.2"),
+}
+
 DEFAULT_CONFIG = {
-    "model":       os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile"),
+    "model":       os.environ.get("OLLAMA_MODEL", "llama3.2"),
     "temperature": 0.2,
     "top_p":       0.9,
     "max_tokens":  4096,
@@ -41,70 +57,112 @@ def get_config() -> dict:
 
 
 async def call_llm(prompt: str, system_prompt: str = "", config_override: dict = None) -> str:
-    """Send prompt to Groq API and return response text."""
-    from groq import AsyncGroq
-
+    """Envía prompt a Ollama y retorna el texto de respuesta."""
     cfg = _runtime_config.copy()
     if config_override:
         cfg.update(config_override)
 
-    api_key = os.environ.get("GROQ_API_KEY", "")
-    if not api_key:
-        raise ValueError("GROQ_API_KEY environment variable is not set.")
-
-    client = AsyncGroq(api_key=api_key)
+    model = cfg.get("model", "qwen3:32b")
 
     messages = []
     if system_prompt:
         messages.append({"role": "system", "content": system_prompt})
     messages.append({"role": "user", "content": prompt})
 
-    try:
-        response = await client.chat.completions.create(
-            model=cfg["model"],
-            messages=messages,
-            temperature=cfg["temperature"],
-            top_p=cfg["top_p"],
-            max_tokens=cfg["max_tokens"],
-        )
-        return response.choices[0].message.content.strip()
+    payload = {
+        "model": model,
+        "messages": messages,
+        "stream": False,
+        "options": {
+            "temperature": cfg.get("temperature", 0.2),
+            "top_p":       cfg.get("top_p", 0.9),
+            "num_predict": cfg.get("max_tokens", 4096),
+        },
+    }
 
+    try:
+        async with httpx.AsyncClient(timeout=300.0) as client:
+            response = await client.post(
+                f"{OLLAMA_BASE_URL}/api/chat",
+                json=payload,
+            )
+            response.raise_for_status()
+            data = response.json()
+            return data["message"]["content"].strip()
+
+    except httpx.ConnectError:
+        raise RuntimeError(
+            "No se puede conectar a Ollama en localhost:11434. "
+            "Ejecuta: ollama serve"
+        )
     except Exception as e:
-        logger.error(f"[Groq] API call failed: {e}")
+        logger.error(f"[Ollama] API call failed: {e}")
         raise
+
+
+def _extract_json_object(text: str):
+    """
+    Extrae el primer objeto JSON completo del texto rastreando profundidad de llaves.
+    Maneja correctamente texto antes y después del JSON (ej: 'Here is the JSON: {...} Hope this helps!').
+    """
+    start = text.find('{')
+    if start == -1:
+        return None
+    depth = 0
+    in_string = False
+    escape_next = False
+    for i, ch in enumerate(text[start:], start):
+        if escape_next:
+            escape_next = False
+            continue
+        if ch == '\\' and in_string:
+            escape_next = True
+            continue
+        if ch == '"':
+            in_string = not in_string
+            continue
+        if in_string:
+            continue
+        if ch == '{':
+            depth += 1
+        elif ch == '}':
+            depth -= 1
+            if depth == 0:
+                return text[start:i + 1]
+    return None
 
 
 def parse_json_response(text: str, agent_name: str) -> dict:
     """
-    Robust JSON parser. Handles markdown code blocks and stray text.
-    Groq models are generally clean — but we keep fallbacks for safety.
+    Parser JSON robusto. Maneja markdown, texto extra antes/después del JSON,
+    y bloques <think> de modelos con razonamiento interno (qwen3, deepseek).
     """
-    # Strip any <think> blocks just in case
+    # Elimina bloques <think> (qwen3, deepseek-r1, etc.)
     text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
 
-    # Strategy 1: Direct parse
+    # Estrategia 1: parse directo
     try:
         return json.loads(text)
     except json.JSONDecodeError:
         pass
 
-    # Strategy 2: Extract from ```json ... ```
-    match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL)
+    # Estrategia 2: extraer de ```json ... ``` o ``` ... ```
+    match = re.search(r"```(?:json)?\s*(\{.*?})\s*```", text, re.DOTALL)
     if match:
         try:
             return json.loads(match.group(1))
         except json.JSONDecodeError:
             pass
 
-    # Strategy 3: First { ... } block
-    match = re.search(r"\{.*\}", text, re.DOTALL)
-    if match:
+    # Estrategia 3: extracción por balanceo de llaves (maneja texto antes/después)
+    candidate = _extract_json_object(text)
+    if candidate:
         try:
-            return json.loads(match.group(0))
+            return json.loads(candidate)
         except json.JSONDecodeError:
             pass
 
-    logger.warning(f"[{agent_name}] JSON parse failed. Using fallback.")
+    logger.warning(f"[{agent_name}] JSON parse failed. Raw output: {text[:300]!r}")
     return {
         "agent_name": agent_name,
         "scope": "Parse error",
@@ -121,19 +179,23 @@ def parse_json_response(text: str, agent_name: str) -> dict:
 
 
 async def check_ollama_health() -> dict:
-    """Health check — now reports Groq API status instead of Ollama."""
-    api_key = os.environ.get("GROQ_API_KEY", "")
-    model   = _runtime_config.get("model", "llama-3.3-70b-versatile")
-    if not api_key:
+    """Verifica que Ollama esté corriendo y lista los modelos disponibles."""
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            response = await client.get(f"{OLLAMA_BASE_URL}/api/tags")
+            response.raise_for_status()
+            data = response.json()
+            available = [m["name"] for m in data.get("models", [])]
+            return {
+                "ollama_running": True,
+                "available_models": available,
+                "mode_models": MODE_MODELS,
+                "configured_model": _runtime_config.get("model", "qwen3:32b"),
+            }
+    except Exception as e:
         return {
-            "groq_api": False,
-            "model_available": False,
-            "configured_model": model,
-            "error": "GROQ_API_KEY not set",
+            "ollama_running": False,
+            "error": str(e),
+            "mode_models": MODE_MODELS,
+            "configured_model": _runtime_config.get("model", "qwen3:32b"),
         }
-    return {
-        "groq_api": True,
-        "model_available": True,
-        "available_models": GROQ_MODELS,
-        "configured_model": model,
-    }

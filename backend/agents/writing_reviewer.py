@@ -10,8 +10,9 @@ from backend.agents.base_agent import BaseReviewerAgent
 
 SYSTEM_PROMPT = """You are a scientific editor and senior peer reviewer for Q1 journals (Elsevier/IEEE/Emerald).
 Evaluate the scientific writing quality of a manuscript.
-Respond ONLY with valid JSON. Provide specific examples of weak writing when identified.
-Quote problematic sentences directly from the text (under 15 words per quote)."""
+OUTPUT RULES: Respond ONLY with a valid JSON object. Start your response with { and end with }.
+Do not add any text, explanation, or markdown before or after the JSON.
+Provide specific examples of weak writing. Quote problematic sentences from the text."""
 
 USER_PROMPT_TEMPLATE = """Critically evaluate the scientific writing quality of this manuscript.
 
@@ -42,20 +43,32 @@ MANUSCRIPT TEXT:
 {text}
 ---
 
-Respond ONLY with this JSON:
+Respond ONLY with this JSON. Write at least 3 items in each list:
 {{
   "agent_name": "WritingReviewer",
   "scope": "Scientific writing quality, clarity, and style",
-  "overall_clarity": "<clear/acceptable/unclear>",
-  "passive_voice_overused": true/false,
-  "vague_quantifiers_found": [],
-  "undefined_acronyms": [],
-  "paragraphs_needing_rewrite": [],
-  "strengths": [],
-  "weaknesses": [],
-  "major_comments": [],
-  "minor_comments": [],
-  "specific_recommendations": [],
+  "strengths": [
+    "<specific writing strength with example from text>",
+    "<second strength>",
+    "<third strength>"
+  ],
+  "weaknesses": [
+    "<specific writing problem — quote or cite the problematic passage>",
+    "<second weakness>",
+    "<third weakness>"
+  ],
+  "major_comments": [
+    "<writing issue that significantly impacts readability or clarity>"
+  ],
+  "minor_comments": [
+    "<minor grammar, style, or formatting issue>",
+    "<second minor issue>"
+  ],
+  "specific_recommendations": [
+    "<concrete rewrite suggestion or action>",
+    "<second action>",
+    "<third action>"
+  ],
   "score": 0.0,
   "confidence": 0.0
 }}"""

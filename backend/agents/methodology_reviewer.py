@@ -11,13 +11,10 @@ from backend.agents.base_agent import BaseReviewerAgent
 
 SYSTEM_PROMPT = """You are a senior peer reviewer for a Q1 scientific journal (Elsevier/IEEE/Emerald).
 You specialize in evaluating research methodology, experimental design, and mathematical formulations.
-IMPORTANT: You must evaluate the methodology HOLISTICALLY — even if there is no chapter explicitly
-called "Methodology". Look at how the paper is structured: what is presented first, what comes after,
-whether the sequence is logical (problem → model → method → experiment → results → conclusion).
-Infer what the authors actually did from the full manuscript, including sections named Framework,
-Approach, Proposed Method, Model, Formulation, System Model, Experiments, Evaluation, or Results.
-Respond ONLY with valid JSON. Never invent content not present in the text.
-If something is absent, state exactly: "Not reported in the manuscript"."""
+Evaluate the methodology HOLISTICALLY — even if there is no section explicitly called "Methodology".
+Look at sections named Framework, Approach, Proposed Method, Model, Experiments, Evaluation, or Results.
+OUTPUT RULES: Respond ONLY with a valid JSON object. Start your response with { and end with }.
+Do not add any text, explanation, or markdown before or after the JSON. Never invent content."""
 
 USER_PROMPT_TEMPLATE = """Perform a holistic methodological review of this scientific manuscript.
 
@@ -55,29 +52,33 @@ MANUSCRIPT TEXT:
 {text}
 ---
 
-Respond ONLY with this JSON:
+Respond ONLY with this JSON. Write at least 3 items in each list:
 {{
   "agent_name": "MethodologyReviewer",
   "scope": "Methodology, experimental design, equations, reproducibility — holistic review",
-  "design_type": "<experimental/computational/theoretical/mixed/unclear>",
-  "inferred_method_summary": "<1-2 sentence summary of what the authors did>",
-  "presentation_sequence": [],
+  "inferred_method_summary": "<1-2 sentence summary of what the authors actually did>",
   "logical_flow_assessment": "<good/acceptable/weak/broken>",
-  "sequence_issues": [],
-  "reproducibility_score": 0.0,
-  "equations_present": true,
-  "equations_numbered": true,
-  "equations_defined": true,
-  "equations_issues": [],
-  "dataset_described": true,
-  "baseline_comparison_fair": true,
-  "bias_addressed": true,
-  "physical_constraints_incorporated": true,
-  "strengths": [],
-  "weaknesses": [],
-  "major_comments": [],
-  "minor_comments": [],
-  "specific_recommendations": [],
+  "strengths": [
+    "<specific methodological strength with evidence from the text>",
+    "<second strength>",
+    "<third strength>"
+  ],
+  "weaknesses": [
+    "<specific methodological weakness — what is missing, unclear, or not reproducible>",
+    "<second weakness>",
+    "<third weakness>"
+  ],
+  "major_comments": [
+    "<critical issue that must be fixed before acceptance>"
+  ],
+  "minor_comments": [
+    "<minor clarification or completeness issue>"
+  ],
+  "specific_recommendations": [
+    "<concrete action: what to add, clarify, or fix>",
+    "<second action>",
+    "<third action>"
+  ],
   "score": 0.0,
   "confidence": 0.0
 }}"""
@@ -100,46 +101,35 @@ class MethodologyReviewerAgent(BaseReviewerAgent):
         return USER_PROMPT_TEMPLATE.format(text=text)
 
     def get_relevant_sections(self, sections: dict) -> str:
-        # Build a holistic map of the article, not a dependency on a Methodology header.
-        outline = []
-        for key, val in sections.items():
-            if key.startswith("_"):
-                continue
-            first_line = next((line.strip() for line in val.splitlines() if line.strip()), "")
-            outline.append(f"{key}: {first_line[:160]}")
-
+        # Send only the most relevant sections — llama3.2 fails with too much context
         priority = [
-            "title", "abstract", "introduction", "literature", "methodology",
-            "experiments", "results", "discussion", "conclusions",
+            "methodology", "experiments", "results",
+            "introduction", "abstract", "conclusions", "discussion",
         ]
         parts = []
+
+        # Outline: just section names so model knows paper structure
+        outline = [k for k in sections if not k.startswith("_")]
         if outline:
-            parts.append("[ARTICLE MAP]\n" + "\n".join(outline[:20]))
+            parts.append("[PAPER SECTIONS DETECTED]\n" + ", ".join(outline[:15]))
 
         for key in priority:
-            if key in sections and sections[key]:
-                parts.append(f"[{key.upper()}]\n{sections[key][:6000]}")
+            if key in sections and sections[key].strip():
+                parts.append(f"[{key.upper()}]\n{sections[key][:3000]}")
 
-        for key, val in sections.items():
-            if key.startswith("_") or key in priority:
-                continue
-            if key.startswith("section_"):
-                parts.append(f"[{key.upper()}]\n{val[:4000]}")
-
-        # Always add full text portion for holistic flow analysis
-        full = sections.get("_full_text", "")
-        if full:
-            parts.append(f"[FULL PAPER START - for holistic flow analysis]\n{full[:12000]}")
-            if len(full) > 24000:
-                middle = len(full) // 2
-                parts.append(f"[FULL PAPER MIDDLE]\n{full[middle:middle+8000]}")
-        if not parts and full:
-            parts.append(f"[FULL TEXT]\n{full}")
+        # Fallback: use beginning of full text if no named sections found
+        if len(parts) <= 1:
+            full = sections.get("_full_text", "")
+            parts.append(f"[FULL TEXT]\n{full[:8000]}")
 
         return "\n\n".join(parts)
 
     async def run(self, sections: dict, mode: str = "fast", publisher: str = "", paper_type: str = "") -> dict:
         result = await super().run(sections, mode, publisher=publisher, paper_type=paper_type)
+
+        if result.get("parse_error") or result.get("score", 0) == 0:
+            return self._deterministic_result(sections, result.get("raw_output", ""))
+
         has_method_evidence = any(
             sections.get(k, "").strip()
             for k in ("methodology", "experiments", "results", "discussion", "conclusions")
@@ -148,3 +138,66 @@ class MethodologyReviewerAgent(BaseReviewerAgent):
             result["score"] = 2.5
             result["confidence"] = max(result.get("confidence", 0), 0.55)
         return self._normalize_result(result)
+
+    def _deterministic_result(self, sections: dict, raw_output: str = "") -> dict:
+        """Fallback when LLM fails to produce valid JSON."""
+        text = " ".join(
+            sections.get(k, "") for k in
+            ("methodology", "experiments", "results", "discussion", "conclusions", "_full_text")
+        ).lower()
+
+        has_equations = any(t in text for t in ("eq.", "equation", "formula", "(1)", "(2)", "ecuation"))
+        has_dataset = any(t in text for t in ("dataset", "data set", "database", "corpus", "sample", "n =", "n="))
+        has_baseline = any(t in text for t in ("baseline", "compared to", "benchmark", "state-of-the-art", "vs."))
+        has_repro = any(t in text for t in ("algorithm", "parameter", "hyperparameter", "configuration", "setting", "code"))
+        has_validation = any(t in text for t in ("validation", "test", "evaluation", "accuracy", "rmse", "mae", "f1", "precision", "recall"))
+
+        strengths, weaknesses, recommendations = [], [], []
+
+        if has_equations:
+            strengths.append("Mathematical formulations or equations are present, supporting the theoretical foundation.")
+        if has_dataset:
+            strengths.append("Dataset or experimental data is referenced, indicating empirical validation.")
+        if has_baseline:
+            strengths.append("Baseline or benchmark comparisons are present.")
+        if has_validation:
+            strengths.append("Quantitative validation metrics are referenced in the results.")
+        if has_repro:
+            strengths.append("Implementation parameters or algorithmic details are described.")
+
+        if not has_dataset:
+            weaknesses.append("No clear dataset description was detected — sample size, source, and preprocessing should be stated explicitly.")
+            recommendations.append("Describe the dataset: source, size, preprocessing steps, and how it supports the research objective.")
+        if not has_baseline:
+            weaknesses.append("No baseline comparison was detected — results cannot be contextualised without reference methods.")
+            recommendations.append("Include comparison against at least one established baseline or state-of-the-art method.")
+        if not has_repro:
+            weaknesses.append("Reproducibility details appear limited — key parameters and configurations should be explicitly reported.")
+            recommendations.append("Report all hyperparameters, software versions, and configuration settings needed to reproduce results.")
+        if not has_equations:
+            weaknesses.append("No mathematical formulations detected — key model components should be described formally.")
+
+        if not strengths:
+            strengths.append("Methodological content is present in the manuscript.")
+        if not weaknesses:
+            weaknesses.append("Methodology could not be fully evaluated from extracted text — verify completeness of the methodology section.")
+
+        score = 2.0
+        score += 0.4 * sum([has_equations, has_dataset, has_baseline, has_repro, has_validation])
+        score = min(4.2, round(score, 1))
+
+        return self._normalize_result({
+            "agent_name": self.agent_name,
+            "scope": self.scope,
+            "inferred_method_summary": "Assessed via deterministic signal detection (LLM parse failed).",
+            "logical_flow_assessment": "acceptable",
+            "strengths": strengths,
+            "weaknesses": weaknesses,
+            "major_comments": weaknesses[:1],
+            "minor_comments": weaknesses[1:3],
+            "specific_recommendations": recommendations,
+            "score": score,
+            "confidence": 0.55,
+            "fallback_used": True,
+            "raw_output": raw_output[:300],
+        })

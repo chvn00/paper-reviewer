@@ -21,15 +21,17 @@ logger = logging.getLogger(__name__)
 MODE_CONFIG = {
     "fast": {
         "max_chars": 20000,
-        "max_tokens_override": 2500,
+        "max_tokens_override": 3500,
         "system_suffix": (
             "REVIEW DEPTH: Fast screening mode. "
-            "Evaluate all criteria but be concise — maximum 3 items per category. "
+            "Evaluate all criteria with at least 3 specific items per category. "
+            "Each comment must be a complete sentence with concrete evidence from the text. "
             "Focus on issues that would require author revision."
         ),
         "prompt_suffix": (
-            "\nFast screening mode: cover all criteria concisely. "
-            "Prioritize issues that require author action over minor observations."
+            "\nFast screening mode: cover all criteria with specific, evidence-based comments. "
+            "Minimum 3 items in strengths, weaknesses, and recommendations. "
+            "Prioritize issues that require author action."
         ),
     },
     "balanced": {
@@ -315,7 +317,96 @@ class BaseReviewerAgent(ABC):
         except (ValueError, TypeError):
             r["score"]      = 0
             r["confidence"] = 0
+
+        # Remove duplicates within each list and contradictions between strengths/weaknesses
+        r = self._clean_comments(r)
         return r
+
+    def _clean_comments(self, r: dict) -> dict:
+        """
+        1. Remove near-duplicates within each list.
+        2. Remove strengths that directly contradict a weakness
+           (same topic + opposite judgment). Keeps the weakness (more actionable).
+        """
+        for key in ("strengths", "weaknesses", "major_comments", "minor_comments", "specific_recommendations"):
+            r[key] = self._deduplicate(r.get(key, []))
+
+        # Cross-check strengths vs weaknesses:
+        # 1. Remove strengths that directly contradict a weakness (same topic, opposite judgment)
+        # 2. Remove strengths that are near-duplicates of a weakness (same text in both lists)
+        cleaned_strengths = []
+        for s in r.get("strengths", []):
+            s_words = self._sig_words(s)
+            is_contradiction = any(self._are_contradictory(s, w) for w in r.get("weaknesses", []))
+            is_duplicate = any(self._word_overlap(s_words, self._sig_words(w)) > 0.75
+                               for w in r.get("weaknesses", []))
+            if not is_contradiction and not is_duplicate:
+                cleaned_strengths.append(s)
+        r["strengths"] = cleaned_strengths
+        return r
+
+    def _deduplicate(self, items: list) -> list:
+        """Remove near-duplicate strings (>75% significant-word overlap)."""
+        seen_keys = []
+        result = []
+        for item in items:
+            key = self._sig_words(item)
+            if not key:
+                continue
+            if not any(self._word_overlap(key, s) > 0.75 for s in seen_keys):
+                seen_keys.append(key)
+                result.append(item)
+        return result
+
+    def _are_contradictory(self, strength: str, weakness: str) -> bool:
+        """
+        Return True if a strength and a weakness make opposing claims about the same topic.
+        Heuristic: high word overlap (>50%) AND the weakness contains negation/absence markers
+        while the strength does not (or vice versa).
+        """
+        s_words = self._sig_words(strength)
+        w_words = self._sig_words(weakness)
+        if self._word_overlap(s_words, w_words) < 0.45:
+            return False  # Different topics — not a contradiction
+
+        negation_markers = {
+            "not", "no", "lacks", "lack", "missing", "absent", "without",
+            "unclear", "insufficient", "inadequate", "incomplete", "fails",
+            "fail", "poor", "weak", "vague", "none", "never", "omit",
+            "omitted", "undeclared", "unspecified", "undefined", "limited",
+            # Spanish
+            "no", "sin", "falta", "faltan", "ausente", "incompleto",
+            "insuficiente", "poco", "débil", "vago",
+        }
+        s_has_neg = bool(self._sig_words(strength) & negation_markers)
+        w_has_neg = bool(self._sig_words(weakness) & negation_markers)
+
+        # Contradiction: one affirms, the other negates the same topic
+        return s_has_neg != w_has_neg
+
+    def _sig_words(self, text: str) -> set:
+        """Extract significant words (strip stopwords and punctuation)."""
+        stopwords = {
+            "the", "a", "an", "is", "are", "was", "were", "be", "been",
+            "have", "has", "had", "will", "would", "could", "should", "may",
+            "might", "of", "in", "on", "at", "to", "for", "with", "by",
+            "from", "and", "or", "but", "this", "that", "it", "its", "as",
+            "which", "also", "however", "therefore", "thus", "very", "more",
+            # Spanish
+            "el", "la", "los", "las", "de", "del", "en", "que", "se", "un",
+            "una", "con", "por", "para", "su", "sus", "es", "son", "está",
+        }
+        words = set()
+        for w in text.lower().split():
+            w = w.strip(".,;:\"'()[]{}")
+            if w and w not in stopwords and len(w) > 2:
+                words.add(w)
+        return words
+
+    def _word_overlap(self, a: set, b: set) -> float:
+        if not a or not b:
+            return 0.0
+        return len(a & b) / min(len(a), len(b))
 
     def _normalize_text_list(self, value) -> list:
         if value is None:

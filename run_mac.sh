@@ -22,4 +22,5 @@ if ! ollama list | grep -q "llama3.2"; then
   ollama pull llama3.2
 fi
 
+echo "✅  CHVN Paper Reviewer en http://localhost:8000"
 exec .venv/bin/python -m uvicorn backend.app:app --host 0.0.0.0 --port 8000

@@ -62,29 +62,31 @@ MANUSCRIPT TEXT (References + Introduction for citation context):
 {text}
 ---
 
-Respond ONLY with this JSON:
+Respond ONLY with this JSON. Write at least 3 items in each list:
 {{
   "agent_name": "ReferencesReviewer",
   "scope": "References quality, recency, and relevance",
-  "total_references_estimated": 0,
-  "citation_style": "ieee_numbered|apa|other|mixed",
-  "sequential_numbering_correct": true,
-  "numbering_gaps_detected": [],
-  "url_only_references": [],
-  "grey_literature_count": 0,
-  "doi_present": true,
-  "recent_references_present": true,
-  "seminal_works_present": true,
-  "self_citation_concern": false,
-  "cuadro_instead_of_tabla": false,
-  "missing_key_areas": [],
-  "weak_or_irrelevant_references": [],
-  "citation_style_consistent": true,
-  "strengths": [],
-  "weaknesses": [],
-  "major_comments": [],
-  "minor_comments": [],
-  "specific_recommendations": [],
+  "strengths": [
+    "<specific strength about the references>",
+    "<second strength>",
+    "<third strength>"
+  ],
+  "weaknesses": [
+    "<specific weakness: missing recency, gaps, URL-only, etc.>",
+    "<second weakness>",
+    "<third weakness>"
+  ],
+  "major_comments": [
+    "<critical reference issue that must be fixed>"
+  ],
+  "minor_comments": [
+    "<minor formatting or style issue>"
+  ],
+  "specific_recommendations": [
+    "<concrete action: add, remove, or fix specific references>",
+    "<second action>",
+    "<third action>"
+  ],
   "score": 0.0,
   "confidence": 0.0
 }}"""
