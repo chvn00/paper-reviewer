@@ -1,0 +1,24 @@
+# Logs
+*.log
+chvn_review.log
+
+# Reportes generados
+reports/*.pdf
+reports/history.json
+
+# Uploads temporales
+uploads/
+
+# Variables de entorno locales
+.env.local
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# macOS
+.DS_Store
