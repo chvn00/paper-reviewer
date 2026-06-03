@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MADSI · Hub de Herramientas</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:      #0d0d0d;
+      --dark:       #141414;
+      --card-bg:    #1a1a1a;
+      --card-hover: #212121;
+      --border:     #2a2a2a;
+      --blue:       #1a3fa3;
+      --blue-light: #2554cc;
+      --yellow:     #f5c400;
+      --yellow-dim: #c49d00;
+      --text:       #f0f0f0;
+      --muted:      #888;
+      --active:     #22c55e;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--black);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, var(--dark) 0%, #0a1a4a 100%);
+      border-bottom: 3px solid var(--yellow);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      height: 80px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.6);
+    }
+
+    header img {
+      height: 52px;
+      filter: drop-shadow(0 0 8px rgba(245,196,0,0.4));
+    }
+
+    .header-text h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.01em;
+    }
+
+    .header-text p {
+      font-size: 0.75rem;
+      color: var(--yellow);
+      font-weight: 500;
+      margin-top: 2px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1;
+      padding: 2.5rem 2rem 3rem;
+      max-width: 1280px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .toolbar-title h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .toolbar-title p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      min-width: 240px;
+    }
+
+    .search-box svg { color: var(--muted); flex-shrink: 0; }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 0.85rem;
+      width: 100%;
+    }
+
+    .search-box input::placeholder { color: var(--muted); }
+
+    /* ── GRID ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transition: transform .2s, box-shadow .2s, border-color .2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 14px 14px 0 0;
+    }
+
+    .card.blue::before   { background: var(--blue-light); }
+    .card.yellow::before { background: var(--yellow); }
+    .card.green::before  { background: #22c55e; }
+    .card.purple::before { background: #a855f7; }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      border-color: #3a3a3a;
+    }
+
+    /* Badge */
+    .badge {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+
+    .badge-active   { background: rgba(34,197,94,0.15);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+    .badge-soon     { background: rgba(245,196,0,0.12);  color: var(--yellow); border: 1px solid rgba(245,196,0,0.3); }
+    .badge-dev      { background: rgba(168,85,247,0.12); color: #a855f7; border: 1px solid rgba(168,85,247,0.3); }
+
+    /* Icon */
+    .card-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+    }
+
+    .icon-blue   { background: rgba(37,84,204,0.2); }
+    .icon-yellow { background: rgba(245,196,0,0.15); }
+    .icon-green  { background: rgba(34,197,94,0.15); }
+    .icon-purple { background: rgba(168,85,247,0.15); }
+
+    /* Card body */
+    .card-body { flex: 1; }
+
+    .card-body h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+      padding-right: 4rem;
+    }
+
+    .card-body p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    /* Tags */
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .tag {
+      font-size: 0.68rem;
+      color: var(--muted);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2px 9px;
+    }
+
+    /* Actions */
+    .card-actions { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1.2rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all .15s;
+      text-decoration: none;
+      width: 100%;
+    }
+
+    .btn-primary {
+      background: var(--blue-light);
+      color: #fff;
+    }
+    .btn-primary:hover { background: #1e46b8; }
+
+    .btn-yellow {
+      background: var(--yellow);
+      color: #000;
+    }
+    .btn-yellow:hover { background: var(--yellow-dim); }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.05);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      cursor: not-allowed;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-row .btn { flex: 1; }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { background: rgba(255,255,255,0.06); border-color: #555; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 1.25rem;
+      font-size: 0.72rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+
+    footer span { color: var(--yellow); }
+
+    /* ── SEARCH FILTER ── */
+    .card.hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <img src="sghn-teleco/static/escudo.png" alt="USTA" />
+  <div class="header-text">
+    <h1>Maestría en Análisis de Datos y Sistemas Inteligentes</h1>
+    <p>Universidad Santo Tomás · Portal de Herramientas MADSI</p>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main>
+  <div class="toolbar">
+    <div class="toolbar-title">
+      <h2>Herramientas disponibles</h2>
+      <p>Selecciona la aplicación que necesitas</p>
+    </div>
+    <div class="search-box">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" id="search" placeholder="Buscar herramienta..." />
+    </div>
+  </div>
+
+  <div class="grid" id="grid">
+
+    <!-- CARD 1: Seguimiento a Estudiantes -->
+    <div class="card blue" data-name="seguimiento estudiantes">
+      <span class="badge badge-active">Activo</span>
+      <div class="card-icon icon-blue">👨‍🎓</div>
+      <div class="card-body">
+        <h3>Seguimiento a Estudiantes</h3>
+        <p>Registro y seguimiento del desempeño académico, alertas tempranas y gestión de casos por docente.</p>
+      </div>
+      <div class="tags">
+        <span class="tag">Estudiantes</span>
+        <span class="tag">Seguimiento</span>
+        <span class="tag">Alertas</span>
+      </div>
+      <div class="card-actions">
+        <a href="#" class="btn btn-primary">Abrir →</a>
+      </div>
+    </div>
+
+    <!-- CARD 2: Comité de Proyectos -->
+    <div class="card yellow" data-name="comite proyectos">
+      <span class="badge badge-soon">Próximamente</span>
+      <div class="card-icon icon-yellow">📋</div>
+      <div class="card-body">
+        <h3>Comité de Proyectos</h3>
+        <p>Gestión de propuestas, evaluación de anteproyectos, asignación de directores y seguimiento de avances.</p>
+      </div>
+      <div class="tags">
+        <span class="tag">Proyectos</span>
+        <span class="tag">Comité</span>
+        <span class="tag">Evaluación</span>
+      </div>
+      <div class="card-actions">
+        <button class="btn btn-ghost" disabled>En desarrollo ⏳</button>
+      </div>
+    </div>
+
+    <!-- CARD 3: Administrativa -->
+    <div class="card green" data-name="administrativa nominas presupuestos">
+      <span class="badge badge-soon">Próximamente</span>
+      <div class="card-icon icon-green">🏛️</div>
+      <div class="card-body">
+        <h3>Administrativa</h3>
+        <p>Gestión centralizada de procesos administrativos del programa, nómina docente y control presupuestal.</p>
+      </div>
+      <div class="tags">
+        <span class="tag">Nóminas</span>
+        <span class="tag">Presupuestos</span>
+        <span class="tag">Admin</span>
+      </div>
+      <div class="card-actions">
+        <div class="btn-row">
+          <a href="#" class="btn btn-outline">💰 Nóminas</a>
+          <a href="#" class="btn btn-outline">📊 Presupuestos</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 4: Módulos -->
+    <div class="card purple" data-name="modulos academicos">
+      <span class="badge badge-dev">En desarrollo</span>
+      <div class="card-icon icon-purple">🧩</div>
+      <div class="card-body">
+        <h3>Módulos</h3>
+        <p>Módulos integrados del programa académico: contenidos, evaluaciones y recursos por asignatura.</p>
+      </div>
+      <div class="tags">
+        <span class="tag">Académico</span>
+        <span class="tag">Módulos</span>
+        <span class="tag">Contenidos</span>
+      </div>
+      <div class="card-actions">
+        <button class="btn btn-ghost" disabled>En desarrollo ⏳</button>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  Maestría en Análisis de Datos y Sistemas Inteligentes · <span>USTA</span> · 2026
+</footer>
+
+<script>
+  const search = document.getElementById('search');
+  const cards  = document.querySelectorAll('.card');
+
+  search.addEventListener('input', () => {
+    const q = search.value.toLowerCase().trim();
+    cards.forEach(card => {
+      const name = card.dataset.name || '';
+      card.classList.toggle('hidden', q.length > 0 && !name.includes(q));
+    });
+  });
+</script>
+
+</body>
+</html>
