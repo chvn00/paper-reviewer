@@ -932,6 +932,7 @@ function renderHistory(items) {
         </div>
         <div class="history-time">${elapsed}</div>
         <button class="btn-download" ${item.report_ready ? "" : "disabled"} onclick="downloadHistoryReport('${item.id}')">PDF</button>
+        <button class="btn-author-mode" title="Load and use Author Mode" onclick="loadHistoryForAuthorMode('${item.id}')">✍️</button>
         <button class="btn-delete-history" title="Delete from history" onclick="deleteHistoryItem('${item.id}', this)">✕</button>
       </div>`;
     }).join("")}
@@ -943,6 +944,14 @@ function formatElapsed(sec) {
   const m = Math.floor(sec / 60).toString().padStart(2, "0");
   const s = (sec % 60).toString().padStart(2, "0");
   return `${m}:${s}`;
+}
+
+async function loadHistoryForAuthorMode(sessionId) {
+  // Carga una revisión pasada y activa Modo Autor
+  state.sessionId = sessionId;
+  localStorage.setItem("lastSessionId", sessionId);
+  showPanel("author");
+  showToast("Revisión cargada. Haz click en 'Generar Sugerencias'", "info");
 }
 
 async function downloadHistoryReport(id) {
