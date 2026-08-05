@@ -1063,7 +1063,7 @@ function resetConfig() {
     document.getElementById(id).value           = val;
     if (vid) document.getElementById(vid).textContent = val;
   };
-  set("cfgModel", null, "qwen3:32b");
+  set("cfgModel", null, "llama3.2");
   set("cfgUrl",   null, "http://localhost:11434");
   set("cfgTemp",   "tempVal",   0.2);
   set("cfgTopP",   "topPVal",   0.9);

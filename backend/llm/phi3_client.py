@@ -37,7 +37,7 @@ MODE_MODELS: dict = {
 }
 
 DEFAULT_CONFIG = {
-    "model":       os.environ.get("OLLAMA_MODEL", "qwen3:32b"),
+    "model":       os.environ.get("OLLAMA_MODEL", "llama3.2"),
     "temperature": 0.2,
     "top_p":       0.9,
     "max_tokens":  4096,
