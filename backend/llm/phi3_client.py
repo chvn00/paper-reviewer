@@ -4,12 +4,13 @@ phi3_client.py — CHVN Paper Reviewer (Local Ollama mode)
 LLM backend: Ollama local API (http://localhost:11434)
 Sin API key. Sin rate limits. Sin datos a la nube.
 
-Modelos por modo:
-  fast     → qwen3:14b   (rápido, buena calidad)
-  balanced → qwen3:32b   (máxima calidad)
-  deep     → qwen3:32b   (máxima calidad, más tokens)
+Modelos recomendados (configurable desde UI):
+  32GB+ RAM  → qwen3:32b     (máxima calidad, 20-24GB VRAM)
+  16-24GB RAM → qwen3:14b    (muy bueno, 8-10GB VRAM)
+  8-16GB RAM → llama3.2      (rápido, 4-6GB VRAM)
 
-Override: OLLAMA_MODEL_FAST / OLLAMA_MODEL_BALANCED / OLLAMA_MODEL_DEEP
+El modelo actual se controla desde /config (UI) y se aplica a todos los modos.
+Environment override: OLLAMA_MODEL (aplica a todos los modos)
 """
 
 import os
@@ -31,13 +32,12 @@ OLLAMA_MODELS = [
 ]
 
 MODE_MODELS: dict = {
-    "fast":     os.environ.get("OLLAMA_MODEL_FAST",     "llama3.2"),
-    "balanced": os.environ.get("OLLAMA_MODEL_BALANCED", "llama3.2"),
-    "deep":     os.environ.get("OLLAMA_MODEL_DEEP",     "llama3.2"),
+    # Nota: todos los modos usan el mismo modelo configurado en runtime (DEFAULT_CONFIG["model"])
+    # Las diferencias están en max_chars y max_tokens_override por modo, no en el modelo LLM
 }
 
 DEFAULT_CONFIG = {
-    "model":       os.environ.get("OLLAMA_MODEL", "llama3.2"),
+    "model":       os.environ.get("OLLAMA_MODEL", "qwen3:32b"),
     "temperature": 0.2,
     "top_p":       0.9,
     "max_tokens":  4096,
@@ -62,7 +62,7 @@ async def call_llm(prompt: str, system_prompt: str = "", config_override: dict =
     if config_override:
         cfg.update(config_override)
 
-    model = cfg.get("model", "qwen3:32b")
+    model = cfg.get("model", DEFAULT_CONFIG["model"])
 
     messages = []
     if system_prompt:
