@@ -391,7 +391,7 @@ async def download_report(session_id: str):
 # ─── Modo Autor ──────────────────────────────────────────────────────────────
 
 @app.post("/author-mode/{session_id}")
-async def start_author_mode(session_id: str, bg: BackgroundTasks, _: None = Depends(_require_auth)):
+async def start_author_mode(session_id: str, bg: BackgroundTasks):
     if session_id not in sessions:
         raise HTTPException(404, "Session not found.")
     s = sessions[session_id]
