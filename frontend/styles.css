@@ -774,6 +774,27 @@ body {
   border-color: #dc262635;
 }
 
+.btn-author-mode {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  padding: 0;
+}
+.btn-author-mode:hover {
+  background: #f59e0b18;
+  color: #fbbf24;
+  border-color: #f59e0b35;
+}
+
 /* ═══ CONFIG ════════════════════════════════════════════ */
 .config-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; margin-bottom: 22px; }
 .config-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 20px; }
