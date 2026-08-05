@@ -484,14 +484,14 @@ class ParserAgent:
         )
 
         patterns = [
-            # IEEE dash style: Abstract— or Resumen—
-            rf"(?:Abstract|Resumen)\s*[—–\-:]\s*(.{{100,2500}}?){_STOP}",
-            # Abstract followed by newline then body text
-            rf"[Aa]bstract\s*[—–\-\.]?\s*(.{{100,2000}}?){_STOP}",
-            # ABSTRACT all caps
-            rf"ABSTRACT\s*[—–\-\.]?\s*(.{{100,2000}}?){_STOP}",
-            # RESUMEN all caps (Spanish)
-            rf"RESUMEN\s*[—–\-\.]?\s*(.{{100,2000}}?){_STOP}",
+            # IEEE dash style: Abstract— or Resumen— (increased max to 3500 chars)
+            rf"(?:Abstract|Resumen)\s*[—–\-:]\s*(.{{50,3500}}?){_STOP}",
+            # Abstract followed by newline then body text (increased min/max)
+            rf"[Aa]bstract\s*[—–\-\.]?\s*(.{{50,3000}}?){_STOP}",
+            # ABSTRACT all caps (increased max)
+            rf"ABSTRACT\s*[—–\-\.]?\s*(.{{50,3000}}?){_STOP}",
+            # RESUMEN all caps (Spanish) (increased max)
+            rf"RESUMEN\s*[—–\-\.]?\s*(.{{50,3000}}?){_STOP}",
         ]
 
         for pat in patterns:
@@ -514,7 +514,7 @@ class ParserAgent:
                 logger.info("[Parser] Abstract inferred from pre-introduction content")
 
     def _infer_title(self, text: str, sections: dict):
-        """Infer title from the first three substantial lines when absent."""
+        """Infer title from the first substantial lines when absent."""
         if sections.get("title"):
             return
         lines = []
@@ -522,13 +522,15 @@ class ParserAgent:
             s = line.strip()
             if not s:
                 continue
-            if re.match(r"^(abstract|index terms|keywords)\b", s, re.IGNORECASE):
+            if re.match(r"^(abstract|index terms|keywords|resumen|palabras clave)\b", s, re.IGNORECASE):
                 break
             if re.match(r"^(I|II|III|IV|V|VI|VII)\.?\s+", s, re.IGNORECASE):
                 break
-            if len(s.split()) <= 25:
+            # Allow titles up to 60 words (increased from 25)
+            if len(s.split()) <= 60:
                 lines.append(s)
-            if len(lines) == 3:
+            # Allow up to 5 lines for very long titles (increased from 3)
+            if len(lines) == 5:
                 break
         if lines:
             sections["title"] = " ".join(lines).strip()
@@ -549,8 +551,9 @@ class ParserAgent:
         found_kw_sets = []
 
         patterns = [
-            r"\b(?:Index\s+Terms|Keywords?|Key\s+words)\s*[—–\-:]\s*(.{10,600}?)" + _STOP,
-            r"\bPalabras\s+clave\s*[—–\-:]\s*(.{10,600}?)" + _STOP,
+            # Increased max from 600 to 1000 for longer keyword lists
+            r"\b(?:Index\s+Terms|Keywords?|Key\s+words)\s*[—–\-:]\s*(.{10,1000}?)" + _STOP,
+            r"\bPalabras\s+clave\s*[—–\-:]\s*(.{10,1000}?)" + _STOP,
         ]
         for pat in patterns:
             m = re.search(pat, text, re.IGNORECASE | re.DOTALL)
