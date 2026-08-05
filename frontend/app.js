@@ -6,7 +6,7 @@
 const API = window.location.origin;
 
 let state = {
-  sessionId:    null,
+  sessionId:    localStorage.getItem("lastSessionId") || null,
   filename:     null,
   uploadData:   null,
   polling:      null,
@@ -210,6 +210,8 @@ async function processFile(file) {
     state.sessionId  = data.session_id;
     state.filename   = data.filename;
     state.uploadData = data;
+    // Guarda en localStorage para persistir entre recargas
+    localStorage.setItem("lastSessionId", data.session_id);
 
     document.getElementById("previewMeta").textContent =
       `${data.size_mb} MB · ${data.word_count.toLocaleString()} words · ${data.format_detected}`;
