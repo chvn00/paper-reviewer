@@ -465,47 +465,57 @@ class ParserAgent:
 
     def _extract_inline_abstract(self, text: str, sections: dict):
         """
-        Detect IEEE-style inline abstract:
-        'Abstract—This paper...' or 'abstract This paper...'
-        Also handles Spanish 'Resumen—' style.
-        Works regardless of case, italic markers, or em-dash style.
+        Extract full abstract by capturing all lines after 'Abstract:'
+        until the next major section header or keywords line.
         """
         if "abstract" in sections:
             return
 
-        # More lenient stop markers — only hard section headers (not keywords inline)
-        _STOP = (
-            r"(?:"
-            r"(?:\n\s*)?(?:Index\s+Terms|Keywords?|Key\s+words|Palabras\s+clave)\s*[—–\-:]"
-            r"|\n\s*(?:I\.?\s+|1\.?\s+)(?:INTRODUCTION|Introducci[oó]n)"
-            r"|\n\s*[A-Z]+\s*(?:\n|$)"  # All-caps header on own line
-            r")"
-        )
+        # Find where abstract starts
+        abstract_start = None
+        for pattern in [r"\bAbstract\s*[—–\-:]\s*", r"\bRESUMEN\s*[—–\-:]\s*", r"\bResumen\s*[—–\-:]\s*"]:
+            m = re.search(pattern, text, re.IGNORECASE)
+            if m:
+                abstract_start = m.end()
+                break
 
-        patterns = [
-            # IEEE dash style: Abstract— or Resumen— (very greedy, max 5000)
-            rf"(?:Abstract|Resumen)\s*[—–\-:]\s*(.{{50,5000}}?){_STOP}",
-            # Abstract followed by newline then body text
-            rf"[Aa]bstract\s*[—–\-\.]?\s*(.{{50,4000}}?){_STOP}",
-            # ABSTRACT all caps
-            rf"ABSTRACT\s*[—–\-\.]?\s*(.{{50,4000}}?){_STOP}",
-            # RESUMEN all caps (Spanish)
-            rf"RESUMEN\s*[—–\-\.]?\s*(.{{50,4000}}?){_STOP}",
+        if not abstract_start:
+            return
+
+        # Get text after "Abstract:"
+        rest_of_text = text[abstract_start:]
+
+        # Find where abstract ends: at Keywords, Introduction, or next numbered section
+        end_patterns = [
+            r"\n\s*(?:Index\s+Terms|Keywords?|Key\s+words|Palabras\s+clave)\s*[—–\-:]",
+            r"\n\s*(?:I\.?\s+INTRODUCTION|1\.?\s+(?:INTRODUCTION|Introducci[oó]n))",
+            r"\n\s*\d+\.\s+[A-Z]",  # Numbered sections: "1. METHODOLOGY"
+            r"\n\s*[A-Z]{2,}(?:\s+[A-Z]{2,})*\s*\n",  # ALL-CAPS headers
         ]
 
-        for pat in patterns:
-            m = re.search(pat, text, re.DOTALL | re.IGNORECASE)
+        abstract_end = len(rest_of_text)
+        for pattern in end_patterns:
+            m = re.search(pattern, rest_of_text, re.IGNORECASE)
             if m:
-                abstract_text = m.group(1).strip()
-                # Remove trailing author/submission metadata
-                abstract_text = re.sub(
-                    r'\s*(?:--\s*Manuscript|Manuscript\s+Number|Number:).*$',
-                    '', abstract_text, flags=re.IGNORECASE | re.DOTALL
-                )
-                if abstract_text and len(abstract_text) > 50:
-                    sections["abstract"] = abstract_text
-                    logger.info("[Parser] Inline abstract detected")
-                    return
+                abstract_end = m.start()
+                break
+
+        # Extract and clean
+        abstract_text = rest_of_text[:abstract_end].strip()
+
+        # Remove trailing metadata
+        abstract_text = re.sub(
+            r'\s*(?:--\s*Manuscript|Manuscript\s+Number|Number:|Received|Revised).*$',
+            '', abstract_text, flags=re.IGNORECASE | re.DOTALL
+        )
+
+        # Clean multiple spaces
+        abstract_text = re.sub(r'\s+', ' ', abstract_text).strip()
+
+        if abstract_text and len(abstract_text) > 50:
+            sections["abstract"] = abstract_text
+            logger.info(f"[Parser] Abstract extracted: {len(abstract_text)} chars")
+            return
 
         # Fallback: first large paragraph before Introduction (EN or ES, Roman or numbered)
         intro_match = re.search(
