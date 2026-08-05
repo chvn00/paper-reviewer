@@ -431,6 +431,7 @@ async function pollStatus() {
       document.getElementById("newReviewBtn").style.display = "inline-flex";
       await fetchResults();
       loadHistory();
+      enableAuthorTab();
       showPanel("report");
       showToast(data.status === "stopped" ? "Partial review saved." : "Review complete! ✓", "success");
     } else if (data.status === "error") {
@@ -978,10 +979,17 @@ async function clearSession() {
   }
   if (state.polling) clearInterval(state.polling);
   stopTimer();
+  if (authorPolling) { clearInterval(authorPolling); authorPolling = null; }
   state = { sessionId:null, filename:null, uploadData:null, polling:null, timerInterval:null, results:null, suggestionDecisions:{} };
   clearFile();
   document.getElementById("agentsGrid").innerHTML    = `<div class="empty-state"><div class="empty-icon">🤖</div><p>Run a review to see agent results</p></div>`;
   document.getElementById("reportContent").innerHTML = `<div class="empty-state"><div class="empty-icon">📊</div><p>Complete a review to generate the report</p></div>`;
+  document.getElementById("authorContent").innerHTML = `<div class="empty-state"><div class="empty-icon">✍️</div><p>Completa una revisión y haz clic en <strong>Generar Sugerencias</strong><br>para obtener instrucciones de mejora y código LaTeX por sección.</p></div>`;
+  document.getElementById("authorProgress").style.display = "none";
+  document.getElementById("authorRunBtn").disabled = false;
+  document.getElementById("authorRunBtn").textContent = "▶ Generar Sugerencias";
+  const navAuthor = document.getElementById("navAuthor");
+  if (navAuthor) { navAuthor.disabled = true; navAuthor.title = "Completa una revisión primero"; }
   document.getElementById("suggestionGate").style.display = "none";
   document.getElementById("downloadBtn").style.display   = "none";
   document.getElementById("newReviewBtn").style.display  = "none";
@@ -1055,13 +1063,189 @@ function resetConfig() {
     document.getElementById(id).value           = val;
     if (vid) document.getElementById(vid).textContent = val;
   };
-  set("cfgModel", null, "phi3:mini");
+  set("cfgModel", null, "llama3.2");
   set("cfgUrl",   null, "http://localhost:11434");
   set("cfgTemp",   "tempVal",   0.2);
   set("cfgTopP",   "topPVal",   0.9);
   set("cfgTokens", "tokensVal", 4096);
   set("cfgCtx",    "ctxVal",    49152);
   saveConfig();
+}
+
+// ─── TOASTS ───────────────────────────────────────────────────────────────────
+// ─── MODO AUTOR ───────────────────────────────────────────────────────────────
+
+let authorPolling = null;
+
+function enableAuthorTab() {
+  const btn = document.getElementById("navAuthor");
+  if (btn) { btn.disabled = false; btn.title = ""; }
+}
+
+async function startAuthorMode() {
+  if (!state.sessionId) { showToast("No hay sesión activa.", "error"); return; }
+
+  const runBtn = document.getElementById("authorRunBtn");
+  runBtn.disabled = true;
+  runBtn.textContent = "⏳ Generando...";
+
+  document.getElementById("authorProgress").style.display = "block";
+  document.getElementById("authorContent").innerHTML =
+    `<div class="empty-state"><div class="empty-icon">✍️</div><p>Analizando secciones…</p></div>`;
+
+  try {
+    const res = await apiFetch(`${API}/author-mode/${state.sessionId}`, { method: "POST" });
+    if (!res.ok) {
+      const data = await safeJson(res);
+      showToast(data.detail || "Error al iniciar Modo Autor.", "error");
+      runBtn.disabled = false;
+      runBtn.textContent = "▶ Generar Sugerencias";
+      return;
+    }
+    showToast("Generando sugerencias LaTeX por sección…", "info");
+    pollAuthorMode();
+  } catch {
+    showToast("Error de conexión.", "error");
+    runBtn.disabled = false;
+    runBtn.textContent = "▶ Generar Sugerencias";
+  }
+}
+
+function pollAuthorMode() {
+  if (authorPolling) clearInterval(authorPolling);
+  authorPolling = setInterval(async () => {
+    if (!state.sessionId) { clearInterval(authorPolling); return; }
+    try {
+      const res  = await apiFetch(`${API}/author-mode/${state.sessionId}`);
+      if (!res.ok) return;
+      const data = await res.json();
+
+      const pct = data.progress || 0;
+      document.getElementById("authorProgressBar").style.width = `${pct}%`;
+      document.getElementById("authorProgressPct").textContent = `${pct}%`;
+      document.getElementById("authorProgressLabel").textContent =
+        data.current ? `Procesando: ${AGENT_LABELS[data.current] || data.current}` : "Procesando…";
+
+      if (data.results?.length) renderAuthorPartial(data.results);
+
+      if (data.status === "completed") {
+        clearInterval(authorPolling);
+        document.getElementById("authorProgress").style.display = "none";
+        const runBtn = document.getElementById("authorRunBtn");
+        runBtn.disabled = false;
+        runBtn.textContent = "↻ Regenerar";
+        renderAuthorResults(data.results, data.publisher, data.paper_type);
+        showToast("¡Sugerencias LaTeX listas! ✓", "success");
+      } else if (data.status === "error") {
+        clearInterval(authorPolling);
+        document.getElementById("authorProgress").style.display = "none";
+        showToast(`Error: ${data.error}`, "error");
+        document.getElementById("authorRunBtn").disabled = false;
+        document.getElementById("authorRunBtn").textContent = "▶ Generar Sugerencias";
+      }
+    } catch (e) { console.error("AuthorMode poll:", e); }
+  }, 2500);
+}
+
+function renderAuthorPartial(results) {
+  const box = document.getElementById("authorContent");
+  const done = results.length;
+  box.innerHTML = `<div style="font-size:12px;color:var(--text-muted);margin-bottom:16px">
+    ${done} sección${done !== 1 ? "es" : ""} procesada${done !== 1 ? "s" : ""}…
+  </div>` + renderAuthorCards(results, false);
+}
+
+function renderAuthorResults(results, publisher, paperType) {
+  const PUB_NAMES = {
+    ieee:"IEEE", elsevier:"Elsevier / ScienceDirect", mdpi:"MDPI",
+    emerald:"Emerald", sage:"SAGE", taylor:"Taylor & Francis"
+  };
+  const pubLabel = publisher ? PUB_NAMES[publisher] || publisher.toUpperCase() : "General";
+  const typeLabel = paperType ? ` · ${paperType.replace(/_/g," ")}` : "";
+  const badge = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:10px 16px;
+    background:var(--blue-glow);border:1px solid var(--blue-light);border-radius:10px;">
+    <span style="font-size:13px;color:var(--blue-light);font-weight:700">📋 Editorial:</span>
+    <span style="font-size:13px;color:var(--text);font-weight:600">${pubLabel}${typeLabel}</span>
+    <span style="font-size:11px;color:var(--text-muted);margin-left:auto">Sugerencias ajustadas al estilo y formato de esta editorial</span>
+  </div>`;
+  document.getElementById("authorContent").innerHTML = badge + renderAuthorCards(results, true);
+  const firstBad = document.querySelector(".author-card:not(.no-issues)");
+  if (firstBad) firstBad.classList.add("open");
+}
+
+function renderAuthorCards(results, final) {
+  if (!results?.length) return `<div class="empty-state"><div class="empty-icon">✍️</div><p>Sin resultados aún.</p></div>`;
+
+  return `<div class="author-grid">` +
+    results.map((r, idx) => {
+      const score = parseFloat(r.score || 0);
+      const pillCls = r.skipped ? "sk" : score >= 4 ? "ok" : score >= 3 ? "med" : score >= 2 ? "low" : "bad";
+      const pillTxt = r.skipped ? "Omitida" : `${score.toFixed(1)} / 5`;
+      const noIssues = !r.issues?.length && !r.skipped;
+      const hasLatex = !!r.latex_code;
+
+      const issuesHtml = (r.issues || []).map(iss =>
+        `<div class="author-issue-item">${escapeHtml(iss)}</div>`
+      ).join("");
+
+      const latexHtml = hasLatex ? `
+        <div class="author-latex-block">
+          <div class="author-latex-header">
+            <span class="author-latex-label">📄 Sugerencia LaTeX</span>
+            <button class="btn-copy-latex" onclick="copyLatex(this, 'latex-${idx}')">Copiar</button>
+          </div>
+          <pre class="author-latex-code" id="latex-${idx}">${escapeHtml(r.latex_code)}</pre>
+        </div>` : "";
+
+      const instructionHtml = r.instruction ? `
+        <div class="author-instruction-block">
+          <div class="author-instruction-label">💡 Qué hacer</div>
+          <div class="author-instruction-text">${escapeHtml(r.instruction)}</div>
+        </div>` : "";
+
+      return `
+        <div class="author-card${noIssues ? " no-issues" : ""}" id="author-card-${idx}">
+          <div class="author-card-header" onclick="toggleAuthorCard(${idx})">
+            <div>
+              <div class="author-section-name">${escapeHtml(r.section_label)}</div>
+              <div class="author-section-score">${(r.issues || []).length} problema${(r.issues || []).length !== 1 ? "s" : ""} encontrado${(r.issues || []).length !== 1 ? "s" : ""}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="author-score-pill ${pillCls}">${pillTxt}</span>
+              <span class="author-chevron">▼</span>
+            </div>
+          </div>
+          <div class="author-card-body">
+            ${r.skipped
+              ? `<div class="author-empty-note">Esta sección fue omitida en la revisión.</div>`
+              : noIssues
+              ? `<div class="author-empty-note">✓ Sin problemas detectados en esta sección.</div>`
+              : `
+                <div class="author-issues-label">Problemas encontrados</div>
+                ${issuesHtml}
+                ${instructionHtml}
+                ${latexHtml}
+              `
+            }
+          </div>
+        </div>`;
+    }).join("") +
+  `</div>`;
+}
+
+function toggleAuthorCard(idx) {
+  const card = document.getElementById(`author-card-${idx}`);
+  if (card) card.classList.toggle("open");
+}
+
+function copyLatex(btn, id) {
+  const pre = document.getElementById(id);
+  if (!pre) return;
+  navigator.clipboard.writeText(pre.textContent).then(() => {
+    btn.textContent = "✓ Copiado";
+    btn.classList.add("copied");
+    setTimeout(() => { btn.textContent = "Copiar"; btn.classList.remove("copied"); }, 2000);
+  }).catch(() => showToast("No se pudo copiar.", "error"));
 }
 
 // ─── TOASTS ───────────────────────────────────────────────────────────────────

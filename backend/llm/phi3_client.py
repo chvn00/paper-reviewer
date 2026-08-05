@@ -79,6 +79,10 @@ async def call_llm(prompt: str, system_prompt: str = "", config_override: dict =
             "num_predict": cfg.get("max_tokens", 4096),
         },
     }
+    # Todos los agentes esperan JSON: format=json fuerza salida válida en Ollama
+    # (desactivable con config_override={"json_mode": False})
+    if cfg.get("json_mode", True):
+        payload["format"] = "json"
 
     try:
         async with httpx.AsyncClient(timeout=300.0) as client:

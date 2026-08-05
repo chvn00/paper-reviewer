@@ -834,6 +834,168 @@ body {
 .model-table tr.highlighted td { background: var(--blue-glow); color: var(--text); }
 .model-table code { font-family: var(--font-mono); font-size: 10.5px; background: var(--surface-3); padding: 2px 7px; border-radius: 4px; color: var(--blue-light); }
 
+/* ═══ MODO AUTOR ════════════════════════════════════════ */
+
+.nav-author[disabled] { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+.nav-author:not([disabled]) { border-left: 2px solid var(--blue-light); }
+
+.author-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 8px;
+}
+
+.author-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.author-card:hover { border-color: var(--blue-light); }
+.author-card.no-issues { opacity: 0.6; }
+
+.author-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: var(--navy-2);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+}
+.author-card-header:hover { background: var(--surface-3); }
+
+.author-section-name {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+.author-section-score {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.author-score-pill {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+.author-score-pill.ok  { background: #16a34a22; color: #22c55e; }
+.author-score-pill.med { background: #2563eb22; color: #60a5fa; }
+.author-score-pill.low { background: #f59e0b22; color: #fbbf24; }
+.author-score-pill.bad { background: #ef444422; color: #f87171; }
+.author-score-pill.sk  { background: var(--surface-3); color: var(--text-muted); }
+
+.author-chevron { font-size: 11px; color: var(--text-muted); margin-left: 12px; transition: transform 0.2s; }
+.author-card.open .author-chevron { transform: rotate(180deg); }
+
+.author-card-body { display: none; padding: 20px; }
+.author-card.open .author-card-body { display: block; }
+
+.author-issues-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.author-issue-item {
+  display: flex;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  line-height: 1.55;
+}
+.author-issue-item::before { content: "⚠"; color: #f59e0b; flex-shrink: 0; }
+
+.author-instruction-block {
+  background: linear-gradient(135deg, #1e3a5f18 0%, #0f204008 100%);
+  border: 1px solid var(--blue-light);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 16px 0;
+}
+.author-instruction-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--blue-light);
+  margin-bottom: 8px;
+}
+.author-instruction-text {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.65;
+}
+
+.author-latex-block {
+  margin-top: 16px;
+}
+.author-latex-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.author-latex-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #a78bfa;
+}
+.btn-copy-latex {
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font-sans);
+}
+.btn-copy-latex:hover { background: var(--blue-glow); color: var(--blue-light); border-color: var(--blue-light); }
+.btn-copy-latex.copied { color: #22c55e; border-color: #22c55e; }
+
+.author-latex-code {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  padding: 16px 18px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  color: #e6edf3;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* syntax-like coloring */
+.author-latex-code .kw  { color: #ff7b72; }   /* commands \section etc */
+.author-latex-code .env { color: #79c0ff; }   /* environments */
+.author-latex-code .arg { color: #a5d6ff; }   /* {arguments} */
+.author-latex-code .cmt { color: #8b949e; font-style: italic; } /* % comments */
+
+.author-empty-note {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 8px 0;
+}
+
 /* ═══ EMPTY ═════════════════════════════════════════════ */
 .empty-state { text-align: center; padding: 64px 32px; color: var(--text-muted); }
 .empty-icon  { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }

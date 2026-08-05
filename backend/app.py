@@ -60,6 +60,7 @@ from backend.agents.references_reviewer import ReferencesReviewerAgent
 from backend.agents.ethics_limitations_reviewer import EthicsLimitationsReviewerAgent
 from backend.agents.meta_reviewer import MetaReviewerAgent
 from backend.report_generator import ReportGenerator
+from backend.agents.author_mode_agent import generate_author_suggestion
 
 BASE_DIR     = Path(__file__).parent.parent
 UPLOAD_DIR   = BASE_DIR / "uploads"
@@ -138,7 +139,12 @@ class ConfigUpdate(BaseModel):
 @app.get("/")
 async def root():
     index = FRONTEND_DIR / "index.html"
-    return FileResponse(str(index)) if index.exists() else {"status": "CHVN Paper Reviewer v4"}
+    if not index.exists():
+        return {"status": "CHVN Paper Reviewer v4"}
+    return FileResponse(
+        str(index),
+        headers={"Cache-Control": "no-store, no-cache, must-revalidate"},
+    )
 
 
 @app.get("/health")
@@ -149,9 +155,9 @@ async def health():
 
 @app.get("/models")
 async def list_models(_: None = Depends(_require_auth)):
-    from backend.llm.phi3_client import GROQ_MODELS
+    from backend.llm.phi3_client import OLLAMA_MODELS
     cfg = get_config()
-    return {"models": GROQ_MODELS, "current": cfg["model"]}
+    return {"models": OLLAMA_MODELS, "current": cfg["model"]}
 
 
 @app.get("/config")
@@ -376,6 +382,74 @@ async def download_report(session_id: str):
         path=path, media_type="application/pdf",
         filename=f"CHVN_Review_{fname}_{session_id[:8]}.pdf"
     )
+
+
+# ─── Modo Autor ──────────────────────────────────────────────────────────────
+
+@app.post("/author-mode/{session_id}")
+async def start_author_mode(session_id: str, bg: BackgroundTasks, _: None = Depends(_require_auth)):
+    if session_id not in sessions:
+        raise HTTPException(404, "Session not found.")
+    s = sessions[session_id]
+    if s["status"] not in ("completed", "stopped"):
+        raise HTTPException(409, "Review must be completed before entering Author Mode.")
+    if not s.get("agent_results"):
+        raise HTTPException(409, "No review results available.")
+
+    s["author_mode_status"]   = "running"
+    s["author_mode_progress"] = 0
+    s["author_mode_current"]  = ""
+    s["author_mode_results"]  = []
+
+    bg.add_task(_run_author_mode, session_id)
+    return {"status": "started", "session_id": session_id}
+
+
+@app.get("/author-mode/{session_id}")
+async def get_author_mode(session_id: str):
+    if session_id not in sessions:
+        raise HTTPException(404, "Session not found.")
+    s = sessions[session_id]
+    return {
+        "status":     s.get("author_mode_status", "idle"),
+        "progress":   s.get("author_mode_progress", 0),
+        "current":    s.get("author_mode_current", ""),
+        "results":    s.get("author_mode_results", []),
+        "error":      s.get("author_mode_error", ""),
+        "publisher":  s.get("publisher", ""),
+        "paper_type": s.get("paper_type", ""),
+    }
+
+
+async def _run_author_mode(session_id: str):
+    s        = sessions[session_id]
+    sections = s["parse_result"]["sections"]
+    agents   = [r for r in s["agent_results"] if r.get("agent_name") != "MetaReviewer"]
+    total    = max(len(agents), 1)
+
+    try:
+        results = []
+        for i, agent_result in enumerate(agents):
+            s["author_mode_current"]  = agent_result.get("agent_name", "")
+            s["author_mode_progress"] = int((i / total) * 95)
+
+            suggestion = await generate_author_suggestion(
+                agent_result, sections,
+                publisher=s.get("publisher", ""),
+                paper_type=s.get("paper_type", ""),
+            )
+            results.append(suggestion)
+            s["author_mode_results"] = list(results)
+
+            logger.info(f"[AuthorMode] {session_id} — {suggestion['agent_name']} done ({i+1}/{total})")
+
+        s["author_mode_status"]   = "completed"
+        s["author_mode_progress"] = 100
+        s["author_mode_current"]  = ""
+    except Exception as e:
+        logger.error(f"[AuthorMode] {session_id} ERROR: {e}", exc_info=True)
+        s["author_mode_status"] = "error"
+        s["author_mode_error"]  = str(e)
 
 
 @app.delete("/session/{session_id}")

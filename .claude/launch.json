@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "paper-reviewer",
+      "runtimeExecutable": "/Users/cesarvalencia/Downloads/Paper_Reviewer_mac/.venv/bin/python",
+      "runtimeArgs": ["-m", "uvicorn", "backend.app:app", "--host", "0.0.0.0", "--port", "8000"],
+      "port": 8000
+    },
+    {
+      "name": "informe_decanato",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "7788", "--directory", "/Users/cesarvalencia/Desktop/rendicion_de_cuentas"],
+      "port": 7788
+    },
+    {
+      "name": "icetex_frontend",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8080", "--directory", "/Users/cesarvalencia/Desktop/APP Icetex 2026/frontend"],
+      "port": 8080
+    }
+  ]
+}

@@ -68,6 +68,10 @@
     <button class="nav-item" data-panel="report" onclick="showPanel('report')">
       <span class="nav-icon">📊</span><span>Final Report</span>
     </button>
+    <button class="nav-item nav-author" data-panel="author" id="navAuthor"
+            onclick="showPanel('author')" disabled title="Completa una revisión primero">
+      <span class="nav-icon">✍️</span><span>Modo Autor</span>
+    </button>
     <button class="nav-item" data-panel="history" onclick="showPanel('history')">
       <span class="nav-icon">🕘</span><span>History</span>
     </button>
@@ -256,6 +260,39 @@
     <div id="suggestionGate" class="suggestion-gate" style="display:none"></div>
     <div id="reportContent">
       <div class="empty-state"><div class="empty-icon">📊</div><p>Complete a review to generate the report</p></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════ MODO AUTOR -->
+  <section class="panel" id="panel-author">
+    <div class="report-header-row">
+      <div class="page-hero compact">
+        <h1 class="hero-title small">Modo <em>Autor</em> ✍️</h1>
+        <p class="hero-sub">Sugerencias de redacción y código LaTeX para cada sección revisada</p>
+      </div>
+      <button class="btn-run sm" id="authorRunBtn" onclick="startAuthorMode()">
+        ▶ Generar Sugerencias
+      </button>
+    </div>
+
+    <div id="authorProgress" style="display:none" class="progress-card" style="margin-bottom:24px">
+      <div class="progress-top">
+        <div class="progress-status">
+          <span class="progress-dot"></span>
+          <span id="authorProgressLabel">Analizando...</span>
+        </div>
+        <div class="progress-right">
+          <span class="progress-pct" id="authorProgressPct">0%</span>
+        </div>
+      </div>
+      <div class="progress-track"><div class="progress-bar" id="authorProgressBar"></div></div>
+    </div>
+
+    <div id="authorContent">
+      <div class="empty-state">
+        <div class="empty-icon">✍️</div>
+        <p>Completa una revisión y haz clic en <strong>Generar Sugerencias</strong><br>para obtener instrucciones de mejora y código LaTeX por sección.</p>
+      </div>
     </div>
   </section>
 

@@ -140,13 +140,11 @@ class MetaReviewerAgent(BaseReviewerAgent):
                 all_recommendations.extend(result.get("specific_recommendations", []))
                 all_weaknesses.extend(result.get("weaknesses", []))
 
-        # ── LLM synthesis for deep mode ────────────────────────────────────
-        llm_summary = {}
-        if mode == "deep":
-            llm_summary = await self._llm_synthesis(
-                agent_results, final_score, editorial_decision, sections,
-                publisher=publisher, paper_type=paper_type
-            )
+        # ── LLM synthesis (all modes — single cheap call, big report value) ──
+        llm_summary = await self._llm_synthesis(
+            agent_results, final_score, editorial_decision, sections,
+            publisher=publisher, paper_type=paper_type
+        )
 
         # ── Score table (as Elsevier/IEEE rubric dimensions) ──────────────
         score_table = self._build_score_table(agent_results, scores_by_agent)
@@ -180,27 +178,34 @@ class MetaReviewerAgent(BaseReviewerAgent):
     async def _llm_synthesis(self, agent_results: list, score: float,
                               decision: str, sections: dict,
                               publisher: str = "", paper_type: str = "") -> dict:
-        """Deep mode: LLM generates narrative summary."""
+        """LLM generates narrative summary grounded in title/abstract + agent findings."""
         summary_data = {r.get("agent_name"): {
             "score": r.get("score", 0),
             "major": r.get("major_comments", [])[:2],
+            "weaknesses": r.get("weaknesses", [])[:2],
             "strengths": r.get("strengths", [])[:2],
-        } for r in agent_results}
+        } for r in agent_results if not r.get("skipped")}
+
+        title = (sections.get("title") or "").strip()[:300]
+        abstract = (sections.get("abstract") or "").strip()[:1500]
+        paper_ctx = ""
+        if title or abstract:
+            paper_ctx = f"\nManuscript title: {title}\nAbstract: {abstract}\n"
 
         prompt = f"""As chief editor, write a synthesis of this peer review.
 Final score: {score}/5.0
 Editorial decision: {decision}
-
-Agent summaries:
-{summary_data}
+{paper_ctx}
+Agent summaries (JSON):
+{json.dumps(summary_data, ensure_ascii=False, default=str)[:6000]}
 
 Respond with JSON:
 {{
-  "executive_summary": "<2-3 sentences summarizing the manuscript>",
+  "executive_summary": "<2-3 sentences summarizing the manuscript and its overall quality>",
   "main_contribution": "<what the paper contributes to science>",
   "critical_issues": ["<top 3 issues that must be addressed>"],
   "positive_aspects": ["<top 3 strengths>"],
-  "decision_rationale": "<why this editorial decision>"
+  "decision_rationale": "<why this editorial decision follows from the findings>"
 }}"""
 
         try:
@@ -208,7 +213,11 @@ Respond with JSON:
             rubric_ctx = build_rubric_context(publisher, paper_type)
             system = SYSTEM_PROMPT + ("\n\n" + rubric_ctx if rubric_ctx else "")
             response = await call_llm(prompt, system_prompt=system)
-            return parse_json_response(response, "MetaReviewer")
+            result = parse_json_response(response, "MetaReviewer")
+            # Si el parseo falló, el dict de fallback contamina el reporte — descartarlo
+            if result.get("parse_error"):
+                return {}
+            return result
         except Exception as e:
             logger.warning(f"[MetaReviewer] LLM synthesis failed: {e}")
             return {}
