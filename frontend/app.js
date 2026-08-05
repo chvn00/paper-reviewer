@@ -428,6 +428,8 @@ async function pollStatus() {
     if (data.status === "completed" || data.status === "stopped") {
       clearInterval(state.polling);
       stopTimer();
+      // Guarda sessionId en localStorage para Modo Autor
+      if (state.sessionId) localStorage.setItem("lastSessionId", state.sessionId);
       updateProgress(100, data.status === "stopped" ? "Stopped — partial report saved" : "Review complete!");
       document.getElementById("stopBtn").style.display = "none";
       document.getElementById("runBtn").disabled = false;
