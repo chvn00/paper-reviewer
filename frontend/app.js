@@ -932,7 +932,7 @@ function renderHistory(items) {
         </div>
         <div class="history-time">${elapsed}</div>
         <button class="btn-download" ${item.report_ready ? "" : "disabled"} onclick="downloadHistoryReport('${item.id}')">PDF</button>
-        <button class="btn-author-mode" title="Load and use Author Mode" onclick="loadHistoryForAuthorMode('${item.id}')">✍️</button>
+        <button class="btn-author-mode" title="Load and use Author Mode" onclick="loadHistoryForAuthorMode('${item.id}')">🎨</button>
         <button class="btn-delete-history" title="Delete from history" onclick="deleteHistoryItem('${item.id}', this)">✕</button>
       </div>`;
     }).join("")}
