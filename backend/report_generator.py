@@ -78,6 +78,15 @@ class ReportGenerator:
         }
         return custom
 
+    def _escape_text(self, text: str) -> str:
+        """Escape special characters for ReportLab Paragraph XML."""
+        if not text:
+            return ""
+        # Escape XML special chars
+        text = str(text).replace("&", "&amp;")
+        text = text.replace("<", "&lt;").replace(">", "&gt;")
+        return text
+
     def generate(self, review_data: dict, filename_original: str) -> str:
         """Generate PDF report. Returns path to generated file."""
         doc = SimpleDocTemplate(
@@ -173,7 +182,7 @@ class ReportGenerator:
         if warnings:
             self.story.append(Paragraph("Parser Warnings", self.styles["H2"]))
             for w in warnings:
-                self.story.append(Paragraph(f"• {w}", self.styles["Bullet"]))
+                self.story.append(Paragraph(f"• {self._escape_text(w)}", self.styles["Bullet"]))
             self.story.append(Spacer(1, 0.2*cm))
 
     def _add_decision_banner(self, data: dict):
@@ -323,7 +332,7 @@ class ReportGenerator:
                             "SL", fontName="Helvetica-Bold", fontSize=9, textColor=DARK_NAVY, spaceAfter=2
                         )))
                         for item in items:
-                            block.append(Paragraph(f"• {item}", self.styles["Bullet"]))
+                            block.append(Paragraph(f"• {self._escape_text(item)}", self.styles["Bullet"]))
 
             block.append(Spacer(1, 0.3*cm))
             self.story.extend(block)
@@ -340,7 +349,7 @@ class ReportGenerator:
             self.styles["Body"]
         ))
         for i, c in enumerate(comments, 1):
-            self.story.append(Paragraph(f"<b>[{i}]</b> {c}", self.styles["Bullet"]))
+            self.story.append(Paragraph(f"<b>[{i}]</b> {self._escape_text(c)}", self.styles["Bullet"]))
         self.story.append(Spacer(1, 0.3*cm))
 
     def _add_minor_comments(self, data: dict):
@@ -354,7 +363,7 @@ class ReportGenerator:
             self.styles["Body"]
         ))
         for i, c in enumerate(comments, 1):
-            self.story.append(Paragraph(f"<b>[{i}]</b> {c}", self.styles["Bullet"]))
+            self.story.append(Paragraph(f"<b>[{i}]</b> {self._escape_text(c)}", self.styles["Bullet"]))
         self.story.append(Spacer(1, 0.3*cm))
 
     def _add_recommendations(self, data: dict):
@@ -364,7 +373,7 @@ class ReportGenerator:
             return
         self.story.append(Paragraph("Specific Improvement Recommendations", self.styles["H1"]))
         for i, r in enumerate(recs, 1):
-            self.story.append(Paragraph(f"{i}. {r}", self.styles["Bullet"]))
+            self.story.append(Paragraph(f"{i}. {self._escape_text(r)}", self.styles["Bullet"]))
         self.story.append(Spacer(1, 0.3*cm))
 
     def _add_footer_disclaimer(self):
