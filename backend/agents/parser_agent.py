@@ -465,69 +465,86 @@ class ParserAgent:
 
     def _extract_inline_abstract(self, text: str, sections: dict):
         """
-        Extract full abstract by capturing all lines after 'Abstract:'
-        until the next major section header or keywords line.
+        Extract FULL abstract by finding ALL text between Abstract header
+        and Keywords/Introduction, with maximum capture.
         """
         if "abstract" in sections:
             return
 
-        # Find where abstract starts
+        # More flexible patterns for abstract start (lowercase, different spacing, etc)
+        abstract_patterns = [
+            r"(?:^|\n)\s*Abstract\s*[—–\-:]\s*",
+            r"(?:^|\n)\s*ABSTRACT\s*[—–\-:]\s*",
+            r"(?:^|\n)\s*Resumen\s*[—–\-:]\s*",
+            r"(?:^|\n)\s*RESUMEN\s*[—–\-:]\s*",
+            r"(?:^|\n)\s*abstract\s*[—–\-:]\s*",
+        ]
+
         abstract_start = None
-        for pattern in [r"\bAbstract\s*[—–\-:]\s*", r"\bRESUMEN\s*[—–\-:]\s*", r"\bResumen\s*[—–\-:]\s*"]:
+        for pattern in abstract_patterns:
             m = re.search(pattern, text, re.IGNORECASE)
             if m:
                 abstract_start = m.end()
+                logger.info(f"[Parser] Found abstract at position {abstract_start}")
                 break
 
-        if not abstract_start:
+        if abstract_start is None:
+            logger.info("[Parser] No explicit Abstract header found, using fallback")
+            # Fallback: capture everything from title/keywords area to introduction
+            intro_match = re.search(
+                r"\b(?:I\.?\s+INTRODUCTION|1\.?\s+Introducci[oó]n|1\.?\s+INTRODUCTION)\b",
+                text, re.IGNORECASE
+            )
+            if intro_match:
+                # Get the longest substantial paragraph before introduction
+                before = text[:intro_match.start()]
+                # Split by double newlines but capture very long single-section blocks
+                paragraphs = [p.strip() for p in re.split(r'\n\n+', before) if len(p.strip()) > 100]
+                if paragraphs:
+                    # Take the last (longest) paragraph before introduction
+                    abstract_text = paragraphs[-1]
+                    # Clean it
+                    abstract_text = re.sub(r'\s+', ' ', abstract_text).strip()
+                    sections["abstract"] = abstract_text[:5000]  # Cap at 5000 chars
+                    logger.info(f"[Parser] Abstract (fallback): {len(abstract_text)} chars")
             return
 
-        # Get text after "Abstract:"
+        # Get text after "Abstract:" marker
         rest_of_text = text[abstract_start:]
 
-        # Find where abstract ends: at Keywords, Introduction, or next numbered section
+        # Find end: Keywords, Introduction, or 2+ newlines indicating new section
         end_patterns = [
             r"\n\s*(?:Index\s+Terms|Keywords?|Key\s+words|Palabras\s+clave)\s*[—–\-:]",
             r"\n\s*(?:I\.?\s+INTRODUCTION|1\.?\s+(?:INTRODUCTION|Introducci[oó]n))",
-            r"\n\s*\d+\.\s+[A-Z]",  # Numbered sections: "1. METHODOLOGY"
-            r"\n\s*[A-Z]{2,}(?:\s+[A-Z]{2,})*\s*\n",  # ALL-CAPS headers
+            r"\n\s*\d+\.\s+(?:INTRODUCTION|METHODOLOGY|RESULTS|DISCUSSION|CONCLUSION)",
+            r"\n\n\n",  # Triple newline = section break
         ]
 
         abstract_end = len(rest_of_text)
         for pattern in end_patterns:
-            m = re.search(pattern, rest_of_text, re.IGNORECASE)
+            m = re.search(pattern, rest_of_text, re.IGNORECASE | re.MULTILINE)
             if m:
                 abstract_end = m.start()
                 break
 
-        # Extract and clean
+        # Extract - NO character limit, capture everything
         abstract_text = rest_of_text[:abstract_end].strip()
 
-        # Remove trailing metadata
+        # Remove only metadata that's clearly not part of abstract
         abstract_text = re.sub(
-            r'\s*(?:--\s*Manuscript|Manuscript\s+Number|Number:|Received|Revised).*$',
+            r'\s*(?:--\s*Manuscript|--Manuscript|Received on|Received:|Revised|Accepted)\b.*$',
             '', abstract_text, flags=re.IGNORECASE | re.DOTALL
         )
 
-        # Clean multiple spaces
-        abstract_text = re.sub(r'\s+', ' ', abstract_text).strip()
+        # Normalize spaces but preserve paragraph structure
+        abstract_text = re.sub(r'\n\n+', '\n', abstract_text)  # Remove excessive newlines
+        abstract_text = re.sub(r'[ \t]+', ' ', abstract_text)  # Normalize inline spaces
+        abstract_text = abstract_text.strip()
 
         if abstract_text and len(abstract_text) > 50:
             sections["abstract"] = abstract_text
             logger.info(f"[Parser] Abstract extracted: {len(abstract_text)} chars")
             return
-
-        # Fallback: first large paragraph before Introduction (EN or ES, Roman or numbered)
-        intro_match = re.search(
-            r"\b(?:I\.?\s+INTRODUCTION|1\.?\s+Introducci[oó]n|1\.?\s+INTRODUCTION)\b",
-            text, re.IGNORECASE
-        )
-        if intro_match:
-            before = text[:intro_match.start()]
-            paragraphs = [p.strip() for p in before.split("\n\n") if len(p.strip()) > 150]
-            if paragraphs:
-                sections["abstract"] = paragraphs[-1]
-                logger.info("[Parser] Abstract inferred from pre-introduction content")
 
     def _infer_title(self, text: str, sections: dict):
         """Infer title from the first substantial lines when absent."""
