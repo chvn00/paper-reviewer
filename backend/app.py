@@ -143,7 +143,11 @@ async def root():
         return {"status": "CHVN Paper Reviewer v4"}
     return FileResponse(
         str(index),
-        headers={"Cache-Control": "no-store, no-cache, must-revalidate"},
+        headers={
+            "Cache-Control": "no-store, no-cache, no-transform, must-revalidate, max-age=0",
+            "Pragma": "no-cache",
+            "Expires": "0",
+        },
     )
 
 
