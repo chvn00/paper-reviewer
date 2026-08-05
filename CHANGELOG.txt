@@ -1,0 +1,45 @@
+CHVN Paper Reviewer — Changelog
+================================
+
+v3.0.2 (2026-08-05)
+─────────────────
+
+FIX: PDF Generation Paraparser Error
+- Added _escape_text() method to report_generator.py to properly escape XML special characters (& < >)
+- Applied escaping to all agent-generated content in PDF output:
+  - Bullet points in agent reviews
+  - Consolidated major/minor comments
+  - Specific recommendations
+  - Parser warnings
+- This resolves the "parse ended with unclosed tags para" error that was blocking PDF generation
+- Commit: 5922dcd
+
+v3.0.1 (2026-08-04)
+─────────────────
+
+FEATURE: Modo Autor (Author Mode)
+- Generate targeted revision suggestions with LaTeX code for each paper section
+- Publisher-specific styling (IEEE, Elsevier, MDPI, Emerald, SAGE, Taylor & Francis)
+- Automatic activation after review completion
+- HTML/XML caching optimization with aggressive no-cache headers
+
+FEATURE: macOS Launcher Application
+- One-click startup with "Abrir Paper Reviewer.app"
+- Auto-restarts Ollama server on port 8000
+- Automatic browser launch
+
+IMPROVEMENT: Model Selection
+- Default model: llama3.2 (fast, adequate quality)
+- Alternative: qwen3:8b/14b/32b for higher quality at performance cost
+- 28GB RAM system can run qwen3:32b for maximum quality
+
+v3.0.0 (2026-05-20)
+─────────────────
+
+INITIAL RELEASE
+- Multi-agent paper review system (11 specialized agents)
+- Local Ollama backend (no cloud dependencies)
+- FastAPI server with sequential agent pipeline
+- ReportLab PDF generation
+- Publisher-specific rubrics (IEEE, Elsevier, Springer, MDPI, etc.)
+- Three review modes: Fast (~4min), Balanced (~6min), Deep (~10min)
