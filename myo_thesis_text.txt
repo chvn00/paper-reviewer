@@ -1,0 +1,1531 @@
+
+
+
+
+Control de una prótesis de mano mediante señales EMG utilizando inteligencia artificial en pacientes amputados
+
+Proyecto de investigación 
+
+
+
+Ronald Yessid Álvarez Suárez
+1007382954
+Yennzy Camila Barrera Ardila
+1005541150
+Juan José López Mier
+1050924023
+
+
+UNIDADES TECNOLÓGICAS DE SANTANDER
+FACULTAD DE CIENCIAS NATURALES E INGENIERIA
+INGENIERIA ELECTRONICA
+Bucaramanga, 23 marzo de 2026
+
+
+Control de una prótesis de mano mediante señales EMG utilizando inteligencia artificial en pacientes amputados
+
+Proyecto de Investigación
+
+Ronald Yessid Álvarez Suárez 1007382954
+Yennzy Camila Barrera Ardila 1005541150
+Juan José López Mier 1050924023
+Trabajo de Grado para optar al título de
+Ingeniero electrónico 
+
+DIRECTOR
+Dr. Ing. Cesar Hernando Valencia Niño
+CODIRECTOR
+Cristhiam Jesid Gutiérrez Lozano
+Grupo de investigación GICAV 
+
+UNIDADES TECNOLÓGICAS DE SANTANDER
+FACULTAD DE CIENCIAS NATURALES E INGENIERIAS
+INGENIERIA ELECTRONICA
+Bucaramanga, 23 marzo de 2026
+Nota de Aceptación
+
+
+Este informe final de trabajo de grado, en modalidad Proyecto Investigación fue APROBADOen cumplimiento de uno de los requisitos exigidos por lasUnidades Tecnológicas de Santander para optar elTítulo de Ingeniero Electrónico,según acta No. 9 del 27 de abril del 2026,del Comité de Trabajo de Grado
+
+
+
+__________________________________
+Firma del Evaluador (Jhon F Linares A.)
+
+
+
+__________________________________
+Firma del Director 
+Cesar Hernando Valencia Niño
+
+DEDICATORIA
+
+
+Este trabajo de grado está dedicado a nuestras familias, por su apoyo constante, su comprensión y su paciencia a lo largo de este proceso académico. Su acompañamiento fue fundamental en los momentos de mayor exigencia y representó una motivación permanente para culminar esta meta profesional.
+
+También está dedicado a todas las personas que, de una u otra manera, estuvieron presentes durante este camino, brindando ánimo, confianza y respaldo en cada etapa del desarrollo de este proyecto.
+
+
+
+
+
+
+AGRADECIMIENTOS
+
+
+Se expresa agradecimiento a las Unidades Tecnológicas de Santander y al programa de Ingeniería Electrónica por la formación académica brindada y por ofrecer el entorno institucional que permitió el desarrollo de este trabajo de grado.
+
+Al director, Cesar Hernando Valencia Niño, y al codirector, Cristhiam Jesid Gutiérrez Lozano, por su orientación, disposición y acompañamiento durante las diferentes etapas del proyecto, así como por sus aportes académicos y técnicos.
+
+A los docentes que hicieron parte del proceso de formación profesional, por los conocimientos compartidos y por las bases construidas en áreas fundamentales para el desarrollo de esta investigación, como la electrónica, el control, la programación, los sistemas embebidos y el procesamiento de señales.
+
+A la familia, por el apoyo constante, la comprensión y la paciencia durante este proceso, especialmente en los momentos de mayor exigencia. Su acompañamiento fue fundamental para culminar satisfactoriamente esta etapa académica.
+
+Finalmente, se reconoce a todas las personas que, de una u otra manera, aportaron al crecimiento personal y profesional alcanzado a lo largo de este camino.
+
+
+
+
+
+
+TABLA DE CONTENIDO
+
+TOC \o "1-3" \z \u \hRESUMEN EJECUTIVO	 PAGEREF _Toc226200407 \h 14
+INTRODUCCIÓN	 PAGEREF _Toc226200408 \h 16
+1.	DESCRIPCIÓN DEL TRABAJO DE INVESTIGACIÓN	 PAGEREF _Toc226200409 \h 19
+1.1.	PLANTEAMIENTO DEL PROBLEMA	 PAGEREF _Toc226200410 \h 19
+1.2.	JUSTIFICACIÓN	 PAGEREF _Toc226200411 \h 21
+1.3.	OBJETIVOS	 PAGEREF _Toc226200412 \h 23
+1.3.1.	OBJETIVO GENERAL	 PAGEREF _Toc226200413 \h 23
+1.3.2.	OBJETIVOS ESPECÍFICOS	 PAGEREF _Toc226200414 \h 23
+1.4.	ESTADO DEL ARTE	 PAGEREF _Toc226200415 \h 24
+2.	MARCO REFERENCIAL	 PAGEREF _Toc226200416 \h 27
+2.1.1.	Señales electromiográficas (EMG)	 PAGEREF _Toc226200417 \h 27
+2.1.2.	Adquisición de señales EMG	 PAGEREF _Toc226200418 \h 27
+2.1.3.	Procesamiento de señales EMG	 PAGEREF _Toc226200419 \h 28
+2.1.4.	Reconocimiento de patrones en señales EMG	 PAGEREF _Toc226200420 \h 29
+2.1.5.	Redes neuronales aplicadas a señales EMG	 PAGEREF _Toc226200421 \h 29
+2.1.6.	Control de prótesis mioeléctricas	 PAGEREF _Toc226200422 \h 30
+2.1.7.	Actuadores y control mediante PWM	 PAGEREF _Toc226200423 \h 31
+2.1.8.	Sistemas embebidos para control en tiempo real	 PAGEREF _Toc226200424 \h 31
+3.	DISEÑO DE LA INVESTIGACIÓN	 PAGEREF _Toc226200425 \h 32
+3.1.	Tipo de investigación	 PAGEREF _Toc226200426 \h 34
+3.2.	Enfoque metodológico	 PAGEREF _Toc226200427 \h 34
+3.3.	Método de investigación	 PAGEREF _Toc226200428 \h 35
+3.4.	Procedimiento de desarrollo	 PAGEREF _Toc226200429 \h 36
+4.	DESARROLLO DEL TRABAJO DE GRADO	 PAGEREF _Toc226200430 \h 39
+4.1.	Arquitectura general del sistema	 PAGEREF _Toc226200431 \h 39
+4.2.	Configuración del sistema de adquisición	 PAGEREF _Toc226200432 \h 43
+4.3.	Preparación del participante y protocolo experimental	 PAGEREF _Toc226200433 \h 46
+4.4.	Adquisición de señales electromiográficas (EMG)	 PAGEREF _Toc226200434 \h 51
+4.5.	Preprocesamiento de señales electromiográficas (EMG)	 PAGEREF _Toc226200435 \h 53
+4.6.	Construcción del conjunto de datos (dataset)	 PAGEREF _Toc226200436 \h 56
+4.7.	Diseño y entrenamiento del modelo de inteligencia artificial.	 PAGEREF _Toc226200437 \h 60
+4.7.1.	Diseño de la arquitectura	 PAGEREF _Toc226200438 \h 61
+4.7.2.	Proceso de entrenamiento	 PAGEREF _Toc226200439 \h 63
+4.7.3.	Evaluación del modelo	 PAGEREF _Toc226200440 \h 65
+4.7.4.	Exportación del modelo	 PAGEREF _Toc226200441 \h 66
+4.8.	Implementación del modelo en tiempo real	 PAGEREF _Toc226200442 \h 66
+4.8.1.	Flujo de procesamiento en tiempo real	 PAGEREF _Toc226200443 \h 67
+4.8.2.	Inferencia mediante ventanas deslizantes	 PAGEREF _Toc226200444 \h 68
+4.8.3.	Suavizado de predicciones	 PAGEREF _Toc226200445 \h 69
+4.8.4.	Integración con el sistema	 PAGEREF _Toc226200446 \h 69
+4.8.5.	Latencia del sistema	 PAGEREF _Toc226200447 \h 70
+4.8.6.	Visualización en tiempo real	 PAGEREF _Toc226200448 \h 70
+4.8.7.	Consideraciones finales de implementación	 PAGEREF _Toc226200449 \h 71
+4.9.	Diseño y fabricación de la prótesis robótica	 PAGEREF _Toc226200450 \h 72
+4.10.	Control de la prótesis mediante señales PWM	 PAGEREF _Toc226200451 \h 84
+4.10.1.	Mapeo de gestos a posiciones articulares	 PAGEREF _Toc226200452 \h 85
+4.10.2.	Generación de señales PWM y control progresivo	 PAGEREF _Toc226200453 \h 85
+4.10.3.	Sincronización con la inferencia del modelo	 PAGEREF _Toc226200454 \h 86
+4.10.4.	Sistema de alimentación y estabilidad eléctrica	 PAGEREF _Toc226200455 \h 87
+4.10.5.	Consideraciones de desempeño	 PAGEREF _Toc226200456 \h 87
+4.11.	Integración del sistema y validación	 PAGEREF _Toc226200457 \h 88
+5.	RESULTADOS	 PAGEREF _Toc226200458 \h 92
+5.1.	Evaluación del modelo de clasificación	 PAGEREF _Toc226200459 \h 92
+5.2.	Comportamiento del sistema en tiempo real	 PAGEREF _Toc226200460 \h 94
+5.3.	Validación funcional del sistema	 PAGEREF _Toc226200461 \h 98
+5.3.1.	Evaluación cuantitativa del sistema	 PAGEREF _Toc226200462 \h 99
+5.4.	Síntesis de resultados frente a los objetivos específicos	 PAGEREF _Toc226200463 \h 100
+6.	CONCLUSIONES	 PAGEREF _Toc226200464 \h 101
+7.	RECOMENDACIONES	 PAGEREF _Toc226200465 \h 103
+8.	REFERENCIAS BIBLIOGRÁFICAS	 PAGEREF _Toc226200466 \h 105
+9.	ANEXOS	 PAGEREF _Toc226200467 \h 109
+
+
+
+
+
+
+LISTA DE FIGURAS
+
+
+ TOC \h \z \c "Figura" Figura 1: Adquisición y visualización de señales electromiográficas mediante Myo Armband.	 PAGEREF _Toc226200468 \h 43
+Figura 2: Conexión Raspberry pi y BLED112 de la Myo Armband	 PAGEREF _Toc226200469 \h 44
+Figura 3: Interfaz (VNC) conectada a Raspberry pi	 PAGEREF _Toc226200470 \h 45
+Figura 4: Postura correcta del participante con la colocación de la Myo y orientación correcta del dispositivo	 PAGEREF _Toc226200471 \h 48
+Figura 5: Gráfica de señales electromiográficas correspondientes a los gestos con patrones diferenciales	 PAGEREF _Toc226200472 \h 50
+Figura 6: Etiquetado de muestras y gestos desde la raspberry pi	 PAGEREF _Toc226200473 \h 52
+Figura 7: Estructura del dataset para señales EMG.	 PAGEREF _Toc226200474 \h 57
+Figura 8: Arquitectura del modelo CNN–BiLSTM propuesto para la clasificación de señales electromiográficas.	 PAGEREF _Toc226200475 \h 60
+Figura 9: Matriz de confusión	 PAGEREF _Toc226200476 \h 65
+Figura 10: Impresión en tiempo real de gestos desde la Raspberry pi	 PAGEREF _Toc226200477 \h 71
+Figura 11: Diseño CAD del soporte estructural de la prótesis, destinado a alojar los componentes electrónicos y proporcionar fijación al sistema mecánico.	 PAGEREF _Toc226200478 \h 73
+Figura 12: Diseño CAD del soporte estructural de la prótesis, destinado a alojar los componentes electrónicos y proporcionar fijación al sistema mecánico.	 PAGEREF _Toc226200479 \h 73
+Figura 13: Componentes de acoplamiento diseñados en CAD, utilizados para la conexión entre los servomotores y el sistema mecánico de la prótesis mediante el nailon de pesca.	 PAGEREF _Toc226200480 \h 74
+Figura 14: Diseño CAD de los dedos de la prótesis robótica, donde se definen las articulaciones y la geometría necesaria para el movimiento de flexión.	 PAGEREF _Toc226200481 \h 74
+Figura 15: Componentes de la prótesis de mano.	 PAGEREF _Toc226200482 \h 75
+Figura 16: Impresión de piezas en resina mediante impresora Anycubic Photon Mono M5s Pro.	 PAGEREF _Toc226200483 \h 76
+Figura 17: Integración de los servomotores en los dedos de la prótesis robótica, mostrando la disposición de los actuadores.	 PAGEREF _Toc226200484 \h 78
+Figura 18: Diseño CAD del sistema de la prótesis robótica.	 PAGEREF _Toc226200485 \h 79
+Figura 19: Módulos electrónicos del sistema, donde se observan el controlador PWM PCA9685 y el convertidor DC-DC, encargados de la generación de señales de control y la regulación de voltaje para los actuadores.	 PAGEREF _Toc226200486 \h 80
+Figura 20: Módulo reductor de voltaje DC-DC utilizado para estabilizar la alimentación del sistema y suministrar energía adecuada a los servomotores.	 PAGEREF _Toc226200487 \h 81
+Figura 21: Unidad de procesamiento basada en Raspberry Pi, encargada de ejecutar el modelo de inteligencia artificial y gestionar el sistema de control en tiempo real.	 PAGEREF _Toc226200488 \h 82
+Figura 22: Prototipo final ensamblado de la prótesis robótica.	 PAGEREF _Toc226200489 \h 83
+Figura 23: Sistema completo en operación durante la validación funcional	 PAGEREF _Toc226200490 \h 89
+Figura 24: Evolución de la exactitud durante el entrenamiento del modelo.	 PAGEREF _Toc226200491 \h 96
+Figura 25: Evolución de la función de pérdida durante el entrenamiento del modelo.	 PAGEREF _Toc226200492 \h 97
+
+
+
+
+
+
+
+
+
+
+LISTA DE TABLAS
+
+
+ TOC \h \z \c "Tabla" Tabla 1: Plan de actividades y cronograma del proyecto (semanas 1–22).	 PAGEREF _Toc226200493 \h 33
+Tabla 2: Distribución de muestras por clase en el dataset completo	 PAGEREF _Toc226200494 \h 58
+Tabla 3: Distribución del dataset según partición estratificada para entrenamiento, validación y prueba.	 PAGEREF _Toc226200495 \h 59
+Tabla 4: Arquitectura del modelo CNN–BiLSTM propuesto	 PAGEREF _Toc226200496 \h 63
+Tabla 5: Métricas de desempeño del modelo en el conjunto de prueba	 PAGEREF _Toc226200497 \h 93
+Tabla 6: Indicadores de desempeño en tiempo real	 PAGEREF _Toc226200498 \h 95
+Tabla 7: Métricas de validación funcional del sistema, obtenidas a partir del análisis de las predicciones en tiempo real.	 PAGEREF _Toc226200499 \h 99
+Tabla 8: Cumplimiento de objetivos	 PAGEREF _Toc226200500 \h 100
+
+
+
+
+
+
+
+
+RESUMEN EJECUTIVO
+
+El control de prótesis de miembro superior mediante señales electromiográficas (EMG) representa una de las aplicaciones más relevantes de la ingeniería biomédica y la inteligencia artificial en el desarrollo de tecnologías de asistencia. Sin embargo, muchos sistemas de prótesis mioeléctricas presentan limitaciones relacionadas con la precisión en la detección de gestos musculares, la complejidad de los algoritmos de procesamiento y las dificultades de implementación en plataformas embebidas de bajo costo.
+
+En este contexto, el presente trabajo propone el desarrollo de un sistema inteligente para el control de una prótesis de mano robótica mediante la clasificación de señales electromiográficas adquiridas a través de un dispositivo Myo Armband de ocho canales. El sistema integra un proceso completo que abarca la adquisición de señales EMG, el preprocesamiento de la señal, la segmentación temporal de los datos y el entrenamiento de un modelo de aprendizaje profundo basado en una arquitectura híbrida de redes neuronales convolucionales (CNN-1D) y redes neuronales recurrentes tipo BiLSTM para la identificación de gestos musculares.
+
+El modelo entrenado es posteriormente implementado en un sistema embebido, permitiendo la inferencia en tiempo real de los gestos detectados y el control de los actuadores de una mano robótica mediante servomotores. La arquitectura propuesta busca demostrar la viabilidad de utilizar técnicas de aprendizaje profundo para mejorar la interpretación de señales EMG y facilitar el desarrollo de prótesis robóticas más accesibles y eficientes.
+
+Los resultados esperados del proyecto incluyen la correcta clasificación de diferentes gestos musculares y la ejecución de movimientos correspondientes en la prótesis robótica, contribuyendo al desarrollo de soluciones tecnológicas orientadas a la asistencia y rehabilitación de personas con amputaciones de miembro superior.
+
+PALABRAS CLAVE. Señales electromiográficas, prótesis robótica, aprendizaje profundo, reconocimiento de gestos, interfaz humano-máquina.
+
+
+
+
+INTRODUCCIÓN
+
+
+En los últimos años, los avances en inteligencia artificial y en sistemas embebidos han permitido el desarrollo de soluciones capaces de ejecutar algoritmos complejos directamente en dispositivos de bajo costo. Estas tecnologías han facilitado la implementación de sistemas inteligentes capaces de adquirir, procesar e interpretar datos en tiempo real, lo que resulta especialmente relevante en aplicaciones de control y robótica. En el campo de la ingeniería biomédica, estos avances han impulsado el desarrollo de dispositivos de asistencia capaces de interactuar con el usuario mediante señales fisiológicas, permitiendo el control de prótesis robóticas de forma más natural e intuitiva.
+
+Entre las diferentes técnicas utilizadas para el control de prótesis de miembro superior, las señales electromiográficas de superficie (sEMG) han demostrado ser una alternativa eficaz para interpretar la actividad muscular del usuario. Estas señales reflejan la activación de los músculos y pueden emplearse para inferir la intención de movimiento, permitiendo controlar dispositivos robóticos mediante contracciones musculares. Sin embargo, la interpretación precisa de las señales electromiográficas representa un desafío debido a su naturaleza no estacionaria, la presencia de ruido y la variabilidad entre usuarios. En este contexto, los métodos de aprendizaje automático y aprendizaje profundo han demostrado ser herramientas prometedoras para mejorar la clasificación de gestos musculares y aumentar la fiabilidad de los sistemas de control mioeléctrico.
+
+En este marco, el presente trabajo de grado propone el diseño, implementación y validación de un sistema capaz de interpretar señales electromiográficas de superficie adquiridas mediante un dispositivo Myo Armband y traducirlas en comandos de control para una prótesis de mano robótica. El sistema integra un flujo de trabajo completo que incluye la adquisición de datos electromiográficos, el preprocesamiento de las señales, la segmentación temporal de los datos y el entrenamiento de un modelo de aprendizaje profundo basado en una arquitectura híbrida de redes neuronales convolucionales unidimensionales (CNN-1D) y redes neuronales recurrentes tipo BiLSTM, orientadas a la clasificación de gestos musculares.
+
+Una vez entrenado el modelo, este se optimiza para su implementación en un sistema embebido, permitiendo la ejecución de inferencias en tiempo real. El modelo es integrado en el sistema de control de una mano robótica, donde los gestos detectados se traducen en movimientos específicos ejecutados mediante actuadores tipo servomotor. De esta manera, el sistema propuesto busca demostrar la viabilidad de utilizar técnicas de aprendizaje profundo para interpretar señales electromiográficas y controlar dispositivos robóticos de forma eficiente en plataformas de bajo costo.
+
+El desarrollo del proyecto se estructura en varias etapas metodológicas que garantizan la trazabilidad desde la adquisición de la señal hasta la ejecución del movimiento en la prótesis. Inicialmente se establece un protocolo de captura y etiquetado de datos electromiográficos correspondientes a diferentes gestos musculares. Posteriormente, se realiza el preprocesamiento de las señales y la segmentación temporal de los datos para generar las muestras utilizadas durante el entrenamiento del modelo. A continuación, se efectúa la partición del conjunto de datos en subconjuntos de entrenamiento, validación y prueba, seguido del proceso de entrenamiento del modelo y la evaluación de su desempeño mediante métricas de clasificación.
+
+Finalmente, el modelo seleccionado es optimizado e integrado en el sistema embebido encargado de ejecutar el proceso de inferencia y generar las señales de control para la prótesis robótica. El sistema completo es evaluado mediante pruebas funcionales que verifican la correcta interpretación de los gestos musculares y la ejecución estable de los movimientos correspondientes en la mano robótica.
+
+
+DESCRIPCIÓN DEL TRABAJO DE INVESTIGACIÓN
+
+
+PLANTEAMIENTO DEL PROBLEMA
+
+La problemática que se aborda en este trabajo de grado está relacionada con la limitada capacidad de control en prótesis de mano que utilizan señales electromiográficas (EMG). Los sistemas actuales presentan limitaciones significativas en la interpretación precisa de estas señales bioeléctricas, lo que compromete tanto la exactitud como la confiabilidad de la respuesta de la prótesis.
+
+Esta situación se origina en la escasa implementación de tecnologías avanzadas, como las redes neuronales profundas, capaces de realizar una clasificación más efectiva de los patrones de actividad muscular.
+
+ Según Avilés-Mendoza (2023), estas arquitecturas mejoran el reconocimiento de patrones EMG, permitiendo una interacción más fluida y precisa entre el usuario y el dispositivo protésico; además, Li (2021) resalta que la integración de técnicas de aprendizaje automático optimiza el control y la adaptabilidad de las prótesis, superando las restricciones de los sistemas convencionales.
+
+En este contexto, persiste una brecha entre prototipos desarrollados en escenarios controlados y soluciones integrales que puedan funcionar en condiciones reales utilizando plataformas embebidas de bajo costo. 
+
+Por esta razón, resulta necesario investigar estrategias que permitan integrar el procesamiento de señales electromiográficas, el entrenamiento de modelos de inteligencia artificial y su implementación en sistemas capaces de controlar una prótesis robótica en tiempo real.
+En consecuencia, la pregunta central que guía esta investigación es:
+
+¿De qué manera pueden las técnicas de inteligencia artificial aplicadas a señales electromiográficas permitir la identificación de gestos musculares para el control de una prótesis de mano robótica?
+
+
+JUSTIFICACIÓN
+
+La incorporación de técnicas de inteligencia artificial en el control de prótesis de mano surge como una alternativa tecnológica para mejorar la funcionalidad y la interacción entre el usuario y los dispositivos protésicos. Los sistemas convencionales de control mioeléctrico presentan limitaciones en la interpretación de las señales electromiográficas (EMG), lo que puede afectar la precisión en la identificación de gestos musculares y, en consecuencia, el desempeño del dispositivo. En este sentido, el uso de arquitecturas de aprendizaje profundo ha demostrado una mayor capacidad para identificar patrones complejos presentes en las señales EMG, permitiendo mejorar el reconocimiento de gestos y facilitar un control más natural de las prótesis robóticas (Avilés-Mendoza et al., 2023).
+
+Adicionalmente, la integración de técnicas de aprendizaje automático permite desarrollar sistemas de control mioeléctrico capaces de adaptarse a las características particulares de cada usuario y a las variaciones propias de la señal muscular. Esto favorece la construcción de sistemas de control más robustos y confiables en comparación con los métodos tradicionales basados únicamente en extracción de características y clasificadores estadísticos (Li et al., 2021). En este contexto, el desarrollo de soluciones que integren procesamiento de señales electromiográficas, modelos de inteligencia artificial y sistemas embebidos representa una oportunidad para mejorar el desempeño de las prótesis robóticas y ampliar su accesibilidad tecnológica.
+
+Desde una perspectiva social, el desarrollo de tecnologías orientadas al control de prótesis robóticas tiene un impacto significativo en la calidad de vida de las personas con amputaciones de miembro superior. La posibilidad de controlar una prótesis mediante señales musculares permite realizar actividades cotidianas de manera más autónoma, favoreciendo la rehabilitación funcional, la independencia del usuario y su integración en diferentes entornos sociales y laborales.
+
+Finalmente, desde el punto de vista académico y tecnológico, el presente proyecto contribuye al desarrollo de metodologías aplicadas para la adquisición, procesamiento y clasificación de señales electromiográficas utilizando técnicas de inteligencia artificial. Asimismo, aporta una propuesta de integración entre sistemas de adquisición de señales EMG, modelos de aprendizaje profundo y control de actuadores robóticos, lo que permite generar conocimiento aplicado en áreas como la ingeniería biomédica, la robótica y el procesamiento de señales.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OBJETIVOS
+OBJETIVO GENERAL
+
+Desarrollar e integrar un sistema basado en inteligencia artificial capaz de interpretar en tiempo real señales electromiográficas (EMG) adquiridas mediante una Myo Armband y generar comandos PWM para accionar una prótesis de mano robótica preexistente, con el fin de reproducir gestos funcionales como apertura, cierre, pinza y agarre.
+
+OBJETIVOS ESPECÍFICOS
+
+•	Adquirir señales electromiográficas (EMG) mediante una Myo Armband utilizando un protocolo de captura y preprocesamiento que incluya filtrado, segmentación y organización de los datos, con el propósito de construir un conjunto de datos adecuado para el entrenamiento de modelos de inteligencia artificial.
+
+•	Entrenar y validar un modelo de inteligencia artificial basado en redes neuronales convolucionales, empleando las señales EMG registradas, con el fin de clasificar patrones musculares asociados a diferentes gestos de la mano.
+
+•	Implementar el modelo entrenado en un sistema capaz de ejecutar inferencias en tiempo real, permitiendo la identificación de gestos musculares a partir de las señales EMG capturadas.
+
+•	Integrar el sistema de clasificación con el control de actuadores de una prótesis de mano, convirtiendo los gestos identificados por el modelo en señales PWM que accionen los servomotores responsables del movimiento de la prótesis.
+
+ESTADO DEL ARTE 
+
+En los últimos años, la inteligencia artificial ha adquirido un papel relevante en el desarrollo de soluciones dentro del campo de la ingeniería biomédica. Su aplicación se ha extendido al análisis de señales fisiológicas como electrocardiografía (ECG), electroencefalografía (EEG) y electromiografía de superficie (EMG), donde estas técnicas permiten interpretar la actividad biológica del cuerpo humano y transformarla en información útil para el control de dispositivos tecnológicos, entre ellos las prótesis mioeléctricas (Kim et al., 2020; Shanmuganathan et al., 2023).
+
+Las señales electromiográficas representan la actividad eléctrica generada durante la contracción muscular y pueden emplearse para inferir la intención de movimiento del usuario. No obstante, el procesamiento de estas señales presenta desafíos importantes debido a su naturaleza no estacionaria, la presencia de ruido y la variabilidad entre usuarios. Estas características dificultan la identificación precisa de patrones musculares cuando se emplean métodos tradicionales de procesamiento de señales (Farina et al., 2014).
+
+Para abordar estas dificultades, diversas investigaciones han incorporado técnicas de aprendizaje profundo en el análisis de señales EMG. En particular, las redes neuronales convolucionales (CNN) han demostrado una elevada capacidad para extraer características relevantes de manera automática, reduciendo la necesidad de procesos complejos de extracción manual de características y mejorando la precisión en la clasificación de gestos musculares (Huang et al., 2023).
+
+Diversos estudios recientes han reportado resultados superiores al 90 % de precisión en la clasificación de gestos musculares utilizando modelos basados en aprendizaje profundo. Estos resultados se han obtenido incluso empleando dispositivos de adquisición portátiles, lo que evidencia la viabilidad de implementar sistemas de control mioeléctrico fuera de entornos estrictamente controlados de laboratorio (Ahmed et al., 2021; Rahim et al., 2022).
+
+Adicionalmente, los avances en hardware embebido han permitido integrar estos modelos de inteligencia artificial en plataformas de bajo costo capaces de ejecutar procesos de inferencia en tiempo real. Esta integración facilita el desarrollo de sistemas protésicos más accesibles y portátiles, ampliando las posibilidades de aplicación en contextos clínicos y en entornos con recursos tecnológicos limitados (Lee et al., 2022; Hernández & López, 2023).
+
+En América Latina también se han desarrollado investigaciones orientadas al control de prótesis mioeléctricas mediante técnicas de aprendizaje automático. Algunos estudios han explorado modelos adaptativos que permiten mejorar el reconocimiento de gestos musculares y aumentar la interacción entre el usuario y la prótesis, obteniendo resultados prometedores en términos de precisión y estabilidad del sistema (Soto-Martínez et al., 2021; García-Moreno et al., 2020).
+En Colombia, diversas instituciones académicas han desarrollado investigaciones relacionadas con el procesamiento de señales electromiográficas y el control de dispositivos robóticos mediante técnicas de inteligencia artificial. Estas iniciativas buscan desarrollar soluciones tecnológicas de bajo costo que permitan mejorar la accesibilidad a dispositivos protésicos y promover el desarrollo de tecnologías de asistencia adaptadas al contexto local (Castaño-Bolívar & Rodríguez, 2020; Martínez et al., 2022; Parra-Varón et al., 2021).
+A pesar de los avances reportados en la literatura, donde se alcanzan altos niveles de precisión en la clasificación de señales electromiográficas mediante técnicas de aprendizaje profundo, muchas de estas soluciones están asociadas al uso de hardware especializado o sistemas de cómputo de mayor capacidad, lo que incrementa considerablemente su costo de implementación. Aunque estos enfoques presentan buenos resultados en entornos controlados, su aplicación en contextos reales suele verse limitada por factores como la dependencia de dispositivos costosos, la necesidad de equipos externos para el procesamiento y la baja portabilidad de los sistemas desarrollados.
+
+En este sentido, la principal limitación no se encuentra únicamente en el desempeño de los modelos, sino en la dificultad de llevar estas soluciones a escenarios donde el acceso a tecnología de alto costo es reducido. Esto resulta especialmente relevante en aplicaciones como las prótesis, donde la accesibilidad es un factor clave. Por ello, surge la necesidad de desarrollar sistemas que, además de mantener un buen desempeño en la clasificación de señales EMG, sean accesibles, portables y viables desde el punto de vista económico.
+
+En este contexto, el presente trabajo propone una solución basada en inteligencia artificial implementada en una plataforma embebida de bajo costo, capaz de operar en tiempo real e integrarse directamente con una prótesis de mano robótica, aportando al desarrollo de tecnologías de asistencia más accesibles.
+
+
+
+
+
+
+
+
+
+MARCO REFERENCIAL
+
+Señales electromiográficas (EMG)
+Las señales electromiográficas (EMG) corresponden a la actividad eléctrica generada durante la contracción de las fibras musculares, las cuales pueden ser registradas mediante electrodos de superficie ubicados sobre la piel. Estas señales contienen información relevante sobre la activación muscular y permiten inferir la intención de movimiento del usuario, lo que las convierte en una herramienta fundamental en el desarrollo de sistemas de control mioeléctrico para prótesis de miembro superior (Farina et al., 2014).
+
+Las señales EMG presentan características complejas debido a su naturaleza no estacionaria, la presencia de ruido y la variabilidad entre individuos y condiciones de adquisición. Generalmente, su contenido espectral se encuentra en un rango aproximado de 20 a 500 Hz, siendo susceptible a interferencias externas como el ruido eléctrico de la red (50/60 Hz) y artefactos de movimiento. Estas condiciones dificultan su análisis y requieren técnicas de procesamiento adecuadas para su correcta interpretación (De Luca, 2002).
+Adquisición de señales EMG
+
+La adquisición de señales electromiográficas puede realizarse mediante sensores especializados que capturan la actividad muscular de forma no invasiva. En este trabajo se emplea el dispositivo Myo Armband, el cual dispone de múltiples canales de adquisición que permiten registrar la actividad muscular del antebrazo en diferentes posiciones.
+
+El uso de dispositivos multicanal permite obtener una representación más completa de la actividad muscular, lo que mejora la capacidad de clasificación de gestos. En este sentido, la adquisición de datos debe realizarse bajo un protocolo controlado que garantice la consistencia de las señales, considerando factores como la colocación de los sensores, la repetición de gestos y la duración de las muestras (Kim et al., 2020).
+
+Procesamiento de señales EMG 
+
+Debido a la naturaleza ruidosa de las señales EMG, es necesario aplicar técnicas de preprocesamiento que permitan mejorar la calidad de la información antes de su análisis. Entre las técnicas más comunes se encuentran el filtrado pasa banda y la eliminación de interferencias mediante filtros notch.
+
+En el sistema desarrollado, las señales EMG son sometidas a un filtrado en el rango de 20 a 450 Hz, junto con la eliminación de componentes de ruido a 50 y 60 Hz, lo cual permite reducir la interferencia eléctrica y mejorar la relación señal-ruido. 
+Posteriormente, las señales son segmentadas en ventanas temporales, lo que permite analizar bloques de datos y facilitar el entrenamiento de modelos de aprendizaje automático.
+La segmentación en ventanas es una técnica ampliamente utilizada en el procesamiento de señales EMG, ya que permite capturar patrones temporales relevantes para la clasificación de gestos musculares (Phinyomark et al., 2012).
+
+
+Reconocimiento de patrones en señales EMG
+
+El reconocimiento de patrones consiste en la identificación de características relevantes dentro de una señal que permitan clasificar diferentes estados o comportamientos. En el contexto de señales EMG, esto implica identificar patrones asociados a diferentes gestos musculares.
+
+Los métodos tradicionales de reconocimiento de patrones se basan en la extracción manual de características y el uso de clasificadores como máquinas de soporte vectorial o redes neuronales simples. Sin embargo, estos enfoques presentan limitaciones al no capturar completamente la complejidad de las señales EMG, lo que ha motivado el uso de técnicas de aprendizaje profundo (Englehart & Hudgins, 2003).
+
+
+
+
+
+Redes neuronales aplicadas a señales EMG
+
+Las redes neuronales artificiales han demostrado ser una herramienta eficaz para el análisis de señales biomédicas. En particular, las redes neuronales convolucionales (CNN) han sido ampliamente utilizadas para la clasificación de señales EMG debido a su capacidad para extraer características relevantes de manera automática.
+
+Las CNN aplicadas a señales unidimensionales (CNN-1D) permiten procesar directamente la señal EMG en el dominio temporal, identificando patrones locales sin necesidad de una extracción manual de características. Estas redes utilizan filtros convolucionales que se desplazan a lo largo de la señal, capturando información relevante en diferentes escalas (Huang et al., 2023).
+
+Adicionalmente, las redes neuronales recurrentes, como las Long Short-Term Memory (LSTM), permiten modelar dependencias temporales en la señal, lo que resulta especialmente útil en señales EMG debido a su comportamiento dinámico. Las arquitecturas bidireccionales (BiLSTM) permiten analizar la señal tanto en dirección temporal directa como inversa, mejorando la capacidad de reconocimiento de patrones complejos.
+
+En este trabajo, se emplea una arquitectura híbrida que combina CNN-1D con una red BiLSTM, lo que permite extraer características espaciales de la señal y, al mismo tiempo, modelar su evolución temporal, mejorando el desempeño en la clasificación de gestos musculares.
+
+Control de prótesis mioeléctricas
+Las prótesis mioeléctricas son dispositivos diseñados para ser controlados mediante señales musculares del usuario. Estas prótesis permiten traducir la actividad electromiográfica en movimientos mecánicos, facilitando la ejecución de tareas funcionales.
+
+El control de estas prótesis puede realizarse mediante diferentes enfoques, desde métodos basados en umbrales hasta técnicas avanzadas de reconocimiento de patrones. El uso de inteligencia artificial ha permitido mejorar la precisión del control, facilitando una interacción más natural entre el usuario y el dispositivo (Li et al., 2021).
+
+ Actuadores y control mediante PWM
+Los servomotores son ampliamente utilizados en sistemas robóticos debido a su capacidad de posicionamiento preciso. Estos dispositivos son controlados mediante señales de modulación por ancho de pulso (PWM), las cuales permiten regular la posición angular del motor.
+
+En el contexto de este trabajo, los gestos musculares identificados por el modelo de inteligencia artificial son convertidos en señales PWM que controlan los servomotores de la prótesis, permitiendo la ejecución de movimientos como apertura, cierre y agarre.
+
+
+
+Sistemas embebidos para control en tiempo real
+
+Los sistemas embebidos permiten ejecutar algoritmos de control y procesamiento de datos en dispositivos compactos y de bajo costo. En aplicaciones de control de prótesis, estos sistemas deben ser capaces de procesar señales en tiempo real y generar respuestas rápidas y estables.
+
+La implementación de modelos de inteligencia artificial en sistemas embebidos permite desarrollar soluciones portátiles y accesibles, facilitando su uso en entornos reales y ampliando las posibilidades de aplicación en el campo de la rehabilitación.
+
+
+
+
+
+
+
+
+
+
+DISEÑO DE LA INVESTIGACIÓN
+
+El diseño de la investigación está orientado al desarrollo y validación de un sistema para la interpretación de señales electromiográficas (EMG) con el fin de controlar funcionalmente una prótesis de mano mediante inteligencia artificial. Se adopta un enfoque metodológico cuantitativo de tipo experimental, basado en sesiones controladas de adquisición, procesamiento y modelado de datos, seguido de la implementación del sistema en una plataforma embebida para su evaluación en tiempo real.
+
+El proceso metodológico se organiza en fases secuenciales que incluyen la preparación del sistema de adquisición, la construcción del conjunto de datos, el entrenamiento y validación del modelo de inteligencia artificial directamente en una plataforma embebida (Raspberry Pi), su implementación y la integración con la prótesis para pruebas funcionales. Este enfoque permite garantizar la trazabilidad completa del sistema, desde la adquisición de la señal hasta la ejecución del movimiento, asegurando coherencia entre cada etapa del proceso.
+
+Los criterios de evaluación del sistema incluyen métricas de clasificación como exactitud y F1-score, así como criterios de estabilidad temporal del modelo, con el fin de verificar que la interpretación de los gestos musculares sea consistente y aplicable en condiciones reales de operación.
+
+En la Tabla 1 se presenta el plan de actividades y cronograma del proyecto, estructurado en cinco fases a lo largo de 22 semanas, lo que permite visualizar la secuencia de ejecución, los solapamientos entre actividades y los puntos de control del desarrollo.
+
+Tabla  SEQ Tabla \* ARABIC 1: Plan de actividades y cronograma del proyecto (semanas 1–22).
+Actividad (Semanal)
+Fase 1
+Fase 2
+Fase 3
+Fase 4
+Fase 5
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+Revisión bibliográfica
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Instalación de software y configuración de la Myo Armband
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Toma de muestras y etiquetado de señales EMG
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Entrenamiento y ajuste del modelo CNN
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Migración del modelo CNN a Raspberry Pi y desarrollo del sistema de control
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Creación y construcción del circuito electrónico 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Integración y prueba del sistema en la prótesis
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Entrega del documento Final para evaluación
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Sustentación del trabajo de grado
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Entrega final 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+Tipo de investigación
+El presente estudio se enmarca como una investigación aplicada con enfoque cuantitativo y diseño experimental de tipo intra-sujeto, orientada a evaluar la viabilidad técnica de un sistema de interpretación de señales electromiográficas para el control de una prótesis de mano robótica.
+
+Se emplean sesiones repetidas de adquisición de datos con un mismo participante, lo que permite analizar la consistencia de las señales y la capacidad del modelo para generalizar dentro de condiciones controladas. El modelo de inteligencia artificial es entrenado y validado directamente en una plataforma embebida (Raspberry Pi), lo que permite evaluar su desempeño bajo las mismas condiciones de operación del sistema final y elimina la dependencia de infraestructura de cómputo externa.
+Enfoque metodológico
+El proyecto adopta un enfoque cuantitativo con un diseño iterativo orientado a la validación de la viabilidad técnica del sistema propuesto. Inicialmente, se realizan sesiones controladas de adquisición de señales electromiográficas, siguiendo un protocolo definido que garantiza la consistencia de los datos recolectados.
+
+Posteriormente, las señales son sometidas a procesos de preprocesamiento, segmentación y normalización, permitiendo la generación de un conjunto de datos estructurado para el entrenamiento del modelo. El entrenamiento y validación del modelo de inteligencia artificial se realizan directamente en la Raspberry Pi, utilizando técnicas de aprendizaje profundo para la clasificación de gestos musculares.
+Con el fin de evitar sesgos y garantizar la validez del modelo, se implementan estrategias de partición de datos que evitan fuga de información, como la separación de los datos por sesiones antes del proceso de segmentación y la normalización basada únicamente en el conjunto de entrenamiento. Finalmente, el modelo es integrado en el sistema embebido para su evaluación en condiciones reales de operación.
+Este enfoque permite validar la viabilidad computacional del modelo dentro de las restricciones reales de hardware, asegurando que el sistema pueda operar de manera autónoma sin requerir procesamiento externo.
+Método de investigación
+El método de investigación se desarrolla en etapas secuenciales que permiten la construcción, validación e implementación del sistema. En primer lugar, se define el conjunto de gestos musculares que serán utilizados para el control de la prótesis, incluyendo reposo, apertura, cierre, pinza y agarre.
+
+Posteriormente, se realiza la preparación del sistema de adquisición y la ejecución de pruebas piloto para validar la calidad de la señal electromiográfica. A partir de estas pruebas, se lleva a cabo la recolección del conjunto de datos bajo condiciones controladas, garantizando la consistencia de las muestras y el correcto etiquetado de los gestos.
+
+Con el conjunto de datos estructurado, se procede al entrenamiento y validación del modelo de inteligencia artificial directamente en la Raspberry Pi, asegurando que el proceso de aprendizaje sea coherente con las capacidades del sistema embebido.
+
+Una vez seleccionado el modelo con mejor desempeño, este es implementado en el sistema de inferencia en tiempo real y se integra con la capa de control de la prótesis. Finalmente, se realizan pruebas funcionales para evaluar la estabilidad, precisión y consistencia del sistema en la ejecución de gestos musculares.
+Procedimiento de desarrollo
+El desarrollo del sistema se estructura en etapas que permiten garantizar la correcta implementación y validación de cada componente.
+
+E1. Preparación y alistamiento
+Se definen los gestos a reconocer, incluyendo reposo, mano abierta, puño cerrado, pinza y agarre de vaso. Se establece un protocolo de adquisición que contempla la postura del usuario, la correcta colocación de la Myo Armband y las condiciones de captura de la señal. Asimismo, se organiza la estructura de almacenamiento de los datos.
+
+Criterio: adquisición estable y protocolo validado.
+
+E2. Piloto de adquisición
+Se realiza una sesión piloto para verificar la calidad de las señales electromiográficas, identificando posibles fuentes de ruido o inconsistencias en la medición.
+
+Criterio: señal diferenciable entre gestos.
+
+
+
+E3. Recolección de datos
+Se ejecutan múltiples sesiones de adquisición para cada gesto, garantizando un conjunto de datos balanceado y correctamente etiquetado.
+
+Criterio: dataset completo y consistente.
+
+E4. Preprocesamiento de señales
+Las señales EMG son sometidas a procesos de filtrado, segmentación en ventanas temporales y normalización, con el fin de preparar los datos para el entrenamiento del modelo.
+Criterio: datos sin ruido excesivo y correctamente estructurados.
+
+E5. División del conjunto de datos 
+El conjunto de datos se divide en subconjuntos de entrenamiento, validación y prueba, asegurando independencia entre ellos.
+
+Criterio: ausencia de fuga de información.
+
+E6. Entrenamiento del modelo
+Se entrena un modelo basado en redes neuronales convolucionales y recurrentes (CNN + BiLSTM) directamente en la Raspberry Pi, evaluando su desempeño mediante métricas como exactitud, F1-score y matriz de confusión.
+
+Criterio: modelo con desempeño satisfactorio.
+
+
+
+E7. Implementación en tiempo real
+El modelo entrenado es convertido a un formato optimizado (TFLite) e implementado en el sistema de inferencia en tiempo real, permitiendo la clasificación continua de gestos musculares.
+
+Criterio: inferencia estable y en tiempo real.
+
+E8. Integración con la prótesis
+Los gestos identificados son convertidos en señales PWM que permiten accionar los servomotores de la prótesis de mano.
+
+Criterio: ejecución correcta de movimientos.
+
+E9. Validación final
+Se realizan pruebas funcionales del sistema completo, evaluando la precisión, estabilidad y repetibilidad del control de la prótesis.
+
+Criterio: comportamiento consistente en condiciones reales.
+
+A diferencia de enfoques tradicionales que requieren estaciones de cómputo externas para el entrenamiento del modelo, el presente trabajo implementa el proceso completo de adquisición, entrenamiento, inferencia y control directamente en una plataforma embebida, lo que demuestra la viabilidad de sistemas de inteligencia artificial autónomos para el control de prótesis en contextos reales.
+
+DESARROLLO DEL TRABAJO DE GRADO
+
+El presente capítulo describe la implementación del sistema propuesto para la interpretación de señales electromiográficas (EMG) y el control de una prótesis de mano robótica mediante técnicas de inteligencia artificial. Se detalla el desarrollo de cada una de las etapas del sistema, desde la adquisición de las señales hasta la ejecución de los movimientos en la prótesis, asegurando coherencia con el diseño metodológico planteado.
+
+El desarrollo se estructura en componentes funcionales que permiten comprender el flujo completo del sistema, incluyendo la configuración del entorno de adquisición, el procesamiento de señales, el entrenamiento del modelo de inteligencia artificial y su implementación en una plataforma embebida para operación en tiempo real.
+
+Arquitectura general del sistema
+
+La arquitectura del sistema desarrollado se diseñó bajo un enfoque modular orientado a la integración eficiente de las etapas de adquisición, procesamiento e interpretación de señales electromiográficas (EMG), así como su posterior transformación en acciones de control para una prótesis de mano robótica. En este contexto, se define un flujo de procesamiento continuo que permite traducir la actividad muscular del usuario en comandos de actuación en tiempo real.
+
+El sistema se estructura en cinco bloques funcionales principales: (i) adquisición de señales EMG, (ii) preprocesamiento de la señal, (iii) segmentación y estructuración de datos, (iv) inferencia mediante un modelo de inteligencia artificial y (v) generación de señales de control para la prótesis. Estos bloques se ejecutan de manera integrada sobre una plataforma embebida basada en Raspberry Pi, lo que garantiza un funcionamiento autónomo y elimina la dependencia de infraestructura externa de cómputo.
+
+A diferencia de arquitecturas tradicionales secuenciales, el sistema implementado emplea un esquema de procesamiento concurrente y asíncrono, en el cual la adquisición de datos, el procesamiento de señales y la inferencia del modelo operan de forma desacoplada. Este enfoque permite mantener un flujo continuo de datos sin bloqueos en la ejecución, optimizando el rendimiento del sistema en condiciones de tiempo real.
+
+En la etapa de adquisición, las señales electromiográficas son capturadas mediante una banda Myo Armband de ocho canales, la cual transmite los datos de forma inalámbrica a través de Bluetooth Low Energy (BLE) utilizando un dongle BLED112. Estas señales representan la actividad eléctrica generada por los músculos del antebrazo durante la ejecución de gestos específicos. Los datos son recibidos en forma de flujo continuo (streaming) y almacenados temporalmente en estructuras tipo buffer, permitiendo su procesamiento progresivo.
+
+Posteriormente, las señales son sometidas a un proceso de preprocesamiento en tiempo real, el cual incluye filtrado pasa banda en el rango de 20 a 450 Hz y la atenuación de interferencias mediante filtros notch en 50 Hz y 60 Hz. A diferencia del procesamiento offline, este filtrado se implementa mediante estructuras recursivas que preservan el estado interno del filtro, permitiendo operar sobre señales en streaming sin introducir distorsiones temporales. En consecuencia, se mejora la relación señal-ruido y se mantiene la integridad de la información relevante para la clasificación.
+Una vez filtradas, las señales son segmentadas en ventanas temporales deslizantes de longitud fija, lo que permite estructurar la señal continua en bloques de datos adecuados para el modelo de inteligencia artificial. Este proceso se realiza mediante buffers circulares que almacenan las muestras recientes y permiten generar nuevas ventanas de forma periódica, manteniendo un equilibrio entre resolución temporal y carga computacional.
+
+La etapa de inferencia se basa en un modelo de aprendizaje profundo de tipo híbrido (CNN-1D + BiLSTM), el cual se ejecuta en la Raspberry Pi utilizando TensorFlow Lite. Con el fin de evitar bloqueos en el procesamiento principal, la inferencia se ejecuta en un hilo independiente, permitiendo que la adquisición y el preprocesamiento continúen de manera simultánea. Este esquema concurrente optimiza el uso de recursos del sistema y reduce la latencia en la generación de predicciones.
+
+Adicionalmente, se implementa un mecanismo de postprocesamiento basado en suavizado temporal de las predicciones, mediante la agregación de múltiples salidas consecutivas del modelo. Este enfoque permite reducir fluctuaciones en la clasificación y mejorar la estabilidad del sistema durante la operación en tiempo real.
+Finalmente, los gestos identificados son traducidos en señales de control tipo PWM, las cuales son generadas mediante un controlador dedicado (PCA9685) y enviadas a los servomotores de la prótesis. El sistema de control opera de forma desacoplada respecto al proceso de inferencia, utilizando colas de comunicación que permiten ejecutar movimientos de manera progresiva y evitar cambios bruscos en la posición de los actuadores.
+
+En conjunto, la arquitectura propuesta establece un sistema de interfaz humano-máquina completamente integrado, en el cual la actividad electromiográfica es capturada, procesada e interpretada en tiempo real, permitiendo su conversión directa en acciones mecánicas sobre la prótesis.
+
+Con el fin de validar el correcto funcionamiento de la etapa de adquisición y analizar el comportamiento de las señales electromiográficas en tiempo real, se realizaron pruebas experimentales utilizando la Myo Armband junto con herramientas de visualización en MATLAB. En la Figura 1 se muestra la adquisición y visualización de las señales electromiográficas multicanal, donde se evidencia la variación de la actividad muscular en función de los gestos ejecutados. Estos resultados confirman la viabilidad del sistema para la captura de información relevante en el proceso de clasificación.
+
+
+Figura  SEQ Figura \* ARABIC 1: Adquisición y visualización de señales electromiográficas mediante Myo Armband.
+Configuración del sistema de adquisición
+
+La configuración del sistema de adquisición fue diseñada con el objetivo de garantizar la captura estable y continua de señales electromiográficas (EMG) en tiempo real, mediante una arquitectura centralizada sobre una plataforma embebida. Este enfoque permite integrar en un único dispositivo las tareas de adquisición, procesamiento y almacenamiento de datos, asegurando consistencia en las condiciones experimentales y reduciendo la dependencia de sistemas externos.
+El sistema está compuesto por la banda de electromiografía de superficie Myo Armband, un módulo de comunicación Bluetooth Low Energy (BLE) basado en el dongle BLED112 y una Raspberry Pi tal y como se muestra en la Figura 2, la cual actúa como nodo principal del sistema. En conjunto, estos elementos permiten establecer un flujo de adquisición confiable para el registro de la actividad muscular del usuario.
+
+
+Figura  SEQ Figura \* ARABIC 2: Conexión Raspberry pi y BLED112 de la Myo Armband
+
+La Myo Armband dispone de ocho canales de adquisición, lo que permite registrar de forma simultánea la actividad electromiográfica del antebrazo. Estas señales son transmitidas de manera inalámbrica mediante BLE hacia el dongle BLED112, el cual se encuentra conectado a la Raspberry Pi y actúa como interfaz de comunicación entre el dispositivo de adquisición y el sistema de procesamiento.
+
+La Raspberry Pi ejecuta el entorno de captura desarrollado, encargado de establecer la conexión con la Myo Armband, recibir el flujo continuo de datos electromiográficos y almacenarlos en el sistema de archivos local. Este proceso se realiza de forma directa en la plataforma embebida; en consecuencia, se minimizan las latencias asociadas a la transmisión de datos hacia sistemas externos y se mejora la estabilidad del sistema.
+
+Por otra parte, el computador personal con sistema operativo Windows se emplea únicamente como consola remota para la supervisión del sistema. Como se observa en la Figura 3, la conexión mediante Virtual Network Computing (VNC) permite acceder a la Raspberry Pi para ejecutar scripts, monitorear el estado del sistema y visualizar resultados, sin intervenir directamente en el proceso de adquisición.
+
+Figura  SEQ Figura \* ARABIC 3: Interfaz (VNC) conectada a Raspberry pi
+
+Para garantizar la integridad de las señales capturadas, se estableció un procedimiento de verificación previo a cada sesión experimental, en el cual se valida la correcta detección del dongle BLED112, la estabilidad de la conexión BLE y la disponibilidad de los ocho canales de adquisición (CH1–CH8). Este procedimiento permite identificar posibles fallas en la comunicación o en la instrumentación antes de iniciar la captura de datos.
+
+Adicionalmente, se definió una estructura organizada de almacenamiento en la Raspberry Pi, donde cada sesión de adquisición se registra mediante un identificador asociado a la fecha y condiciones del experimento. 
+Esta organización facilita la trazabilidad de los datos y su posterior utilización en las etapas de procesamiento y entrenamiento del modelo de inteligencia artificial.
+
+En conjunto, la configuración implementada establece un sistema de adquisición robusto, reproducible y adecuado para el registro de señales electromiográficas en condiciones controladas, constituyendo la base para las etapas posteriores de procesamiento, modelado e implementación del sistema de control de la prótesis.
+
+Preparación del participante y protocolo experimental
+La preparación del participante y la estandarización del protocolo experimental constituyen una etapa crítica para garantizar la calidad, consistencia y reproducibilidad de las señales electromiográficas adquiridas. En este trabajo se definió un procedimiento controlado orientado a minimizar la variabilidad en la captura de datos y asegurar condiciones homogéneas entre las diferentes sesiones experimentales.
+
+Previo al inicio de cada sesión, el participante firma un consentimiento informado en el cual se describen los objetivos del estudio, los procedimientos a realizar, los posibles riesgos y el tratamiento de los datos recolectados. Este proceso se lleva a cabo conforme a los principios éticos de investigación en seres humanos y a la normativa vigente en protección de datos personales. 
+El documento correspondiente se incluye en la sección de anexos del presente trabajo (véase Anexo A).
+
+Una vez formalizada la participación, se registra la sesión en una bitácora experimental digital implementada en la Raspberry Pi. En este registro se consignan variables relevantes como el código de sesión, fecha y hora de adquisición, operador responsable, condiciones posturales del participante y observaciones operativas. En consecuencia, se garantiza la trazabilidad de los datos y se facilita la replicación de las condiciones experimentales.
+
+El protocolo de adquisición establece que la instrumentación se realiza sobre el brazo derecho, con el participante en posición sedente. Se define una postura controlada en la cual el antebrazo permanece apoyado sobre una superficie firme, la mano se mantiene en extensión (posición neutra) y la muñeca sin desviaciones apreciables. Como se muestra en la Figura 4, esta configuración permite reducir la influencia de artefactos por movimiento y limitar la activación muscular no deseada, favoreciendo la captura de señales representativas de los gestos solicitados.
+
+Figura  SEQ Figura \* ARABIC 4: Postura correcta del participante con la colocación de la Myo y orientación correcta del dispositivo
+
+La Myo Armband se coloca sobre el antebrazo asegurando un ajuste firme pero confortable, evitando tanto la compresión excesiva como el desplazamiento durante la ejecución de los movimientos. Adicionalmente, la orientación del dispositivo se mantiene constante entre sesiones y se documenta mediante evidencia fotográfica, lo que permite reproducir la ubicación de los electrodos y mantener consistencia en la adquisición de señales.
+
+Posteriormente, se realiza una verificación funcional del sistema desde la Raspberry Pi, confirmando la correcta detección del dispositivo, la estabilidad de la conexión Bluetooth Low Energy (BLE) y la disponibilidad de los ocho canales de señal electromiográfica (CH1–CH8) en tiempo real. Este procedimiento permite identificar posibles fallas antes de iniciar la captura formal de datos. 
+
+Durante las sesiones, los gestos musculares son ejecutados siguiendo un protocolo definido que incluye cinco clases: reposo (no-gesto), mano abierta, puño cerrado, pinza (pulgar–índice) y agarre de objeto. Cada gesto se mantiene durante intervalos de tiempo controlados, permitiendo la captura de segmentos de señal suficientemente representativos para el entrenamiento del modelo de inteligencia artificial. Asimismo, se consideran transiciones controladas entre gestos con el fin de evitar solapamientos no deseados entre clases. 
+
+Con el fin de evidenciar el comportamiento diferencial de las señales electromiográficas asociadas a cada gesto, se realizó una visualización en tiempo real utilizando MATLAB. En la Figura 5 se presentan las señales electromiográficas correspondientes a los gestos de reposo, puño cerrado y mano abierta, donde se observa una diferencia clara en los niveles de activación muscular. En el estado de reposo, las señales presentan baja amplitud y menor variabilidad; en contraste, el gesto de puño cerrado evidencia un incremento significativo en la amplitud debido a la contracción muscular. 
+
+
+
+Figura  SEQ Figura \* ARABIC 5: Gráfica de señales electromiográficas correspondientes a los gestos con patrones diferenciales
+
+Por otra parte, el gesto de mano abierta muestra un patrón intermedio, con activaciones distribuidas en varios canales. Estas diferencias en los patrones de activación multicanal confirman la existencia de características discriminantes en las señales EMG, lo cual resulta fundamental para su posterior clasificación mediante modelos de inteligencia artificial. En este sentido, la variabilidad temporal y espacial observada justifica el uso de arquitecturas híbridas basadas en redes neuronales convolucionales y recurrentes.
+
+En conjunto, la implementación de este protocolo experimental garantiza condiciones controladas de adquisición, reduce la variabilidad intra-sujeto y proporciona un conjunto de datos consistente, adecuado para las etapas posteriores de procesamiento, modelado e implementación del sistema de control de la prótesis.
+ Adquisición de señales electromiográficas (EMG) 
+La adquisición de señales electromiográficas (EMG) se realizó mediante la banda Myo Armband, la cual permite capturar la actividad eléctrica generada por los músculos del antebrazo a través de ocho sensores distribuidos de forma circunferencial. Este dispositivo proporciona una señal multicanal que refleja los patrones de activación muscular asociados a la ejecución de diferentes gestos de la mano.
+
+Las señales EMG son transmitidas de forma inalámbrica mediante Bluetooth Low Energy (BLE) hacia la Raspberry Pi, utilizando el dongle BLED112 como interfaz de comunicación. La recepción de datos se implementa mediante un entorno de captura desarrollado en Python, el cual establece la conexión con el dispositivo y gestiona el flujo continuo de muestras en tiempo real.
+
+El sistema opera con una frecuencia de muestreo aproximada de 200 Hz por canal, lo que permite capturar adecuadamente la dinámica de la señal electromiográfica dentro del rango de interés fisiológico. Cada muestra adquirida está compuesta por un vector de ocho valores correspondientes a los canales CH1–CH8, los cuales representan la actividad eléctrica registrada en diferentes regiones del antebrazo.
+
+Los datos son recibidos en forma de flujo continuo (streaming) y organizados temporalmente mediante estructuras de almacenamiento en memoria tipo buffer. Este enfoque permite mantener un procesamiento progresivo de la señal, facilitando tanto su análisis en tiempo real como su almacenamiento para etapas posteriores.
+
+
+Cada sesión de adquisición se registra en archivos de datos en formato CSV, donde se almacenan las muestras junto con la etiqueta correspondiente al gesto ejecutado. La estructura de cada registro está compuesta por ocho columnas asociadas a los canales de señal (CH1–CH8) y una columna adicional correspondiente a la clase del gesto, lo que permite una organización clara y estructurada del dataset.
+
+Durante la adquisición, se implementa un mecanismo de etiquetado interactivo desde la interfaz del sistema, el cual permite seleccionar el gesto a registrar y controlar el inicio de la captura. Como se observa en la Figura 6, el sistema presenta un menú de selección de gestos que permite asociar cada segmento de señal con la acción ejecutada por el usuario en tiempo real, evitando desfases entre la señal registrada y la etiqueta asignada.
+
+Figura  SEQ Figura \* ARABIC 6: Etiquetado de muestras y gestos desde la raspberry pi
+
+
+Asimismo, el sistema permite definir intervalos de captura controlados para cada gesto, garantizando que cada clase cuente con una cantidad representativa de muestras. Por otra parte, se realiza una supervisión continua de la señal, evaluando la variabilidad entre canales y la coherencia de la actividad electromiográfica con el gesto ejecutado.
+
+Adicionalmente, se implementan mecanismos básicos de validación en tiempo real, tales como la verificación de la conectividad del dispositivo, la detección de canales inactivos y el monitoreo de la estabilidad del flujo de datos. Estas medidas permiten identificar fallas operativas y asegurar la calidad de la información adquirida.
+
+En conjunto, la configuración implementada permite la adquisición estable y continua de señales EMG multicanal en tiempo real, constituyendo la base para las etapas de preprocesamiento, segmentación, extracción de características y clasificación mediante técnicas de inteligencia artificial.
+Preprocesamiento de señales electromiográficas (EMG) 
+El preprocesamiento de las señales electromiográficas constituye una etapa fundamental para mejorar la calidad de los datos adquiridos y garantizar que la información relevante para la clasificación de gestos sea preservada. Debido a la naturaleza no estacionaria de las señales EMG y a la presencia de ruido e interferencias, se implementó una cadena de procesamiento orientada a filtrar, segmentar y normalizar la señal antes de su ingreso al modelo de inteligencia artificial.
+Inicialmente, las señales adquiridas son sometidas a un proceso de filtrado en banda, utilizando un rango de frecuencia entre 20 Hz y 450 Hz, correspondiente al espectro característico de la actividad electromiográfica. Este filtrado permite eliminar componentes de baja frecuencia asociadas a artefactos de movimiento, así como ruido de alta frecuencia que no contiene información relevante para el reconocimiento de patrones musculares.
+
+Adicionalmente, se aplica un filtrado tipo notch para la atenuación de interferencias provenientes de la red eléctrica, específicamente en 50 Hz y 60 Hz. Esta etapa resulta crítica para reducir el ruido electromagnético presente en el entorno de adquisición, mejorando la relación señal-ruido.
+
+A diferencia del procesamiento offline, donde se emplean técnicas de filtrado bidireccional, en la implementación en tiempo real el filtrado se realiza mediante estructuras recursivas que mantienen el estado interno del sistema. Este enfoque permite procesar la señal en streaming sin introducir retardos ni distorsiones en la información temporal, lo cual es esencial para aplicaciones de control en tiempo real.
+
+Posteriormente, las señales filtradas son segmentadas en ventanas temporales deslizantes con el fin de estructurar la señal continua en bloques procesables. En la etapa de entrenamiento se emplean ventanas de 150 muestras, lo que corresponde aproximadamente a 0.75 s considerando una frecuencia de muestreo de 200 Hz, con un solapamiento definido por un desplazamiento (HOP) de 50 muestras. Por otra parte, en la implementación en tiempo real se utiliza un HOP menor (20 muestras), lo que permite aumentar la frecuencia de actualización de las predicciones y reducir la latencia del sistema.
+El uso de ventanas con solapamiento permite capturar de manera más precisa la dinámica temporal de la señal electromiográfica, al tiempo que incrementa la cantidad de muestras disponibles para el entrenamiento del modelo. En consecuencia, se mejora la capacidad de generalización del sistema y su desempeño en la clasificación de gestos.
+
+Cada ventana segmentada se organiza en una estructura matricial de dimensiones W×CW \times CW×C, donde WWW corresponde al número de muestras por ventana y C=8C = 8C=8 representa el número de canales de adquisición. Esta representación permite conservar tanto la información temporal como la distribución espacial de la señal, lo cual resulta adecuado para su procesamiento mediante redes neuronales convolucionales y recurrentes.
+
+Finalmente, se aplica un proceso de normalización basado en la estandarización de los datos (z-score), utilizando la media (μ\muμ) y la desviación estándar (σ\sigmaσ) calculadas a partir del conjunto de entrenamiento. Este procedimiento permite escalar la señal y reducir la variabilidad entre sesiones, mejorando la estabilidad del modelo y evitando sesgos asociados a diferencias en la amplitud de las señales.
+
+En conjunto, la cadena de preprocesamiento implementada permite obtener señales limpias, estructuradas y consistentes, preservando la información relevante de la actividad muscular. Esta etapa resulta determinante para el correcto funcionamiento del modelo de aprendizaje profundo, ya que facilita la extracción de características discriminantes y contribuye a mejorar la precisión en la clasificación de gestos en tiempo real.
+
+Construcción del conjunto de datos (dataset)
+La construcción del conjunto de datos constituye una etapa fundamental en el desarrollo del sistema, ya que determina la calidad, organización y representatividad de la información utilizada para el entrenamiento del modelo de inteligencia artificial. En este trabajo, el dataset se generó a partir de múltiples sesiones controladas de adquisición de señales electromiográficas, siguiendo el protocolo experimental descrito en la sección anterior.
+
+Los datos fueron almacenados en la Raspberry Pi dentro del entorno de desarrollo del proyecto, específicamente en la ruta scripts_dongle, donde se organizan los módulos de adquisición, procesamiento y modelado. Dentro de esta estructura, se dispone de un directorio dedicado al almacenamiento de datos (dataset_emg), el cual contiene el archivo principal dataset_completo.csv, donde se consolidan las muestras adquiridas durante las diferentes sesiones experimentales.
+
+Los datos se almacenan en formato CSV, donde cada registro corresponde a una muestra instantánea de la señal electromiográfica. Cada fila está compuesta por ocho valores asociados a los canales de adquisición (CH1–CH8) y una columna adicional correspondiente a la etiqueta del gesto (G). Esta estructura garantiza la correspondencia directa entre la señal y su clase, lo cual resulta esencial para el entrenamiento supervisado del modelo.
+
+A partir de este archivo consolidado, se realiza el proceso de segmentación en ventanas temporales para la construcción de las muestras del dataset. Cada muestra corresponde a una ventana multicanal de dimensiones W×CW \times CW×C, donde W=150W = 150W=150 muestras (equivalentes a aproximadamente 0.75 s a una frecuencia de muestreo de 200 Hz) y C=8C = 8C=8 canales. Estas ventanas son generadas con solapamiento, lo que permite capturar la dinámica temporal de la señal y aumentar la cantidad de muestras disponibles para el entrenamiento.
+
+En la Figura 7 se muestra la estructura general del dataset utilizado, donde se representa la organización de los datos desde su almacenamiento en formato CSV hasta su transformación en ventanas segmentadas listas para el proceso de entrenamiento.
+
+
+Figura  SEQ Figura \* ARABIC 7: Estructura del dataset para señales EMG.
+Tabla  SEQ Tabla \* ARABIC 2: Distribución de muestras por clase en el dataset completo
+Gesto
+Número de muestras
+agarre_vaso
+35,940
+mano_abierta
+23,956
+pinza
+47,914
+puño_cerrado
+23,958
+reposo
+35,944
+Total
+167,712
+
+
+Con el fin de garantizar la calidad del dataset, se implementaron diferentes criterios de validación durante su construcción. En primer lugar, se verificó la correcta correspondencia entre las señales adquiridas y las etiquetas asignadas durante el proceso de captura. Asimismo, se descartaron segmentos con ruido excesivo o inconsistencias en la señal, tales como canales inactivos o artefactos de movimiento. Por otra parte, se analizó la distribución de muestras entre clases para evitar desbalances significativos que pudieran afectar el desempeño del modelo.
+El dataset se compone de cinco clases principales: reposo, mano abierta, puño cerrado, pinza y agarre. Estas clases fueron definidas con base en criterios funcionales de control de prótesis y presentan patrones diferenciables en las señales electromiográficas.
+
+Para la etapa de entrenamiento del modelo, el conjunto de datos fue dividido en tres subconjuntos: entrenamiento (70 %), validación (15 %) y prueba (15 %). A diferencia de una partición aleatoria simple, esta división se realizó de forma estratificada, manteniendo la proporción de muestras por clase en cada subconjunto. En consecuencia, se garantiza una evaluación más consistente del modelo y se reduce el riesgo de sesgo en los resultados.
+
+Tabla  SEQ Tabla \* ARABIC 3: Distribución del dataset según partición estratificada para entrenamiento, validación y prueba.
+Conjunto
+Porcentaje
+Número de muestras
+Entrenamiento
+70 %
+117,398
+Validación
+15 %
+25,157
+Prueba
+15 %
+25,157
+Total
+100 %
+167,712
+
+
+Adicionalmente, dentro del entorno del proyecto se almacenan los artefactos derivados del proceso de entrenamiento, incluyendo modelos entrenados (best_emg.keras, modelo_emg_tf.h5, modelo_emg_tf.tflite), métricas de desempeño, matrices de confusión y registros históricos del entrenamiento. Esta organización permite asegurar la trazabilidad entre el dataset utilizado y los resultados obtenidos por el modelo.
+
+En conjunto, la estructura implementada permite disponer de un dataset organizado, consistente y directamente integrable con el pipeline de entrenamiento e inferencia, constituyendo la base para el desarrollo del sistema de clasificación de gestos electromiográficos.
+
+Diseño y entrenamiento del modelo de inteligencia artificial.
+El modelo de inteligencia artificial propuesto para la clasificación de señales electromiográficas fue diseñado bajo un enfoque híbrido, integrando capas convolucionales y recurrentes con el fin de capturar tanto características locales como dependencias temporales en la señal EMG. Este diseño responde a la naturaleza no estacionaria y multicanal de las señales adquiridas mediante el Myo Armband.
+
+En este contexto, como se ilustra en la Figura 8, la arquitectura implementada combina un bloque de extracción de características basado en CNN, una rama paralela para el análisis de la envolvente de la señal y un bloque recurrente tipo BiLSTM para el modelado temporal.
+
+Figura  SEQ Figura \* ARABIC 8: Arquitectura del modelo CNN–BiLSTM propuesto para la clasificación de señales electromiográficas.
+Diseño de la arquitectura
+La entrada al modelo corresponde a ventanas de señal EMG con dimensiones 150×8150 \times 8150×8, donde cada ventana representa 0.75 segundos de actividad muscular muestreada a 200 Hz.
+
+El diseño de la arquitectura se estructura en tres componentes principales:
+Extracción de características mediante CNNSe emplean dos capas convolucionales unidimensionales:
+Conv1D con 32 filtros y kernel de tamaño 7 
+Conv1D con 64 filtros y kernel de tamaño 5 
+
+Ambas capas están seguidas de normalización por lotes (Batch Normalization) y funciones de activación ReLU. Este bloque permite capturar patrones locales asociados a la activación muscular.
+
+Rama de envolvente de la señalDe forma paralela, se implementa una segunda ruta de procesamiento que calcula una representación de la envolvente de la señal EMG, mediante:
+Operación de valor absoluto 
+Promediado móvil (AveragePooling1D, ventana de tamaño 5) 
+Capa Conv1D con 16 filtros y kernel 3 
+
+Esta rama introduce información relacionada con la intensidad de activación muscular, complementando las características extraídas por la CNN.
+Ambas salidas son posteriormente fusionadas mediante una operación de concatenación.
+Modelado temporal con BiLSTMEl vector de características resultante es procesado por una capa Bidirectional LSTM con 64 unidades. Esta configuración permite capturar dependencias temporales en ambas direcciones dentro de cada ventana de señal.
+
+Para garantizar compatibilidad con sistemas embebidos, la capa LSTM se implementa con desenrollado explícito (unroll=True), facilitando su posterior conversión a TensorFlow Lite.
+
+Finalmente, se aplica una capa Dropout con tasa de 0.3 y una capa densa con activación Softmax para la clasificación de los gestos.
+
+La configuración detallada de la arquitectura propuesta se presenta en la Tabla 2, donde se especifican las capas, parámetros y dimensiones de salida del modelo.
+
+
+Tabla  SEQ Tabla \* ARABIC 4: Arquitectura del modelo CNN–BiLSTM propuesto
+Capa
+Tipo
+Parámetros
+Dimensión de salida
+Descripción
+1
+Entrada
+—
+(150, 8)
+Ventana EMG multicanal
+2
+Conv1D
+32 filtros, kernel=7, sin bias
+(150, 32)
+Extracción de características locales
+3
+BatchNorm
+—
+(150, 32)
+Normalización
+4
+ReLU
+—
+(150, 32)
+Activación no lineal
+5
+Conv1D
+64 filtros, kernel=5, sin bias
+(150, 64)
+Refinamiento de características
+6
+BatchNorm
+—
+(150, 64)
+Normalización
+7
+ReLU
+—
+(150, 64)
+Activación
+8
+Rama paralela
+|x|
+(150, 8)
+Valor absoluto (envolvente)
+9
+AvgPooling1D
+pool=5, stride=1
+(150, 8)
+Suavizado de señal
+10
+Conv1D
+16 filtros, kernel=3
+(150, 16)
+Extracción de envolvente
+11
+Concatenación
+—
+(150, 80)
+Fusión de características (64+16)
+12
+BiLSTM
+64 unidades, bidireccional, unroll=True
+(128)
+Modelado temporal
+13
+Dropout
+0.3
+(128)
+Regularización
+14
+Dense
+N clases, Softmax
+(N)
+Clasificación final
+
+
+Proceso de entrenamiento
+El entrenamiento del modelo se realizó a partir del dataset previamente construido, compuesto por ventanas multicanal etiquetadas correspondientes a diferentes gestos.
+
+Inicialmente, las etiquetas fueron normalizadas para garantizar consistencia en la codificación de clases. Posteriormente, los datos fueron divididos en conjuntos de entrenamiento (70%), validación (15%) y prueba (15%), utilizando un esquema de partición estratificada que preserva la distribución de clases.
+
+Antes del entrenamiento, las señales fueron normalizadas mediante estandarización (z-score), utilizando la media y desviación estándar calculadas exclusivamente sobre el conjunto de entrenamiento, evitando así fuga de información.
+El modelo fue entrenado bajo las siguientes condiciones:
+
+Optimizador: Adam 
+Tasa de aprendizaje inicial: 10−310^{-3}10−3 
+Función de pérdida: entropía cruzada categórica con suavizado de etiquetas (0.05) 
+Tamaño de lote: 128 
+Número de épocas: 60 
+
+Con el fin de mejorar la generalización del modelo y evitar sobreajuste, se implementaron las siguientes estrategias:
+
+Early stopping con paciencia de 12 épocas 
+Reducción adaptativa de la tasa de aprendizaje 
+Ponderación de clases basada en la frecuencia inversa 
+
+Adicionalmente, el entrenamiento se optimizó mediante el uso de pipelines tf.data, permitiendo procesamiento eficiente por lotes, barajado de datos y prefetching.
+Evaluación del modelo
+El desempeño del modelo fue evaluado sobre el conjunto de prueba mediante métricas de clasificación, incluyendo exactitud, matriz de confusión y métricas por clase (precision, recall y F1-score).
+
+Adicionalmente, en la Figura 9 se presenta la matriz de confusión obtenida sobre el conjunto de prueba, la cual permite analizar el desempeño del modelo en la clasificación de cada uno de los gestos evaluados.
+
+Figura  SEQ Figura \* ARABIC 9: Matriz de confusión
+Se observa una alta concentración de valores en la diagonal principal, indicando una correcta clasificación de las muestras.
+
+
+Estas métricas permiten analizar tanto el rendimiento global como la capacidad del modelo para discriminar entre gestos con patrones electromiográficos similares.
+
+Exportación del modelo 
+Una vez finalizado el entrenamiento, el modelo fue exportado en diferentes formatos para su implementación en sistemas embebidos:
+
+Modelo en formato SavedModel 
+Modelo en formato HDF5 
+Modelo optimizado en formato TensorFlow Lite (FP16) 
+
+La conversión a TensorFlow Lite permite reducir el tamaño del modelo y mejorar la eficiencia en inferencia, facilitando su ejecución en la Raspberry Pi en tiempo real.
+
+Implementación del modelo en tiempo real
+Una vez completado el proceso de entrenamiento y validación del modelo de inteligencia artificial, se procedió a su implementación en un entorno de inferencia en tiempo real sobre la plataforma embebida Raspberry Pi. Esta etapa tiene como propósito la clasificación continua de señales electromiográficas y la generación de acciones de control para la prótesis de mano.
+
+Para ello, el modelo entrenado fue convertido a un formato optimizado mediante TensorFlow Lite (TFLite), permitiendo su ejecución eficiente en dispositivos con recursos computacionales limitados. Esta conversión incluye optimización en precisión reducida (FP16), lo que disminuye el tamaño del modelo y mejora el tiempo de inferencia sin afectar significativamente el desempeño.
+
+El modelo en formato TFLite es cargado en la Raspberry Pi mediante el intérprete de inferencia, el cual permite ejecutar predicciones en tiempo real sobre ventanas de señal EMG previamente procesadas.
+
+Flujo de procesamiento en tiempo real
+El sistema implementado sigue un esquema de procesamiento continuo que integra adquisición, filtrado, segmentación e inferencia de manera simultánea.
+Inicialmente, las señales electromiográficas son adquiridas desde el Myo Armband a través del dongle USB BLED112, utilizando comunicación serial. Estas señales son almacenadas temporalmente en una estructura tipo buffer (cola asíncrona), permitiendo desacoplar la adquisición del procesamiento.
+Posteriormente, las señales son sometidas a un proceso de filtrado en línea que replica las condiciones del entrenamiento:
+Filtro pasa banda (20–450 Hz) 
+Filtros notch en 50 Hz y 60 Hz 
+A diferencia del procesamiento offline, en esta etapa los filtros se implementan de forma incremental utilizando estados internos (sosfilt con condiciones iniciales), lo cual permite operar muestra a muestra sin pérdida de continuidad en la señal.
+Las muestras filtradas se almacenan en un buffer deslizante de tamaño fijo W=150W = 150W=150. Una vez que el buffer se llena, se construye una ventana de entrada para el modelo.
+Inferencia mediante ventanas deslizantes
+El sistema utiliza un esquema de ventanas deslizantes con un paso de actualización definido por HOP=20HOP = 20HOP=20 muestras, lo que equivale aproximadamente a una nueva predicción cada 0.1 segundos.
+Cada ventana es normalizada utilizando los parámetros (media y desviación estándar) calculados durante el entrenamiento, garantizando consistencia entre ambas etapas.
+Posteriormente, la ventana es enviada al modelo TFLite, el cual genera un vector de probabilidades asociado a las clases definidas en el sistema:
+reposo 
+mano_abierta 
+puño_cerrado 
+pinza 
+agarre_vaso 
+La inferencia se ejecuta en un hilo independiente, permitiendo mantener la fluidez del sistema sin bloquear la adquisición de datos.
+Suavizado de predicciones
+Con el fin de mejorar la estabilidad del sistema y reducir la variabilidad en la salida del modelo, se implementa un mecanismo de suavizado basado en votación mayoritaria.
+Para ello, se mantiene un historial de las últimas K=7K = 7K=7 predicciones, sobre el cual se aplica un criterio de mayoría para determinar la clase final. Este enfoque permite mitigar fluctuaciones debidas a ruido o transiciones entre gestos.
+Adicionalmente, se incorpora un control de frecuencia de actualización, limitando la emisión de resultados a intervalos de aproximadamente 0.2 segundos, lo que contribuye a una salida más estable y controlada.
+
+Integración con el sistema
+Una vez obtenida la clasificación del gesto, el sistema traduce dicha salida en comandos de control para la prótesis.
+Estos comandos son enviados a un controlador PWM PCA9685, el cual gestiona la activación de los servomotores correspondientes a cada dedo. La conversión de gestos a posiciones articulares se realiza mediante un mapeo predefinido, donde cada clase corresponde a una configuración específica de ángulos.
+Para evitar movimientos bruscos, se implementa un mecanismo de transición gradual entre posiciones, lo que mejora la naturalidad del movimiento de la prótesis.
+
+Latencia del sistema
+La latencia total del sistema está determinada por la suma de los siguientes componentes:
+Tamaño de ventana: 0.75 s 
+Paso de actualización: 0.1 s 
+Tiempo de inferencia del modelo TFLite 
+Procesamiento de filtrado en línea 
+
+En conjunto, el sistema presenta una latencia adecuada para aplicaciones en tiempo real, permitiendo una respuesta prácticamente inmediata desde la activación muscular hasta la ejecución del movimiento.
+Visualización en tiempo real
+Como se muestra en la Figura 10, el sistema permite visualizar en consola las predicciones del modelo en tiempo real, incluyendo la clase detectada y el nivel de confianza asociado.
+
+
+Figura  SEQ Figura \* ARABIC 10: Impresión en tiempo real de gestos desde la Raspberry pi
+ Consideraciones finales de implementación
+La implementación del modelo en la Raspberry Pi demuestra la viabilidad de ejecutar algoritmos de aprendizaje profundo en plataformas embebidas de bajo costo. El sistema desarrollado integra de manera autónoma la adquisición de señales, procesamiento, clasificación e interacción con actuadores, sin requerir infraestructura externa.
+No obstante, el desempeño del sistema puede verse afectado por factores como la variabilidad en la señal EMG, la posición del dispositivo y la capacidad computacional del hardware, lo cual constituye un aspecto relevante para futuras mejoras.
+Diseño y fabricación de la prótesis robótica
+El diseño de la prótesis de mano robótica implementada en este trabajo se basa en el modelo abierto InMoov Hand i2, el cual proporciona una arquitectura mecánica funcional para la reproducción de movimientos básicos de la mano humana. A partir de este diseño, se emplearon los archivos correspondientes a la mano, mientras que la estructura del antebrazo fue desarrollada de forma personalizada mediante modelado en software CAD, permitiendo la integración de los componentes electrónicos y de control dentro de una carcasa adaptada al sistema.
+
+La fabricación de las piezas se realizó mediante tecnologías de impresión 3D, combinando procesos de deposición de material fundido (FDM) y estereolitografía (SLA/MSLA), con el objetivo de aprovechar las ventajas mecánicas de cada técnica. Las piezas estructurales del sistema, incluyendo la carcasa del antebrazo y soportes, fueron impresas en PLA, priorizando rigidez y facilidad de fabricación.
+
+En las Figuras 11 a la 14 se presentan los principales elementos diseñados, donde se incluyen el soporte estructural encargado de alojar la electrónica, la base de la mano que sirve como punto de integración mecánica, los acoples utilizados para la transmisión del movimiento y los dedos articulados que conforman el mecanismo de actuación.
+
+De esta manera, el modelado CAD permitió anticipar el ensamblaje del sistema, verificar la compatibilidad entre piezas y establecer una distribución adecuada de los componentes antes de su fabricación, reduciendo posibles ajustes en etapas posteriores.
+
+Figura  SEQ Figura \* ARABIC 11: Diseño CAD del soporte estructural de la prótesis, destinado a alojar los componentes electrónicos y proporcionar fijación al sistema mecánico.
+
+
+Figura  SEQ Figura \* ARABIC 12: Diseño CAD del soporte estructural de la prótesis, destinado a alojar los componentes electrónicos y proporcionar fijación al sistema mecánico.
+
+
+Figura  SEQ Figura \* ARABIC 13: Componentes de acoplamiento diseñados en CAD, utilizados para la conexión entre los servomotores y el sistema mecánico de la prótesis mediante el nailon de pesca.
+
+En la Figura 14 se presenta el diseño de los dedos de la prótesis, donde se definen las falanges y las articulaciones que permiten la ejecución de movimientos de flexión, evidenciando la relación entre el diseño digital y su posterior fabricación.
+
+Figura  SEQ Figura \* ARABIC 14: Diseño CAD de los dedos de la prótesis robótica, donde se definen las articulaciones y la geometría necesaria para el movimiento de flexión.
+
+Figura  SEQ Figura \* ARABIC 15: Componentes de la prótesis de mano.
+
+Por otra parte, las piezas correspondientes a los dedos, específicamente las falanges, fueron fabricadas mediante impresión en resina utilizando una impresora Anycubic Photon Mono M5s Pro, como se muestra en la Figura 15. Este proceso permitió obtener mayor precisión dimensional y un mejor acabado superficial en componentes críticos para el movimiento articulado.
+
+Figura  SEQ Figura \* ARABIC 16: Impresión de piezas en resina mediante impresora Anycubic Photon Mono M5s Pro.
+
+En el caso de la impresión en resina, la “densidad” de las piezas se controló mediante configuraciones de vaciado interno (hollow), empleando grosores de pared entre 2.0 y 2.5 mm, y hasta 3.0 mm en zonas sometidas a mayor esfuerzo mecánico. Asimismo, se utilizaron alturas de capa de 0.05 mm, logrando un equilibrio entre resolución, resistencia y tiempo de fabricación. Para evitar defectos durante el proceso, se incorporaron orificios de drenaje en las piezas huecas y se optimizó la orientación de impresión entre 20° y 45°, reduciendo efectos de succión y deformación.
+
+El ensamble mecánico de la prótesis se realizó mediante un sistema de transmisión por tendones, utilizando hilos de nailon, los cuales permiten transformar el movimiento rotacional de los servomotores en movimiento de flexión de los dedos. Este mecanismo replica de forma simplificada el funcionamiento de los tendones en la mano humana.
+
+Para la actuación del sistema, se emplearon cinco servomotores tipo MG90S, seleccionados por su tamaño compacto y capacidad de torque adecuada para aplicaciones de bajo peso. Cada servomotor se encuentra asociado a un dedo de la prótesis, permitiendo ejecutar movimientos individuales y combinados, como apertura, cierre, pinza y agarre. En la Figura 16 se presenta la integración de estos actuadores en la estructura de los dedos, evidenciando su disposición y conexión al sistema de control.
+
+Figura  SEQ Figura \* ARABIC 17: Integración de los servomotores en los dedos de la prótesis robótica, mostrando la disposición de los actuadores.
+
+El diseño del sistema, incluyendo la distribución de los componentes electrónicos dentro del antebrazo, fue desarrollado mediante modelado CAD. Este proceso permitió definir no solo la geometría de cada pieza, sino también su función dentro del sistema y su interacción con los demás componentes, de esta forma, en la Figura 17 se puede evidenciar dicho diseño.
+
+
+
+
+
+
+Figura  SEQ Figura \* ARABIC 18: Diseño CAD del sistema de la prótesis robótica.
+Una vez definido el diseño en el entorno CAD, se llevó a la práctica la implementación del sistema electrónico dentro de la prótesis. Durante esta etapa se buscó organizar los componentes de manera eficiente dentro del espacio disponible, procurando una distribución ordenada del cableado y conexiones estables, con el fin de evitar interferencias entre las señales y la alimentación.
+En la Figura 18 se presenta la integración de los módulos electrónicos dentro del antebrazo de la prótesis, donde se pueden identificar el controlador PWM PCA9685, encargado de generar las señales para los servomotores, junto con el sistema de regulación de voltaje. La forma en que estos elementos fueron dispuestos permite una comunicación directa y eficiente entre la unidad de procesamiento y los actuadores, facilitando el control en tiempo real.
+
+Figura  SEQ Figura \* ARABIC 19: Módulos electrónicos del sistema, donde se observan el controlador PWM PCA9685 y el convertidor DC-DC, encargados de la generación de señales de control y la regulación de voltaje para los actuadores.
+Por otra parte, el sistema de alimentación fue diseñado para asegurar un suministro de energía adecuado para todos los componentes. En la Figura 19 se ilustra el módulo reductor de voltaje DC-DC, el cual se encarga de ajustar el nivel de tensión requerido por los servomotores, evitando caídas de voltaje que puedan afectar el desempeño del sistema.
+
+
+Figura  SEQ Figura \* ARABIC 20: Módulo reductor de voltaje DC-DC utilizado para estabilizar la alimentación del sistema y suministrar energía adecuada a los servomotores.
+Asimismo, el procesamiento de la información se concentra en una plataforma embebida. En la Figura 20 se muestra la Raspberry Pi, la cual ejecuta tanto el procesamiento de las señales electromiográficas como el modelo de inteligencia artificial. Este dispositivo actúa como el centro de control del sistema, ya que interpreta la actividad muscular del usuario y genera las señales necesarias para accionar la prótesis.
+
+Figura  SEQ Figura \* ARABIC 21: Unidad de procesamiento basada en Raspberry Pi, encargada de ejecutar el modelo de inteligencia artificial y gestionar el sistema de control en tiempo real.
+
+Finalmente, la estructura fue ensamblada integrando los componentes mecánicos y electrónicos, obteniendo un prototipo funcional completo, como se muestra en la Figura 10.
+
+
+Figura  SEQ Figura \* ARABIC 22: Prototipo final ensamblado de la prótesis robótica.
+
+El uso de un diseño open-source como base permitió enfocar el desarrollo en la integración del sistema de inteligencia artificial y control, reduciendo los tiempos de diseño mecánico y facilitando la implementación de una solución funcional orientada a la validación del sistema propuesto.
+
+Control de la prótesis mediante señales PWM
+La etapa de control constituye el componente encargado de traducir la salida del modelo de inteligencia artificial en acciones físicas ejecutadas por la prótesis robótica. En este contexto, las clases de gestos identificadas a partir de las señales electromiográficas son convertidas en señales de modulación por ancho de pulso (PWM), utilizadas para controlar la posición angular de los servomotores.
+
+Para la generación de dichas señales se emplea el controlador PCA9685, el cual opera mediante comunicación I2C y permite la gestión simultánea de múltiples canales PWM con alta precisión temporal. Este dispositivo desacopla la generación de señales de la unidad de procesamiento principal, reduciendo la carga computacional de la Raspberry Pi y mejorando la estabilidad del sistema de control.
+
+Cada uno de los canales del PCA9685 se encuentra asociado a un servomotor específico de la prótesis, permitiendo el control independiente de los cinco dedos. La señal PWM generada define el ancho de pulso correspondiente a la posición angular del servomotor, típicamente en un rango de 1 ms a 2 ms dentro de un periodo de 20 ms (50 Hz), lo que permite cubrir el rango operativo del actuador.
+
+
+Mapeo de gestos a posiciones articulares
+La lógica de control implementada establece una correspondencia directa entre las clases de salida del modelo y configuraciones específicas de los servomotores. En lugar de generar movimientos continuos, el sistema utiliza un esquema discreto basado en posturas predefinidas.
+
+Cada gesto reconocido se asocia a un vector de posiciones angulares para los cinco servomotores, permitiendo ejecutar movimientos funcionales de la prótesis. Por ejemplo:
+
+Reposo: todos los dedos en posición neutra 
+Mano abierta: extensión completa de los dedos 
+Puño cerrado: flexión total 
+Pinza: activación selectiva de pulgar e índice 
+Agarre: cierre coordinado de todos los dedos 
+
+Este enfoque permite simplificar el control y garantizar consistencia en la ejecución de los movimientos.
+
+Generación de señales PWM y control progresivo
+Una vez determinada la clase del gesto, el sistema envía los valores correspondientes al controlador PCA9685 mediante comandos I2C. Estos valores son convertidos internamente en señales PWM que accionan los servomotores.
+
+Con el fin de evitar movimientos bruscos y mejorar la naturalidad del sistema, se implementa un mecanismo de transición progresiva entre posiciones. En lugar de cambiar instantáneamente de un ángulo a otro, los servomotores se desplazan de forma incremental hacia la posición objetivo.
+
+Este comportamiento se logra mediante la interpolación de valores PWM en pequeños pasos, lo que reduce esfuerzos mecánicos, evita picos de corriente y mejora la percepción de fluidez en el movimiento de la prótesis.
+
+Sincronización con la inferencia del modelo
+El sistema de control se encuentra desacoplado de la etapa de inferencia mediante el uso de estructuras de comunicación interna, lo que permite recibir las predicciones del modelo sin interrumpir el procesamiento de señales.
+
+Adicionalmente, la señal de control no se actualiza ante cada predicción instantánea, sino que depende de la salida suavizada del sistema (basada en votación mayoritaria de múltiples ventanas). Esto evita activaciones erráticas y garantiza que únicamente se ejecuten movimientos cuando existe consistencia en la detección del gesto.
+
+En consecuencia, el control PWM opera sobre una señal de clasificación estabilizada, lo que mejora la robustez del sistema durante la operación en tiempo real.
+
+
+
+
+
+
+
+
+
+
+Sistema de alimentación y estabilidad eléctrica
+El sistema de alimentación fue diseñado para soportar las demandas energéticas de los servomotores sin comprometer la estabilidad del sistema de control.
+
+Se emplea una batería LiPo de 11.1 V y 2200 mAh, la cual permite suministrar corriente suficiente para el accionamiento simultáneo de múltiples actuadores. Dado que los servomotores presentan picos de consumo durante el movimiento, se incorporan reguladores DC-DC tipo XL4016 para adaptar el voltaje a niveles adecuados.
+
+Se implementa una separación entre la etapa de control (Raspberry Pi) y la etapa de potencia (servomotores), utilizando reguladores independientes. Esta configuración permite:
+
+Reducir caídas de tensión 
+Minimizar interferencias eléctricas 
+Evitar reinicios del sistema embebido 
+
+Este aspecto resulta especialmente crítico debido a la sensibilidad de las señales electromiográficas al ruido eléctrico.
+
+Consideraciones de desempeño
+Durante la operación del sistema, se observó que el control mediante PWM presenta un comportamiento estable y reproducible, permitiendo ejecutar múltiples ciclos de movimiento sin degradación en la respuesta.
+La integración entre el modelo de inteligencia artificial y el sistema de control permite establecer una cadena completa de procesamiento, en la cual la actividad muscular del usuario es interpretada y transformada en acciones mecánicas en tiempo real.
+
+No obstante, el desempeño del sistema puede verse afectado por factores como la carga mecánica de los actuadores, la variabilidad en la alimentación y la precisión en la calibración de los ángulos de los servomotores, los cuales constituyen aspectos relevantes para futuras optimizaciones.
+
+Integración del sistema y validación
+La integración del sistema se realizó unificando las diferentes etapas desarrolladas a lo largo del proyecto, desde la adquisición de señales electromiográficas hasta el control de la prótesis de mano robótica. Este proceso permitió establecer un flujo continuo de procesamiento en tiempo real, en el cual la actividad muscular del usuario es capturada, preprocesada, interpretada mediante el modelo de inteligencia artificial y finalmente traducida en acciones mecánicas ejecutadas por la prótesis.
+
+El sistema completo opera de manera autónoma sobre la Raspberry Pi, la cual gestiona de forma concurrente la adquisición de datos desde la Myo Armband, el procesamiento de las señales, la ejecución del modelo en formato TensorFlow Lite y la generación de señales PWM mediante el controlador PCA9685. Esta arquitectura integrada permite reducir la latencia del sistema y garantizar una respuesta coherente frente a la ejecución de gestos musculares.
+
+Como se muestra en la Figura 22, el sistema funciona de manera conjunta durante la ejecución de los gestos, evidenciando la interacción entre la señal electromiográfica del usuario, el modelo de clasificación y la activación de los servomotores en la prótesis.
+
+Figura  SEQ Figura \* ARABIC 23: Sistema completo en operación durante la validación funcional
+Ej. pinza)
+
+Para la validación funcional del sistema, se realizaron pruebas en condiciones controladas, en las cuales el participante ejecutó los gestos definidos en el protocolo experimental: reposo, mano abierta, puño cerrado, pinza y agarre. Durante estas pruebas, se evaluó la capacidad del sistema para reconocer correctamente los gestos y generar los movimientos correspondientes en la prótesis.
+
+Los resultados evidencian que el sistema es capaz de identificar de manera consistente los patrones musculares asociados a cada gesto y activar los servomotores de forma acorde, permitiendo la ejecución de movimientos funcionales. Asimismo, el comportamiento del sistema se mantiene estable durante la operación continua, sin interrupciones en el flujo de procesamiento ni pérdida de sincronización entre las etapas.
+
+Adicionalmente, se verificó que la integración del modelo de inteligencia artificial con el sistema de control no introduce retardos significativos, manteniendo una latencia adecuada para aplicaciones en tiempo real. Esto permite que la respuesta del sistema sea percibida como natural por el usuario, aspecto fundamental en sistemas de control mioeléctrico.
+
+Durante las pruebas se identificaron factores que influyen en el desempeño del sistema, tales como la correcta colocación de la Myo Armband, la estabilidad de la comunicación BLE y la consistencia en la ejecución de los gestos por parte del usuario. Estos aspectos fueron controlados mediante el protocolo experimental y procedimientos de verificación previos a cada sesión.
+
+
+En términos de alimentación, el uso de una batería LiPo junto con reguladores de voltaje independientes permitió mantener una operación estable incluso bajo condiciones de carga asociadas al accionamiento simultáneo de los servomotores. Esta configuración valida la viabilidad del sistema como una solución portátil y autónoma.
+
+En conjunto, los resultados obtenidos en la validación funcional demuestran que el sistema desarrollado integra de manera efectiva la adquisición de señales electromiográficas, el procesamiento mediante modelos de aprendizaje profundo y el control de actuadores, logrando una correspondencia directa entre la intención de movimiento del usuario y la ejecución física en la prótesis.
+En este capítulo se desarrolló de manera integral la implementación del sistema propuesto, abarcando desde la adquisición de señales electromiográficas hasta la ejecución de movimientos en una prótesis de mano robótica en tiempo real. Se definieron los procesos de captura, preprocesamiento y construcción del dataset, así como el diseño y entrenamiento de un modelo de inteligencia artificial basado en una arquitectura híbrida CNN–BiLSTM. Posteriormente, se describió su implementación en un entorno embebido mediante TensorFlow Lite, junto con la integración de mecanismos de inferencia continua y control mediante señales PWM. Finalmente, la validación funcional permitió evidenciar la correcta interacción entre las diferentes etapas del sistema, demostrando la viabilidad de utilizar técnicas de aprendizaje profundo para interpretar señales EMG y traducirlas en acciones mecánicas. En conjunto, los resultados obtenidos establecen una base sólida para el desarrollo de sistemas mioeléctricos autónomos, eficientes y de bajo costo orientados al control de prótesis robóticas.
+
+
+
+
+
+
+
+RESULTADOS
+En esta sección se presentan los resultados obtenidos durante la ejecución del sistema propuesto para el control de una prótesis de mano robótica mediante señales electromiográficas (EMG) y técnicas de inteligencia artificial. Se documentan los resultados derivados del proceso de entrenamiento del modelo, su evaluación en condiciones controladas y su comportamiento durante la operación en tiempo real, complementando el análisis desde una perspectiva cuantitativa y funcional.
+Evaluación del modelo de clasificación
+La evaluación del modelo de inteligencia artificial se realizó con el propósito de determinar su capacidad para clasificar correctamente los patrones electromiográficos asociados a los gestos definidos. El modelo desarrollado, basado en una arquitectura híbrida CNN-1D + BiLSTM, fue evaluado sobre un conjunto de prueba independiente, obteniendo una exactitud global de 0.9959, junto con valores de precisión macro, recall macro y F1-score macro de 0.9958, calculados sobre un total de 496 ventanas de señal.
+
+Estos resultados evidencian un alto desempeño del modelo, indicando no solo una adecuada capacidad de ajuste durante el entrenamiento, sino también una correcta generalización sobre datos no vistos. Desde el punto de vista del reconocimiento de patrones, esto sugiere que la arquitectura implementada logró extraer características discriminativas robustas a partir de las señales EMG.
+
+El análisis por clase muestra un comportamiento homogéneo en el desempeño del modelo. Los gestos agarre_vaso, puño_cerrado y reposo alcanzaron valores perfectos (1.0000) en precisión, recall y F1-score, lo que indica una clasificación completamente correcta en el conjunto de prueba. Por su parte, la clase pinza presentó un F1-score de 0.9929, mientras que mano_abierta obtuvo el menor valor relativo con 0.9859. A pesar de estas diferencias, todas las clases mantienen niveles de desempeño superiores al 98 %, lo que confirma la consistencia del modelo.
+
+La configuración detallada de estas métricas se presenta en la Tabla 3, donde se resumen los valores de precisión, recall y F1-score para cada una de las clases evaluadas.
+
+Tabla  SEQ Tabla \* ARABIC 5: Métricas de desempeño del modelo en el conjunto de prueba
+Clase
+Precisión
+Recall
+F1-score
+Soporte
+agarre_vaso
+1.0000
+1.0000
+1.0000
+106
+mano_abierta
+0.9859
+0.9859
+0.9859
+71
+pinza
+0.9929
+0.9929
+0.9929
+141
+puño_cerrado
+1.0000
+1.0000
+1.0000
+71
+reposo
+1.0000
+1.0000
+1.0000
+107
+Accuracy global
+
+
+0.9960
+496
+Macro promedio
+0.9958
+0.9958
+0.9958
+496
+
+Nota. Datos obtenidos del reporte de clasificación del modelo.
+El análisis de la matriz de confusión mostrada en la figura 9 permite identificar el comportamiento del modelo en términos de errores de clasificación.
+Como se observa en la figura, la mayoría de las predicciones se ubican en la diagonal principal, evidenciando una correspondencia directa entre las etiquetas reales y las predichas. Únicamente se presentan errores puntuales entre las clases mano_abierta y pinza, lo cual puede atribuirse a la similitud en los patrones de activación muscular asociados a estos gestos.
+Este comportamiento resulta coherente con la naturaleza de las señales electromiográficas, donde diferentes movimientos pueden compartir activaciones parciales de grupos musculares. En este sentido, los errores no se presentan de manera aleatoria, sino concentrados en clases con mayor similitud fisiológica.
+
+No obstante, es importante considerar que las señales EMG son altamente sensibles a múltiples factores, entre ellos la anatomía del usuario, la colocación del dispositivo, la intensidad de la contracción y condiciones fisiológicas como fatiga o sudoración. Adicionalmente, la adquisición de los datos se realizó bajo condiciones controladas, lo cual reduce la variabilidad de la señal y favorece el proceso de aprendizaje.
+
+En consecuencia, si bien el modelo presenta un excelente desempeño dentro del dominio evaluado, su capacidad de generalización en escenarios reales aún requiere validación adicional.
+Comportamiento del sistema en tiempo real
+El comportamiento del sistema en tiempo real fue evaluado mediante la ejecución continua del modelo implementado en la Raspberry Pi, registrando las predicciones generadas durante la interacción con señales EMG en condiciones de operación.
+
+Durante la prueba, el sistema generó un total de 199 predicciones en aproximadamente 44.5 segundos de ejecución continua. La confianza media del modelo fue de 0.9015, con una mediana de 0.9589, lo cual indica que la mayoría de las predicciones se realizaron con un alto nivel de certeza.
+
+En términos de estabilidad, la predicción suavizada mediante votación coincidió con la predicción instantánea en aproximadamente el 85.9 % de los casos, evidenciando coherencia en la salida del sistema y reducción de fluctuaciones momentáneas.  Asimismo, la tasa de transición entre clases fue del 11.1 %, lo cual indica que el sistema mantiene estabilidad temporal en sus predicciones.
+
+Tabla  SEQ Tabla \* ARABIC 6: Indicadores de desempeño en tiempo real
+Indicador
+Valor
+Predicciones registradas
+199
+Duración de la prueba
+44.5 s
+Confianza media
+0.9015
+Confianza mediana
+0.9589
+Confianza mínima
+0.3957
+Confianza máxima
+0.9770
+Coincidencia predicción/suavizado
+85.9 %
+Transiciones de clase
+22
+Tasa de transición
+11.1 %
+
+Nota. Resultados obtenidos a partir del registro de inferencia en tiempo real.
+Desde el punto de vista computacional, el sistema mantuvo un comportamiento estable durante toda la ejecución, sin interrupciones en el procesamiento ni acumulación significativa de datos. Es importante señalar que, debido a la ausencia de etiquetas en tiempo real, esta evaluación se centra en la estabilidad y confianza del sistema, y no en métricas supervisadas de clasificación.
+Análisis del proceso de entrenamiento
+La evolución del entrenamiento del modelo se analiza mediante las curvas de exactitud y función de pérdida.
+La Figura 23 presenta la evolución de la exactitud para los conjuntos de entrenamiento y validación. Se observa un incremento rápido en las primeras épocas, seguido de una estabilización en valores cercanos a 1.0.
+
+
+Figura  SEQ Figura \* ARABIC 24: Evolución de la exactitud durante el entrenamiento del modelo.
+ 
+La Figura 24 muestra la evolución de la función de pérdida, evidenciando una disminución progresiva y convergencia estable tanto en entrenamiento como en validación.
+
+Figura  SEQ Figura \* ARABIC 25: Evolución de la función de pérdida durante el entrenamiento del modelo.
+
+En conjunto, estas curvas evidencian un proceso de aprendizaje estable, sin divergencias significativas entre entrenamiento y validación, lo que respalda la consistencia del modelo.
+Validación funcional del sistema
+La validación funcional del sistema se realizó integrando el modelo de inteligencia artificial con el sistema de control de la prótesis, evaluando la correspondencia entre los gestos detectados y los movimientos ejecutados.
+Se observó que el sistema es capaz de interpretar de manera consistente los gestos definidos, generando señales PWM que accionan los servomotores de forma coherente con la intención del usuario. El comportamiento del sistema se mantuvo estable durante la operación continua, permitiendo la ejecución repetida de movimientos sin fallos evidentes.
+La transición entre gestos se realizó de manera fluida, evidenciando una adecuada integración entre la clasificación y el control. Asimismo, la latencia percibida fue suficientemente baja para permitir una interacción natural.
+Se identificó que factores como la colocación del dispositivo y la consistencia en la ejecución de los gestos influyen en el desempeño del sistema, lo cual es coherente con la naturaleza de las señales EMG.
+Evaluación cuantitativa del sistema
+Se analizaron 199 predicciones obtenidas durante la operación continua del sistema. Se encontró que el 88.9 % de las predicciones se mantienen estables entre instantes consecutivos, lo que indica un comportamiento consistente.
+
+Tabla  SEQ Tabla \* ARABIC 7: Métricas de validación funcional del sistema, obtenidas a partir del análisis de las predicciones en tiempo real.
+Métrica
+Valor
+Descripción
+Total de predicciones
+199
+Número total de instancias analizadas en tiempo real
+Estabilidad temporal
+88.9%
+Porcentaje de predicciones consecutivas consistentes
+Transiciones entre clases
+11.1%
+Cambios entre predicciones consecutivas
+Tamaño de ventana
+0.75 s
+Duración de la ventana de análisis
+Paso de actualización
+0.1 s
+Frecuencia de actualización del sistema
+
+
+
+
+
+
+Síntesis de resultados frente a los objetivos específicos
+Con el fin de verificar el cumplimiento de los objetivos planteados, se realizó una síntesis de los resultados obtenidos en cada etapa del sistema.
+
+Se logró adquirir y estructurar un dataset EMG multicanal, entrenar un modelo de inteligencia artificial con alto desempeño, implementar inferencia en tiempo real en una plataforma embebida y controlar una prótesis robótica de forma coherente con los gestos identificados.
+
+
+
+Tabla  SEQ Tabla \* ARABIC 8: Cumplimiento de objetivos
+Objetivo específico
+Evidencia de cumplimiento
+Adquirir señales EMG y construir el dataset
+Captura multicanal con Myo Armband y organización del conjunto de datos
+Entrenar y validar un modelo de IA
+Accuracy global de 0.9959 y F1-score macro de 0.9958
+Implementar inferencia en tiempo real
+199 predicciones registradas en operación continua con alta confianza
+Integrar el sistema con la prótesis
+Ejecución funcional de apertura, cierre, pinza y agarre mediante PWM
+
+En conjunto, estos resultados confirman la viabilidad técnica del sistema desarrollado.
+
+
+
+
+CONCLUSIONES
+
+El desarrollo del trabajo permitió cumplir con el objetivo general planteado, al lograr la implementación de una arquitectura capaz de interpretar señales electromiográficas en tiempo real y traducirlas en movimientos sobre una prótesis de mano robótica. Este resultado demuestra que es posible integrar, en una misma solución, la adquisición de señales, su procesamiento, el uso de modelos de inteligencia artificial y su ejecución en una plataforma embebida de bajo costo.
+
+En cuanto a los objetivos específicos, se logró la adquisición de señales EMG multicanal mediante la Myo Armband, asegurando su calidad a través de un protocolo experimental controlado y un adecuado preprocesamiento. A partir de estos datos, se construyó un dataset organizado y representativo, el cual fue fundamental para el entrenamiento del modelo y para alcanzar los resultados obtenidos.
+
+El modelo de inteligencia artificial, basado en una arquitectura híbrida CNN–BiLSTM, mostró un desempeño sobresaliente, con una exactitud cercana al 99.6 % en el conjunto de prueba. Esto confirma que la combinación de capas convolucionales y recurrentes es adecuada para capturar tanto las características locales como la dinámica temporal de las señales electromiográficas.
+
+Además, se comprobó que la ejecución del modelo en una plataforma como la Raspberry Pi es viable, especialmente al emplear técnicas de optimización como TensorFlow Lite. Durante las pruebas en tiempo real, el comportamiento fue estable y con una latencia adecuada, lo que permitió una interacción fluida entre el usuario y la prótesis.
+
+Desde el punto de vista funcional, la relación entre la salida del modelo y la generación de señales PWM permitió establecer una correspondencia clara entre la intención de movimiento del usuario y la acción ejecutada por la prótesis. Las pruebas evidenciaron un funcionamiento consistente, con estabilidad en las predicciones y una respuesta coherente del dispositivo.
+
+Sin embargo, es importante tener en cuenta que los resultados obtenidos están influenciados por las condiciones controladas en las que se realizó la adquisición de datos y por el uso de un único participante. Por esta razón, aunque el modelo presenta un alto desempeño en este entorno, su comportamiento en escenarios reales podría variar debido a la naturaleza variable de las señales electromiográficas.
+
+Finalmente, se identificaron algunos factores que pueden afectar el desempeño, como la correcta colocación del dispositivo, la calidad de la señal EMG y la alimentación de los actuadores. Estos aspectos fueron considerados durante el desarrollo, evidenciando la importancia de una adecuada integración entre las distintas etapas para lograr un funcionamiento estable.
+
+
+RECOMENDACIONES
+
+Con el fin de ampliar el alcance del desarrollo realizado y mejorar su aplicabilidad en escenarios reales, se proponen algunas líneas de trabajo futuro.
+
+En primer lugar, sería conveniente ampliar el conjunto de datos incorporando más participantes y variando las condiciones de adquisición. Esto permitiría evaluar mejor la capacidad de generalización del modelo frente a la variabilidad entre usuarios, que es uno de los principales retos en el análisis de señales electromiográficas.
+
+También resulta pertinente explorar técnicas de adaptación del modelo, como el aprendizaje transferido o el aprendizaje continuo, que permitan ajustarlo a las características propias de cada usuario sin necesidad de repetir todo el proceso de entrenamiento. Este enfoque es especialmente útil en aplicaciones reales, donde las condiciones de la señal pueden cambiar con el tiempo.
+
+Desde el punto de vista computacional, se podría trabajar en arquitecturas más ligeras orientadas a dispositivos embebidos, así como en técnicas de optimización como la cuantización entera (INT8) o la poda de redes neuronales. Estas alternativas ayudarían a reducir la latencia y el consumo de recursos, facilitando su implementación en hardware aún más limitado.
+
+En cuanto a la prótesis, sería interesante incorporar sensores de retroalimentación, como sensores de fuerza o posición, que permitan mejorar la precisión y naturalidad de los movimientos. Esto abriría la posibilidad de avanzar hacia comportamientos más adaptativos y cercanos a un funcionamiento real.
+
+Por otra parte, se podría integrar información adicional proveniente de otras señales fisiológicas, como sensores inerciales (IMU) o incluso señales EEG, con el fin de complementar la interpretación de la intención del usuario y reducir posibles ambigüedades entre gestos.
+
+Finalmente, se recomienda evaluar el desempeño del desarrollo en entornos no controlados, incluyendo pruebas en condiciones reales de uso y con usuarios finales. Este tipo de validación permitiría identificar nuevas limitaciones y orientar mejoras hacia aplicaciones prácticas en contextos clínicos o de rehabilitación.
+
+REFERENCIAS BIBLIOGRÁFICAS
+
+Ahmed, M., Begum, S., & Funk, P. (2021). Machine learning for real-time electromyographic signal classification in prosthetic control. Biomedical Signal Processing and Control, 68, 102628.
+Asociación Médica Mundial. (2013). Declaración de Helsinki de la AMM: principios éticos para las investigaciones médicas en seres humanos.
+Avilés-Mendoza, G. J., López-Franco, C., & Rodríguez-Reséndiz, J. (2023). Deep learning approaches for surface electromyography signal classification in prosthetic hand control: A review. Biomedical Signal Processing and Control, 84, 104865. https://doi.org/10.1016/j.bspc.2023.104865
+Castaño-Bolívar, A., & Rodríguez, J. F. (2020). Clasificación de señales EMG mediante CNN para control de prótesis de miembro superior. Revista Colombiana de Ingeniería, 39(1), 75–84. https://doi.org/10.26507/rcin39
+Castro, D. R., Gómez, J. A., & Velásquez, A. M. (2022). Inteligencia artificial aplicada a señales biomédicas: una revisión. Revista Ingeniería Biomédica, 16(2), 45–60. https://doi.org/10.22201/fq.25940710e2022
+Congreso de la República de Colombia. (2008). Ley 1266 de 2008. Por la cual se dictan las disposiciones generales del hábeas data y se regula el manejo de la información contenida en bases de datos personales. Diario Oficial.
+Congreso de la República de Colombia. (2012). Ley 1581 de 2012. Por la cual se dictan disposiciones generales para la protección de datos personales. Diario Oficial.
+De Luca, C. J. (2002). Surface electromyography: Detection and recording. DelSys Incorporated.
+Englehart, K., & Hudgins, B. (2003). A robust, real-time control scheme for multifunction myoelectric control. IEEE Transactions on Biomedical Engineering, 50(7), 848–854. https://doi.org/10.1109/TBME.2003.813539
+Farina, D., Jiang, N., Rehbaum, H., Holobar, A., Graimann, B., Dietl, H., & Aszmann, O. (2014). The extraction of neural information from the surface EMG for the control of upper-limb prostheses. Nature Reviews Neurology, 10(7), 396–405.
+García-Moreno, A., Ramírez-López, M., & Fernández-Reyes, M. (2020). Implementación de una prótesis mioeléctrica de bajo costo usando TensorFlow Lite. Ingeniería Biomédica y Biomecánica, 18(2), 90–97.
+Hernández, J. A., & López, F. M. (2023). Implementación de redes neuronales en sistemas embebidos para prótesis mioeléctricas de bajo costo. Revista Electrónica Ingeniería y Sociedad, 9(1), 112–123. https://doi.org/10.3390/eis9010112
+Huang, H., Zhou, P., Li, G., & Kuiken, T. (2023). Deep learning methods for electromyographic signal analysis in prosthetic control. IEEE Transactions on Neural Systems and Rehabilitation Engineering.
+Kim, J., Mastnik, S., & André, E. (2020). EMG-based hand gesture recognition for prosthetic control. Sensors.
+Lee, J., Park, H., & Moon, Y. (2022). Embedded implementation of deep learning models for prosthetic hand control. Sensors, 22(8), 3137. https://doi.org/10.3390/s22083137
+Li, G., Schultz, A. E., & Kuiken, T. A. (2021). Pattern recognition control of multifunctional myoelectric prostheses: A review of the state of the art. Medical Engineering & Physics, 43, 1–12. https://doi.org/10.1016/j.medengphy.2016.11.012
+Martínez, C., Londoño, J., & Pérez, A. (2022). Control de una prótesis mioeléctrica de mano utilizando redes neuronales artificiales y Arduino. Revista Colombiana de Tecnología y Robótica, 6(2), 45–53.
+Ministerio de Salud de Colombia. (1993). Resolución 8430 de 1993. Por la cual se establecen las normas científicas, técnicas y administrativas para la investigación en salud.
+Parra-Varón, A., García-Torres, R., & Romero-León, J. (2021). Clasificación de señales electromiográficas para el control de prótesis en Colombia. Revista Colombiana de Tecnologías de Avanzada, 29(1), 45–53.
+Phinyomark, A., Phukpattaranont, P., & Limsakul, C. (2012). Feature reduction and selection for EMG signal classification. Expert Systems with Applications.
+Presidencia de la República de Colombia. (2013). Decreto 1377 de 2013. Por el cual se reglamenta parcialmente la Ley 1581 de 2012.
+Rahim, M., Khan, M., & Shin, S. (2022). Deep learning-based EMG classification for prosthetic hand control. IEEE Access.
+Shanmuganathan, V., Barbosa, P. C., da Cunha Neto, J. S., Zhang, L., de Albuquerque, V. H. C., & Pasupathi, S. (2023). Development of intelligent and integrated technology for pattern recognition in EMG signals for robotic prosthesis command. Expert Systems, 40(5), e13109.
+Soto-Martínez, P., Rojas, M., & Delgado, C. (2021). Sistema de control adaptativo para prótesis mioeléctrica basado en aprendizaje automático. Revista Chilena de Ingeniería Biomédica, 17(2), 85–93. https://doi.org/10.5354/0719-7902.2021.65091
+Zhang, Y., Liu, T., & Li, M. (2021). Electromyography signal classification with deep learning for prosthetic control: A review. IEEE Reviews in Biomedical Engineering, 14, 42–58. https://doi.org/10.1109/RBME.2020.3019143
+
+
+
+
+
+
+
+
+
+
+
+
+
+ANEXOS
+
+Anexo A
+Consentimiento informado para uso de señales electromiográficas (EMG)
+
+Bucaramanga, ____ de ______ de 2026
+Unidades Tecnológicas de SantanderBucaramanga
+REF.: Consentimiento informado para uso de señales electromiográficas (EMG)
+Respetados docentes:
+Por medio de la presente, yo, ____________________________, identificado(a) con CC No. ____________, manifiesto que he sido informado(a) de manera clara y completa acerca del proyecto 'Implementación de inteligencia artificial para el control de una prótesis de mano mediante señales EMG', sus objetivos, procedimientos, posibles riesgos y beneficios.Autorizo de manera libre, voluntaria, previa, expresa e informada la recolección y uso de mis señales electromiográficas (EMG) exclusivamente con fines académicos y científicos, garantizando que se aplicarán todas las medidas necesarias para la protección y confidencialidad de mis datos, en concordancia con la Ley 1581 de 2012, el Decreto 1377 de 2013, la Resolución 8430 de 1993, la Ley 1266 de 2008, la Declaración de Helsinki (AMM, 2013) y demás normatividad aplicable.Entiendo que puedo retirarme del estudio en cualquier momento y solicitar la eliminación de mis datos sin que esto me genere ninguna consecuencia negativa.Cordialmente,
+Firma del Participante: ____________________________    Fecha: ____/____/______
+Firma del Investigador Responsable: ____________________________    Fecha: ____/____/______
+
+
+
+
+
+
+
+
+

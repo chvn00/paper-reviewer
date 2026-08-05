@@ -1,0 +1,2 @@
+# El nucleo de ejecucion usa exclusivamente la biblioteca estandar de Python.
+# No se requieren SDK de IA ni dependencias de terceros para operar el piloto.

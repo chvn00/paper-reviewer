@@ -1,0 +1,536 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{graphicx}
+
+\geometry{margin=2.1cm}
+\definecolor{azulmanzanares}{HTML}{126D98}
+\definecolor{verdemanzanares}{HTML}{168052}
+\definecolor{grisclaro}{HTML}{F2F5F7}
+\definecolor{grisoscuro}{HTML}{38444D}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=azulmanzanares,
+  urlcolor=azulmanzanares,
+  pdftitle={MANZANARES Growth Agent - Propuesta técnica de piloto},
+  pdfauthor={Documento de trabajo para Grupo Manzanares S.A.S.}
+}
+\pagestyle{fancy}
+\setlength{\headheight}{14pt}
+\fancyhf{}
+\lhead{MANZANARES Growth Agent}
+\rhead{Propuesta técnica de piloto}
+\cfoot{\thepage}
+\setlist{itemsep=2pt,topsep=4pt}
+\renewcommand{\arraystretch}{1.15}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{grisclaro},
+  frame=single,
+  breaklines=true,
+  columns=fullflexible,
+  showstringspaces=false
+}
+
+\newcommand{\decisionbox}[1]{
+  \begin{center}
+  \fcolorbox{azulmanzanares}{grisclaro}{
+    \parbox{0.91\textwidth}{\textbf{Decisión ejecutiva:} #1}
+  }
+  \end{center}
+}
+
+\begin{document}
+\hypersetup{pageanchor=false}
+
+\begin{titlepage}
+\centering
+\vspace*{1.6cm}
+{\color{azulmanzanares}\rule{\textwidth}{2.5pt}}\\[1.2cm]
+{\Huge\bfseries MANZANARES Growth Agent\par}
+\vspace{0.35cm}
+{\Large Propuesta técnica de piloto empresarial\par}
+\vspace{0.25cm}
+{\large Contact center de la UEN Carnes Manzanares\par}
+\vspace{1.4cm}
+
+\fcolorbox{verdemanzanares}{grisclaro}{
+  \parbox{0.82\textwidth}{
+    \centering
+    \textbf{Objetivo}\\[4pt]
+    Convertir la gestión comercial en un proceso medible, trazable y escalable,
+    capaz de aumentar ventas mediante datos, priorización y disciplina de
+    seguimiento, sin crecer proporcionalmente el equipo operativo.
+  }
+}
+
+\vfill
+\begin{tabular}{rl}
+\textbf{Organización:} & Grupo Manzanares S.A.S.\\
+\textbf{Sector:} & Agroalimentos\\
+\textbf{Duración propuesta:} & 16 semanas\\
+\textbf{Presupuesto de referencia:} & 21.000.000 COP\\
+\textbf{Versión de solución:} & 2.0 - núcleo auditable de piloto\\
+\textbf{Fecha:} & 25 de junio de 2026\\
+\end{tabular}
+\vfill
+{\color{azulmanzanares}\rule{\textwidth}{2.5pt}}
+\end{titlepage}
+
+\hypersetup{pageanchor=true}
+\pagenumbering{roman}
+\tableofcontents
+\clearpage
+\pagenumbering{arabic}
+
+\section{Resumen ejecutivo}
+
+La oportunidad no consiste únicamente en incorporar inteligencia artificial. El
+valor principal está en instalar un sistema operativo comercial: datos mínimos
+confiables, una cola diaria priorizada, seguimiento obligatorio, experimentos
+medibles y una lectura ejecutiva común.
+
+Se propone un piloto de 16 semanas que combina un CRM mínimo, agentes
+especializados, scoring explicable, auditoría y medición experimental. La versión
+2.0 implementada ya incluye migraciones de datos, controles de integridad, API
+interna, autenticación opcional, health checks, backups, importación CSV validada,
+operación sin dependencias externas y pruebas automatizadas.
+
+El piloto no se presenta como un CRM corporativo terminado. Se presenta como un
+mecanismo de validación de impacto y adopción que deja una base escalable hacia
+PostgreSQL, identidad corporativa e integraciones empresariales.
+
+\decisionbox{Aprobar un piloto controlado orientado a evidencia. La decisión de
+escalamiento debe depender de adopción, calidad de datos e ingreso incremental,
+no de la sofisticación aparente de la tecnología.}
+
+\section{Entendimiento del reto}
+
+\subsection{Situación actual}
+
+La ficha describe una operación principalmente manual, subjetiva y reactiva, con
+limitaciones en prospección, seguimiento, recuperación de clientes inactivos y
+recompra. No existe trazabilidad completa del ciclo
+datos-cliente-contacto-oportunidad-pedido-recompra.
+
+Las áreas involucradas incluyen dirección comercial, mercadeo, contact center,
+líder de la UEN, puntos de venta y tecnología. La solución debe convivir con
+WhatsApp, llamadas y la operación vigente, manteniendo simplicidad de uso.
+
+\subsection{Meta comercial por aclarar}
+
+La ficha utiliza dos formulaciones incompatibles:
+
+\begin{enumerate}
+  \item duplicar las ventas actuales; y
+  \item aumentar 50\%, pasando de 40 a 80 millones COP.
+\end{enumerate}
+
+Pasar de 40 a 80 millones representa un aumento de 100\%. La meta contractual,
+la venta atribuible al contact center y la línea base deben quedar aprobadas en
+la fase de descubrimiento.
+
+\section{Propuesta de valor}
+
+MANZANARES Growth Agent convierte datos comerciales en decisiones diarias:
+
+\begin{enumerate}
+  \item consolida contactos, oportunidades, interacciones y tareas;
+  \item calcula línea base, pipeline, brecha y calidad de datos;
+  \item segmenta clientes y prospectos por estado, valor y recurrencia;
+  \item asigna un score explicable y muestra las razones;
+  \item crea tareas persistentes sin duplicar ni borrar historial;
+  \item registra resultados y alimenta el siguiente ciclo;
+  \item diseña pilotos con métricas y comparación válida;
+  \item produce un briefing ejecutivo determinístico o mejorado localmente.
+\end{enumerate}
+
+\subsection{Experiencia diaria esperada}
+
+\begin{longtable}{p{3cm}p{5.2cm}p{6.4cm}}
+\toprule
+\textbf{Momento} & \textbf{Usuario} & \textbf{Experiencia}\\
+\midrule
+\endhead
+Inicio de jornada & Líder comercial & Verifica salud, tareas vencidas, brecha y
+distribución por asesor\\
+Priorización & Asesor & Recibe cola ordenada con razón de prioridad y siguiente
+acción\\
+Gestión & Asesor & Registra canal, resultado, nota y próxima acción\\
+Cierre diario & Líder & Revisa cobertura, completitud y pendientes\\
+Revisión semanal & Comité del piloto & Evalúa embudo, conversión, ingreso
+incremental, adopción y riesgos\\
+\bottomrule
+\end{longtable}
+
+\section{Arquitectura de la solución}
+
+\subsection{Capas}
+
+\begin{center}
+\fbox{\parbox{0.9\textwidth}{
+\centering
+\textbf{CLI y API interna}\\
+$\downarrow$\\
+\textbf{Coordinador multi-intención}\\
+$\downarrow$\\
+\textbf{Diagnóstico - Segmentación - Priorización - Seguimiento -
+Reactivación - Growth}\\
+$\downarrow$\\
+\textbf{CRM versionado - Auditoría - Health checks - Backups}\\
+$\downarrow$\\
+\textbf{Síntesis determinística - Ollama local opcional}
+}}
+\end{center}
+
+\subsection{Agentes}
+
+\begin{longtable}{p{2.8cm}p{5cm}p{6.8cm}}
+\toprule
+\textbf{Agente} & \textbf{Responsabilidad} & \textbf{Salida}\\
+\midrule
+\endhead
+Coordinador & Detectar una o varias intenciones & Flujo combinado de agentes\\
+Diagnóstico & Cuantificar línea base, brecha y capacidad & KPIs, completitud,
+actividad y alertas\\
+Segmentador & Clasificar la base & Grupos accionables y registros incompletos\\
+Priorizador & Calcular score reproducible & Ranking, componentes y razones\\
+Seguimiento & Sincronizar la cola diaria & Tareas nuevas, actualizadas,
+reemplazadas y conservadas\\
+Reactivación & Identificar recuperación potencial & Cohorte, valor histórico y
+diseño controlado\\
+Growth & Diseñar experimentos & Hipótesis, métrica primaria y regla de parada\\
+Redactor & Consolidar evidencia & Briefing ejecutivo sin inventar cifras\\
+\bottomrule
+\end{longtable}
+
+\subsection{Decisiones tecnológicas}
+
+\begin{itemize}
+  \item Python 3.11 o superior, sin dependencias de runtime.
+  \item SQLite para piloto de baja concurrencia, con WAL, claves foráneas,
+  índices, timeout y backups consistentes.
+  \item API HTTP interna para integración progresiva.
+  \item Contenedor no privilegiado, filesystem de solo lectura y health check.
+  \item LLM local desactivado por defecto; el núcleo comercial es determinístico.
+\end{itemize}
+
+\section{Controles de nivel empresarial incorporados}
+
+\begin{longtable}{p{4cm}p{5.2cm}p{5.4cm}}
+\toprule
+\textbf{Brecha del prototipo} & \textbf{Mejora implementada} & \textbf{Resultado}\\
+\midrule
+\endhead
+Esquema sin evolución & Migraciones versionadas y detección de base heredada &
+Actualización sin reinstalación manual\\
+Claves foráneas desactivadas & Integridad referencial por conexión & Menor riesgo
+de registros huérfanos\\
+Bloqueo y concurrencia básica & WAL, timeout e índices & Mejor respuesta del
+piloto local\\
+Tareas borradas en cada ejecución & Sincronización idempotente y estado
+\texttt{superseded} & Historial preservado y cola sin duplicados\\
+Prospectos con recencia ficticia de 999 días & Score corregido por estado &
+Priorización más coherente\\
+Una sola intención por consulta & Orquestación multi-intención & Respuestas que
+combinan brecha, prioridades y campañas\\
+Auditoría con texto sensible & Hash de pregunta y metadatos operativos &
+Trazabilidad con menor exposición\\
+LLM como dependencia implícita & Fallback determinístico, timeout y límites &
+Continuidad operativa\\
+Una sola prueba no descubierta & Suite automatizada y descubrible & Evidencia de
+regresión y calidad\\
+Sin interfaz de integración & API interna y salida JSON & Preparación para
+canales corporativos\\
+\bottomrule
+\end{longtable}
+
+\section{Modelo de datos y gobierno}
+
+El CRM mínimo utiliza:
+
+\begin{itemize}
+  \item \texttt{contacts}: identidad externa, segmento, estado, potencial,
+  recurrencia, interés, responsable, consentimiento y fuente;
+  \item \texttt{opportunities}: etapa, valor, probabilidad y siguiente acción;
+  \item \texttt{interactions}: canal, resultado, nota y fecha;
+  \item \texttt{tasks}: prioridad, vencimiento, estado, razón y ejecución origen;
+  \item \texttt{system\_runs}: estado, duración, agentes y uso de LLM;
+  \item \texttt{audit\_log}: eventos técnicos y métricas por agente.
+\end{itemize}
+
+Antes de utilizar datos reales deben aprobarse propietario, custodio, finalidad,
+clasificación, autorización, retención, eliminación y separación de ambientes.
+Los datos de demostración deben permanecer sintéticos o enmascarados.
+
+\section{Scoring comercial explicable}
+
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+\textbf{Dimensión} & \textbf{Peso máximo}\\
+\midrule
+Potencial económico & 30\\
+Interés observado & 25\\
+Tipo de relación & 15\\
+Urgencia o siguiente acción & 15\\
+Frecuencia histórica & 10\\
+Calidad mínima del registro & 5\\
+\midrule
+\textbf{Total} & \textbf{100}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+El score es una ayuda para ordenar trabajo, no una decisión automática de
+exclusión. Cada resultado muestra componentes y razones. Los pesos deben
+recalibrarse con pedidos y conversión real.
+
+\section{Seguridad, privacidad y continuidad}
+
+\subsection{Controles del piloto}
+
+\begin{itemize}
+  \item API limitada a localhost por defecto.
+  \item Token obligatorio al escuchar en interfaces externas.
+  \item Límite de solicitudes y cabeceras HTTP de endurecimiento.
+  \item Secretos fuera del repositorio.
+  \item Auditoría por ejecución y degradación controlada del LLM.
+  \item Usuario no privilegiado en contenedor.
+  \item Backups consistentes mediante API de SQLite.
+\end{itemize}
+
+\subsection{Requisitos antes de producción}
+
+\begin{itemize}
+  \item identidad corporativa, roles y proceso de altas y bajas;
+  \item TLS, cifrado administrado y rotación de secretos;
+  \item logs, métricas, alertas y backups centralizados;
+  \item pruebas de restauración, vulnerabilidades y penetración;
+  \item política aprobada de tratamiento y conservación de datos;
+  \item migración a PostgreSQL cuando la concurrencia o criticidad lo requiera.
+\end{itemize}
+
+\section{Indicadores del piloto}
+
+\subsection{Embudo y valor}
+
+\begin{itemize}
+  \item contactos asignados, intentos y contactos efectivos;
+  \item oportunidades, propuestas, pedidos y conversión por etapa;
+  \item pipeline bruto y ponderado;
+  \item ingreso atribuible e ingreso incremental;
+  \item brecha frente a línea base y meta aprobadas.
+\end{itemize}
+
+\subsection{Retención y productividad}
+
+\begin{itemize}
+  \item clientes con 30, 60 y 90 días sin compra;
+  \item tasa de reactivación y recompra;
+  \item tareas vencidas y tiempo hasta la siguiente acción;
+  \item acciones completadas por asesor;
+  \item completitud de datos y adopción semanal.
+\end{itemize}
+
+\section{Pilotos recomendados}
+
+\subsection{Piloto A: reactivación}
+
+Seleccionar clientes con más de 60 días sin compra y asignarlos a tratamiento y
+control. Medir contacto efectivo, pedido, ingreso incremental y recompra.
+
+\subsection{Piloto B: prospección institucional}
+
+Priorizar restaurantes, hoteles, catering y comedores por potencial, necesidad y
+probabilidad. Medir contactos, reuniones, muestras, propuestas y pedidos.
+
+\subsection{Piloto C: recompra programada}
+
+Generar tareas antes del ciclo esperado de compra y comparar mensajes por
+segmento. Medir recompra, anticipación y valor por cliente.
+
+\section{Plan de 16 semanas}
+
+\begin{longtable}{p{2cm}p{4.5cm}p{8cm}}
+\toprule
+\textbf{Semanas} & \textbf{Fase} & \textbf{Entregables y puerta de control}\\
+\midrule
+\endhead
+1 a 2 & Descubrimiento & Meta aprobada, línea base, proceso, fuentes, riesgos,
+diccionario y criterios de éxito\\
+3 a 4 & Datos y CRM mínimo & Importación, calidad, responsables, permisos,
+migraciones y backup probado\\
+5 a 6 & Priorización & Segmentos, score, cola diaria, API y capacitación inicial\\
+7 a 9 & Piloto A & Reactivación con tratamiento, control y medición incremental\\
+10 a 12 & Pilotos B y C & Prospección institucional y recompra programada\\
+13 a 14 & Calibración & Pesos, mensajes, automatizaciones y experiencia operativa\\
+15 & Transferencia & Manuales, seguridad, gobierno, restauración y soporte\\
+16 & Cierre & Resultados, aceptación, backlog y decisión de escalamiento\\
+\bottomrule
+\end{longtable}
+
+\section{Presupuesto de referencia}
+
+La siguiente distribución es una propuesta de planeación y debe ajustarse con el
+alcance definitivo:
+
+\begin{center}
+\begin{tabularx}{0.92\textwidth}{Xr}
+\toprule
+\textbf{Frente} & \textbf{COP}\\
+\midrule
+Descubrimiento, proceso y gobierno & 3.000.000\\
+Datos, CRM mínimo e importación & 5.000.000\\
+Agentes, API y controles operativos & 4.500.000\\
+Pilotos y medición experimental & 4.000.000\\
+Capacitación y transferencia & 2.000.000\\
+Contingencia, cierre y ruta de escalamiento & 2.500.000\\
+\midrule
+\textbf{Total} & \textbf{21.000.000}\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+No se recomienda comprometer dentro de este presupuesto un CRM empresarial
+completo, integración omnicanal profunda, alta disponibilidad o modelos
+predictivos entrenados antes de validar calidad y volumen de datos.
+
+\section{Criterios de aceptación}
+
+\begin{itemize}
+  \item al menos 95\% de registros priorizados con teléfono, segmento y asesor;
+  \item cola diaria sin duplicados y con historial de reemplazos;
+  \item interacciones trazables y tareas cerrables;
+  \item health check correcto y restauración demostrada;
+  \item score con razones visibles;
+  \item definición aprobada de venta atribuible, línea base y meta;
+  \item evidencia de mejora frente a línea base o grupo de comparación;
+  \item plan aprobado para seguridad e integración antes de producción.
+\end{itemize}
+
+\section{Riesgos y controles}
+
+\begin{longtable}{p{3.8cm}p{5cm}p{5.8cm}}
+\toprule
+\textbf{Riesgo} & \textbf{Impacto} & \textbf{Control}\\
+\midrule
+\endhead
+Datos incompletos & Priorización y medición débiles & Perfilado, campos mínimos,
+rechazo de errores y responsable por fuente\\
+Meta ambigua & Conflicto de evaluación & Aprobación formal en semanas 1 a 2\\
+Baja adopción & Herramienta sin impacto & Diseño con asesores, capacitación y
+tablero de uso\\
+Inventario desactualizado & Ofertas inviables & Validación de vigencia antes de
+campañas\\
+Datos personales & Riesgo legal y reputacional & Minimización, roles, retención,
+auditoría y controles corporativos\\
+Dependencia de IA & Interrupción o respuestas no confiables & Operación
+determinística y LLM opcional\\
+Expectativa de producto final & Sobrecosto y retraso & Alcance de piloto,
+exclusiones y puertas de decisión\\
+SQLite fuera de contexto & Concurrencia insuficiente & Umbrales de migración a
+PostgreSQL\\
+\bottomrule
+\end{longtable}
+
+\section{Evidencia de implementación}
+
+El repositorio entrega actualmente:
+
+\begin{itemize}
+  \item CLI y API interna;
+  \item migración automática desde la base inicial;
+  \item CRM SQLite con integridad, WAL e índices;
+  \item seis agentes funcionales y coordinador multi-intención;
+  \item scoring explicable corregido;
+  \item tareas idempotentes con historial;
+  \item importación CSV con validación previa;
+  \item auditoría por ejecución;
+  \item health checks y backups;
+  \item contenedor endurecido;
+  \item suite automatizada de 15 pruebas;
+  \item documentación de seguridad, operación, datos y aceptación.
+\end{itemize}
+
+\subsection{Comandos de verificación}
+
+\begin{lstlisting}
+python3 app.py inicializar
+python3 app.py salud
+python3 app.py tablero
+python3 app.py consultar "Dame la brecha y las prioridades" --json
+python3 app.py importar-contactos data/contactos_ejemplo.csv --dry-run
+python3 -m unittest discover -v
+\end{lstlisting}
+
+\section{Información requerida a Grupo Manzanares}
+
+\begin{enumerate}
+  \item histórico de clientes, pedidos, productos, fechas, cantidades y valores;
+  \item estados actuales de prospectos y oportunidades;
+  \item registros disponibles de llamadas y WhatsApp;
+  \item asesores, zonas, segmentos y reglas de asignación;
+  \item catálogo e inventario con frecuencia de actualización;
+  \item definición de venta atribuible al contact center;
+  \item línea base validada y estacionalidad;
+  \item política y autorizaciones de tratamiento de datos;
+  \item arquitectura actual y posibilidades de integración;
+  \item confirmación formal de la meta comercial.
+\end{enumerate}
+
+\section{Recomendación final}
+
+La solución ya demuestra el flujo esencial, pero el éxito empresarial dependerá
+de tres factores: calidad de datos, disciplina de registro y diseño experimental.
+La recomendación es iniciar el piloto con una cohorte acotada, una meta aprobada
+y revisiones semanales. El escalamiento debe aprobarse únicamente cuando exista
+evidencia conjunta de impacto comercial, adopción operativa y control de riesgo.
+
+\subsection{Decisión solicitada al comité}
+
+\begin{enumerate}
+  \item autorizar la fase de descubrimiento y acceso controlado a fuentes;
+  \item designar un dueño de negocio, un custodio de datos y representantes de
+  asesores;
+  \item aprobar la puerta de decisión al cierre de la semana 2, cuando estén
+  validadas meta, línea base, alcance, riesgos y criterios de éxito.
+\end{enumerate}
+
+\subsection{Primeros diez días hábiles}
+
+\begin{center}
+\begin{tabularx}{0.94\textwidth}{p{2.3cm}X}
+\toprule
+\textbf{Momento} & \textbf{Actividad}\\
+\midrule
+Días 1 y 2 & Alineación ejecutiva, responsables, alcance, restricciones y
+definición preliminar de éxito\\
+Días 3 a 5 & Perfilado de fuentes, diccionario, calidad, permisos y mapa del
+proceso actual\\
+Días 6 a 8 & Línea base, definición de venta atribuible, segmentos y cohorte
+inicial\\
+Días 9 y 10 & Presentación de hallazgos, riesgos, diseño del piloto y decisión de
+continuidad\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\decisionbox{El entregable de la semana 2 debe permitir decidir con evidencia si
+el piloto puede alcanzar un impacto medible dentro de 16 semanas y 21 millones
+COP, o si requiere ajustar meta, alcance o fuentes antes de continuar.}
+
+\end{document}

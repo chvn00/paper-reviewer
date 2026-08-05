@@ -1,0 +1,427 @@
+\begin{thebibliography}{999}
+
+\bibitem[\protect\citeauthoryear{Bahdanau, Cho,  \BBA\ Bengio}{Bahdanau
+  et~al.}{{2014}}]{bahdanau2014neural}
+Bahdanau, D., Cho, K.,  \BBA\ Bengio, Y.
+\newblock
+\APACrefYearMonthDay{2014}{}{}.
+\newblock Neural Machine Translation by Jointly Learning to Align and
+  Translate.
+\newblock \APACjournalVolNumPages{arXiv}{}{}{}.
+\newblock {\url{https://doi.org/10.48550/arXiv.1409.0473}}.
+
+\bibitem[\protect\citeauthoryear{Burgos \BBA\ Ivanov}{Burgos \BBA\
+  Ivanov}{{2021}}]{burgos2021food}
+Burgos, D.,  \BBA\ Ivanov, D.
+\newblock
+\APACrefYearMonthDay{2021}{}{}.
+\newblock Food retail supply chain resilience and the COVID-19 pandemic: A
+  digital twin-based impact analysis and improvement directions.
+\newblock \APACjournalVolNumPages{Transportation Research Part E: Logistics and
+  Transportation Review}{152}{}{102412}.
+\newblock {\url{https://doi.org/10.1016/j.tre.2021.102412}}.
+
+\bibitem[\protect\citeauthoryear{Cardoso et~al.}{Cardoso
+  et~al.}{{2024}}]{salinas2024esnreview}
+Cardoso, F.  C., Berri, R.  A., Borges, E.  N., Dalmazo, B.  L., Lucca, G.,
+  \BBA\ de Mattos, V.  L.  D.
+\newblock
+\APACrefYearMonthDay{2024}{}{}.
+\newblock Echo state network and classical statistical techniques for time
+  series forecasting: A review.
+\newblock \APACjournalVolNumPages{Knowledge-Based Systems}{293}{}{111639}.
+\newblock {\url{https://doi.org/10.1016/j.knosys.2024.111639}}.
+
+\bibitem[\protect\citeauthoryear{Chen \BBA\ Chen}{Chen \BBA\
+  Chen}{{2025}}]{ghasemian2025resilient}
+Chen, S.,  \BBA\ Chen, Y.
+\newblock
+\APACrefYearMonthDay{2025}{}{}.
+\newblock Designing a resilient supply chain network: A multi-objective
+  data-driven distributionally robust optimization method.
+\newblock \APACjournalVolNumPages{Computers \& Operations
+  Research}{173}{}{106868}.
+\newblock {\url{https://doi.org/10.1016/j.cor.2024.106868}}.
+
+\bibitem[\protect\citeauthoryear{Cucchi, Abreu, Ciccone, Brunner,  \BBA\
+  Kleemann}{Cucchi et~al.}{{2022}}]{nakajima2022reservoir}
+Cucchi, M., Abreu, S., Ciccone, G., Brunner, D.,  \BBA\ Kleemann, H.
+\newblock
+\APACrefYearMonthDay{2022}{}{}.
+\newblock Hands-on reservoir computing: a tutorial for practical
+  implementation.
+\newblock \APACjournalVolNumPages{Neuromorphic Computing and
+  Engineering}{2}{3}{032002}.
+\newblock {\url{https://doi.org/10.1088/2634-4386/ac7db7}}.
+
+\bibitem[\protect\citeauthoryear{Deb, Pratap, Agarwal,  \BBA\ Meyarivan}{Deb
+  et~al.}{{2002}}]{deb2002fast}
+Deb, K., Pratap, A., Agarwal, S.,  \BBA\ Meyarivan, T.
+\newblock
+\APACrefYearMonthDay{2002}{}{}.
+\newblock A fast and elitist multiobjective genetic algorithm: NSGA-II.
+\newblock \APACjournalVolNumPages{IEEE Transactions on Evolutionary
+  Computation}{6}{2}{182--197}.
+\newblock {\url{https://doi.org/10.1109/4235.996017}}.
+
+\bibitem[\protect\citeauthoryear{Ding, Chan, Zhang, Zhou,  \BBA\ Zhang}{Ding
+  et~al.}{{2019}}]{uhlemann2019digital}
+Ding, K., Chan, F.  T.  S., Zhang, X., Zhou, G.,  \BBA\ Zhang, F.
+\newblock
+\APACrefYearMonthDay{2019}{}{}.
+\newblock Defining a Digital Twin-based Cyber-Physical Production System for
+  autonomous manufacturing in smart shop floors.
+\newblock \APACjournalVolNumPages{International Journal of Production
+  Research}{57}{20}{6315--6334}.
+\newblock {\url{https://doi.org/10.1080/00207543.2019.1566661}}.
+
+\bibitem[\protect\citeauthoryear{Fang et~al.}{Fang
+  et~al.}{{2019}}]{fang2019jobshop}
+Fang, Y., Peng, C., Lou, P., Zhou, Z., Hu, J.,  \BBA\ Yan, J.
+\newblock
+\APACrefYearMonthDay{2019}{}{}.
+\newblock Digital-Twin-Based Job Shop Scheduling Toward Smart Manufacturing.
+\newblock \APACjournalVolNumPages{IEEE Transactions on Industrial
+  Informatics}{15}{12}{6425--6435}.
+\newblock {\url{https://doi.org/10.1109/TII.2019.2938572}}.
+
+\bibitem[\protect\citeauthoryear{Fatorachian \BBA\ Kazemi}{Fatorachian \BBA\
+  Kazemi}{{2021}}]{tortorella2021industry}
+Fatorachian, H.,  \BBA\ Kazemi, H.
+\newblock
+\APACrefYearMonthDay{2021}{}{}.
+\newblock Impact of Industry 4.0 on supply chain performance.
+\newblock \APACjournalVolNumPages{Production Planning \&
+  Control}{32}{1}{63--81}.
+\newblock {\url{https://doi.org/10.1080/09537287.2020.1712487}}.
+
+\bibitem[\protect\citeauthoryear{Fuller, Fan, Day,  \BBA\ Barlow}{Fuller
+  et~al.}{{2020}}]{fuller2020digital}
+Fuller, A., Fan, Z., Day, C.,  \BBA\ Barlow, C.
+\newblock
+\APACrefYearMonthDay{2020}{}{}.
+\newblock Digital Twin: Enabling Technologies, Challenges and Open Research.
+\newblock \APACjournalVolNumPages{IEEE Access}{8}{}{108952--108971}.
+\newblock {\url{https://doi.org/10.1109/ACCESS.2020.2998358}}.
+
+\bibitem[\protect\citeauthoryear{Gilani \BBA\ Sahebi}{Gilani \BBA\
+  Sahebi}{{2022}}]{basciftci2022vaccine}
+Gilani, H.,  \BBA\ Sahebi, H.
+\newblock
+\APACrefYearMonthDay{2022}{}{}.
+\newblock A data-driven robust optimization model by cutting hyperplanes on
+  vaccine access uncertainty in COVID-19 vaccine supply chain.
+\newblock \APACjournalVolNumPages{Omega}{110}{}{102637}.
+\newblock {\url{https://doi.org/10.1016/j.omega.2022.102637}}.
+
+\bibitem[\protect\citeauthoryear{Gumte, Devi~Pantula, Miriyala,  \BBA\
+  Mitra}{Gumte et~al.}{{2021}}]{ning2021datadriven}
+Gumte, K.  M., Devi~Pantula, P., Miriyala, S.  S.,  \BBA\ Mitra, K.
+\newblock
+\APACrefYearMonthDay{2021}{}{}.
+\newblock Data driven robust optimization for handling uncertainty in supply
+  chain planning models.
+\newblock \APACjournalVolNumPages{Chemical Engineering Science}{246}{}{116889}.
+\newblock {\url{https://doi.org/10.1016/j.ces.2021.116889}}.
+
+\bibitem[\protect\citeauthoryear{Huang, Bergman,  \BBA\ Gopal}{Huang
+  et~al.}{{2019}}]{boonmee2019prescriptive}
+Huang, T., Bergman, D.,  \BBA\ Gopal, R.
+\newblock
+\APACrefYearMonthDay{2019}{}{}.
+\newblock Predictive and Prescriptive Analytics for Location Selection of
+  Add-on Retail Products.
+\newblock \APACjournalVolNumPages{Production and Operations
+  Management}{28}{7}{1858--1877}.
+\newblock {\url{https://doi.org/10.1111/poms.13018}}.
+
+\bibitem[\protect\citeauthoryear{Ivanov}{Ivanov}{{2023}}]{ivanov2023idt}
+Ivanov, D.
+\newblock
+\APACrefYearMonthDay{2023}{}{}.
+\newblock Intelligent digital twin (iDT) for supply chain stress-testing,
+  resilience, and viability.
+\newblock \APACjournalVolNumPages{International Journal of Production
+  Economics}{263}{}{108938}.
+\newblock {\url{https://doi.org/10.1016/j.ijpe.2023.108938}}.
+
+\bibitem[\protect\citeauthoryear{Ivanov \BBA\ Dolgui}{Ivanov \BBA\
+  Dolgui}{{2021}}]{ivanov2021digital}
+Ivanov, D.,  \BBA\ Dolgui, A.
+\newblock
+\APACrefYearMonthDay{2021}{}{}.
+\newblock Digital supply chain twin for managing the disruption risks and
+  resilience in the era of Industry 4.0.
+\newblock \APACjournalVolNumPages{Production Planning \&
+  Control}{32}{9}{775--788}.
+\newblock {\url{https://doi.org/10.1080/09537287.2020.1768450}}.
+
+\bibitem[\protect\citeauthoryear{Ivanov, Dolgui,  \BBA\ Sokolov}{Ivanov
+  et~al.}{{2019}}]{ivanov2019ripple}
+Ivanov, D., Dolgui, A.,  \BBA\ Sokolov, B.
+\newblock
+\APACrefYearMonthDay{2019}{}{}.
+\newblock The impact of digital technology and Industry 4.0 on the ripple
+  effect and supply chain risk analytics.
+\newblock \APACjournalVolNumPages{International Journal of Production
+  Research}{57}{3}{829--846}.
+\newblock {\url{https://doi.org/10.1080/00207543.2018.1488086}}.
+
+\bibitem[\protect\citeauthoryear{Ivanov, Dolgui,  \BBA\ Sokolov}{Ivanov
+  et~al.}{{2022}}]{nascimento2022cloud}
+Ivanov, D., Dolgui, A.,  \BBA\ Sokolov, B.
+\newblock
+\APACrefYearMonthDay{2022}{}{}.
+\newblock Cloud supply chain: Integrating Industry 4.0 and digital platforms in
+  the Supply Chain-as-a-Service.
+\newblock \APACjournalVolNumPages{Transportation Research Part E: Logistics and
+  Transportation Review}{160}{}{102676}.
+\newblock {\url{https://doi.org/10.1016/j.tre.2022.102676}}.
+
+\bibitem[\protect\citeauthoryear{Jaeger \BBA\ Haas}{Jaeger \BBA\
+  Haas}{{2004}}]{jaeger2004harnessing}
+Jaeger, H.,  \BBA\ Haas, H.
+\newblock
+\APACrefYearMonthDay{2004}{}{}.
+\newblock Harnessing Nonlinearity: Predicting Chaotic Systems and Saving Energy
+  in Wireless Communication.
+\newblock \APACjournalVolNumPages{Science}{304}{5667}{78--80}.
+\newblock {\url{https://doi.org/10.1126/science.1091277}}.
+
+\bibitem[\protect\citeauthoryear{Kritzinger, Karner, Traar, Henjes,  \BBA\
+  Sihn}{Kritzinger et~al.}{{2018}}]{kritzinger2018digital}
+Kritzinger, W., Karner, M., Traar, G., Henjes, J.,  \BBA\ Sihn, W.
+\newblock
+\APACrefYearMonthDay{2018}{}{}.
+\newblock Digital Twin in manufacturing: A categorical literature review and
+  classification.
+\newblock \APACjournalVolNumPages{IFAC-PapersOnLine}{51}{11}{1016--1022}.
+\newblock {\url{https://doi.org/10.1016/j.ifacol.2018.08.474}}.
+
+\bibitem[\protect\citeauthoryear{Kusiak}{Kusiak}{{2018}}]{kusiak2018smart}
+Kusiak, A.
+\newblock
+\APACrefYearMonthDay{2018}{}{}.
+\newblock Smart manufacturing.
+\newblock \APACjournalVolNumPages{International Journal of Production
+  Research}{56}{1--2}{508--517}.
+\newblock {\url{https://doi.org/10.1080/00207543.2017.1351644}}.
+
+\bibitem[\protect\citeauthoryear{Lejarza, Kelley,  \BBA\ Baldea}{Lejarza
+  et~al.}{{2022}}]{perea2022feedback}
+Lejarza, F., Kelley, M.  T.,  \BBA\ Baldea, M.
+\newblock
+\APACrefYearMonthDay{2022}{}{}.
+\newblock Feedback-Based Deterministic Optimization Is a Robust Approach for
+  Supply Chain Management under Demand Uncertainty.
+\newblock \APACjournalVolNumPages{Industrial \& Engineering Chemistry
+  Research}{61}{33}{12153--12168}.
+\newblock {\url{https://doi.org/10.1021/acs.iecr.2c00099}}.
+
+\bibitem[\protect\citeauthoryear{F.~Li}{F.~Li}{{2020}}]{holmstrom2020digital}
+Li, F.
+\newblock
+\APACrefYearMonthDay{2020}{}{}.
+\newblock Leading digital transformation: three emerging approaches for
+  managing the transition.
+\newblock \APACjournalVolNumPages{International Journal of Operations \&
+  Production Management}{40}{6}{809--817}.
+\newblock {\url{https://doi.org/10.1108/IJOPM-04-2020-0202}}.
+
+\bibitem[\protect\citeauthoryear{L.~Li, Lei,  \BBA\ Mao}{L.~Li
+  et~al.}{{2022}}]{zheng2022smart}
+Li, L., Lei, B.,  \BBA\ Mao, C.
+\newblock
+\APACrefYearMonthDay{2022}{}{}.
+\newblock Digital twin in smart manufacturing.
+\newblock \APACjournalVolNumPages{Journal of Industrial Information
+  Integration}{26}{}{100289}.
+\newblock {\url{https://doi.org/10.1016/j.jii.2021.100289}}.
+
+\bibitem[\protect\citeauthoryear{Lim, Arik, Loeff,  \BBA\ Pfister}{Lim
+  et~al.}{{2021}}]{lim2021tft}
+Lim, B., Arik, S.  O., Loeff, N.,  \BBA\ Pfister, T.
+\newblock
+\APACrefYearMonthDay{2021}{}{}.
+\newblock Temporal Fusion Transformers for interpretable multi-horizon time
+  series forecasting.
+\newblock \APACjournalVolNumPages{International Journal of
+  Forecasting}{37}{4}{1748--1764}.
+\newblock {\url{https://doi.org/10.1016/j.ijforecast.2021.03.012}}.
+
+\bibitem[\protect\citeauthoryear{Lugaresi \BBA\ Matta}{Lugaresi \BBA\
+  Matta}{{2021}}]{leng2021automated}
+Lugaresi, G.,  \BBA\ Matta, A.
+\newblock
+\APACrefYearMonthDay{2021}{}{}.
+\newblock Automated manufacturing system discovery and digital twin generation.
+\newblock \APACjournalVolNumPages{Journal of Manufacturing
+  Systems}{59}{}{51--66}.
+\newblock {\url{https://doi.org/10.1016/j.jmsy.2021.01.005}}.
+
+\bibitem[\protect\citeauthoryear{Luko{\v{s}}evi{\v{c}}ius \BBA\
+  Jaeger}{Luko{\v{s}}evi{\v{c}}ius \BBA\
+  Jaeger}{{2009}}]{lukosevicius2009reservoir}
+Luko{\v{s}}evi{\v{c}}ius, M.,  \BBA\ Jaeger, H.
+\newblock
+\APACrefYearMonthDay{2009}{}{}.
+\newblock Reservoir computing approaches to recurrent neural network training.
+\newblock \APACjournalVolNumPages{Computer Science Review}{3}{3}{127--149}.
+\newblock {\url{https://doi.org/10.1016/j.cosrev.2009.03.005}}.
+
+\bibitem[\protect\citeauthoryear{Maass, Natschl{\"a}ger,  \BBA\ Markram}{Maass
+  et~al.}{{2002}}]{maass2002realtime}
+Maass, W., Natschl{\"a}ger, T.,  \BBA\ Markram, H.
+\newblock
+\APACrefYearMonthDay{2002}{}{}.
+\newblock Real-time computing without stable states: A new framework for neural
+  computation based on perturbations.
+\newblock \APACjournalVolNumPages{Neural Computation}{14}{11}{2531--2560}.
+\newblock {\url{https://doi.org/10.1162/089976602760407955}}.
+
+\bibitem[\protect\citeauthoryear{Notz \BBA\ Pibernik}{Notz \BBA\
+  Pibernik}{{2024}}]{bertsimas2024explainable}
+Notz, P.  M.,  \BBA\ Pibernik, R.
+\newblock
+\APACrefYearMonthDay{2024}{}{}.
+\newblock Explainable subgradient tree boosting for prescriptive analytics in
+  operations management.
+\newblock \APACjournalVolNumPages{European Journal of Operational
+  Research}{312}{3}{1119--1133}.
+\newblock {\url{https://doi.org/10.1016/j.ejor.2023.08.037}}.
+
+\bibitem[\protect\citeauthoryear{Ouahabi, Chebak, Kamach, Laayati,  \BBA\
+  Zegrari}{Ouahabi et~al.}{{2024}}]{zhang2024schedulingreview}
+Ouahabi, N., Chebak, A., Kamach, O., Laayati, O.,  \BBA\ Zegrari, M.
+\newblock
+\APACrefYearMonthDay{2024}{}{}.
+\newblock Leveraging digital twin into dynamic production scheduling: A review.
+\newblock \APACjournalVolNumPages{Robotics and Computer-Integrated
+  Manufacturing}{89}{}{102778}.
+\newblock {\url{https://doi.org/10.1016/j.rcim.2024.102778}}.
+
+\bibitem[\protect\citeauthoryear{Qi \BBA\ Tao}{Qi \BBA\
+  Tao}{{2018}}]{qi2018digital}
+Qi, Q.,  \BBA\ Tao, F.
+\newblock
+\APACrefYearMonthDay{2018}{}{}.
+\newblock Digital Twin and Big Data Towards Smart Manufacturing and Industry
+  4.0: 360 Degree Comparison.
+\newblock \APACjournalVolNumPages{IEEE Access}{6}{}{3585--3593}.
+\newblock {\url{https://doi.org/10.1109/ACCESS.2018.2793265}}.
+
+\bibitem[\protect\citeauthoryear{Soori, Arezoo,  \BBA\ Dastres}{Soori
+  et~al.}{{2023}}]{singh2023review}
+Soori, M., Arezoo, B.,  \BBA\ Dastres, R.
+\newblock
+\APACrefYearMonthDay{2023}{}{}.
+\newblock Digital twin for smart manufacturing, A review.
+\newblock \APACjournalVolNumPages{Sustainable Manufacturing and Service
+  Economics}{2}{}{100017}.
+\newblock {\url{https://doi.org/10.1016/j.smse.2023.100017}}.
+
+\bibitem[\protect\citeauthoryear{Tao et~al.}{Tao
+  et~al.}{{2018}}]{tao2018digital}
+Tao, F., Cheng, J., Qi, Q., Zhang, M., Zhang, H.,  \BBA\ Sui, F.
+\newblock
+\APACrefYearMonthDay{2018}{}{}.
+\newblock Digital twin-driven product design, manufacturing and service with
+  big data.
+\newblock \APACjournalVolNumPages{The International Journal of Advanced
+  Manufacturing Technology}{94}{}{3563--3576}.
+\newblock {\url{https://doi.org/10.1007/s00170-017-0233-1}}.
+
+\bibitem[\protect\citeauthoryear{Tao, Zhang, Liu,  \BBA\ Nee}{Tao
+  et~al.}{{2019}}]{tao2019digital}
+Tao, F., Zhang, H., Liu, A.,  \BBA\ Nee, A.  Y.  C.
+\newblock
+\APACrefYearMonthDay{2019}{}{}.
+\newblock Digital twin in industry: State-of-the-art.
+\newblock \APACjournalVolNumPages{IEEE Transactions on Industrial
+  Informatics}{15}{4}{2405--2415}.
+\newblock {\url{https://doi.org/10.1109/TII.2018.2873186}}.
+
+\bibitem[\protect\citeauthoryear{Toorajipour, Sohrabpour, Nazarpour, Oghazi,
+  \BBA\ Fischl}{Toorajipour et~al.}{{2021}}]{toorajipour2021ai}
+Toorajipour, R., Sohrabpour, V., Nazarpour, A., Oghazi, P.,  \BBA\ Fischl, M.
+\newblock
+\APACrefYearMonthDay{2021}{}{}.
+\newblock Artificial intelligence in supply chain management: A systematic
+  literature review.
+\newblock \APACjournalVolNumPages{Journal of Business
+  Research}{122}{}{502--517}.
+\newblock {\url{https://doi.org/10.1016/j.jbusres.2020.09.009}}.
+
+\bibitem[\protect\citeauthoryear{Vaswani et~al.}{Vaswani
+  et~al.}{{2017}}]{vaswani2017attention}
+Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A.  N.,
+  Kaiser, L.,  \BBA\ Polosukhin, I.
+\newblock
+\APACrefYearMonthDay{2017}{}{}.
+\newblock Attention Is All You Need.
+\newblock \APACjournalVolNumPages{arXiv}{}{}{}.
+\newblock {\url{https://doi.org/10.48550/arXiv.1706.03762}}.
+
+\bibitem[\protect\citeauthoryear{Wang, Zhang, Guo,  \BBA\ Zhang}{Wang
+  et~al.}{{2021}}]{liu2021shared}
+Wang, G., Zhang, G., Guo, X.,  \BBA\ Zhang, Y.
+\newblock
+\APACrefYearMonthDay{2021}{}{}.
+\newblock Digital twin-driven service model and optimal allocation of
+  manufacturing resources in shared manufacturing.
+\newblock \APACjournalVolNumPages{Journal of Manufacturing
+  Systems}{59}{}{165--179}.
+\newblock {\url{https://doi.org/10.1016/j.jmsy.2021.02.008}}.
+
+\bibitem[\protect\citeauthoryear{Zhang, Tao,  \BBA\ Nee}{Zhang
+  et~al.}{{2021}}]{zhang2021dynamic}
+Zhang, M., Tao, F.,  \BBA\ Nee, A.  Y.  C.
+\newblock
+\APACrefYearMonthDay{2021}{}{}.
+\newblock Digital Twin Enhanced Dynamic Job-Shop Scheduling.
+\newblock \APACjournalVolNumPages{Journal of Manufacturing
+  Systems}{58}{}{146--156}.
+\newblock {\url{https://doi.org/10.1016/j.jmsy.2020.04.008}}.
+
+\bibitem[\protect\citeauthoryear{J.~Zhao et~al.}{J.~Zhao
+  et~al.}{{2026}}]{wen2026transformersurvey}
+Zhao, J., Chu, F., Xie, L., Che, Y., Wu, Y.,  \BBA\ Burke, A.  F.
+\newblock
+\APACrefYearMonthDay{2026}{}{}.
+\newblock A survey of transformer networks for time series forecasting.
+\newblock \APACjournalVolNumPages{Computer Science Review}{60}{}{100883}.
+\newblock {\url{https://doi.org/10.1016/j.cosrev.2025.100883}}.
+
+\bibitem[\protect\citeauthoryear{S.~Zhao \BBA\ You}{S.~Zhao \BBA\
+  You}{{2019}}]{gao2019robust}
+Zhao, S.,  \BBA\ You, F.
+\newblock
+\APACrefYearMonthDay{2019}{}{}.
+\newblock Resilient supply chain design and operations with decision-dependent
+  uncertainty using a data-driven robust optimization approach.
+\newblock \APACjournalVolNumPages{AIChE Journal}{65}{3}{1006--1021}.
+\newblock {\url{https://doi.org/10.1002/aic.16513}}.
+
+\bibitem[\protect\citeauthoryear{G.~Zhou, Zhang, Li, Ding,  \BBA\ Wang}{G.~Zhou
+  et~al.}{{2020}}]{zhang2020knowledge}
+Zhou, G., Zhang, C., Li, Z., Ding, K.,  \BBA\ Wang, C.
+\newblock
+\APACrefYearMonthDay{2020}{}{}.
+\newblock Knowledge-driven digital twin manufacturing cell towards intelligent
+  manufacturing.
+\newblock \APACjournalVolNumPages{International Journal of Production
+  Research}{58}{4}{1034--1051}.
+\newblock {\url{https://doi.org/10.1080/00207543.2019.1607978}}.
+
+\bibitem[\protect\citeauthoryear{H.~Zhou et~al.}{H.~Zhou
+  et~al.}{{2021}}]{zhou2021informer}
+Zhou, H., Zhang, S., Peng, J., Zhang, S., Li, J., Xiong, H.,  \BBA\ Zhang, W.
+\newblock
+\APACrefYearMonthDay{2021}{}{}.
+\newblock Informer: Beyond Efficient Transformer for Long Sequence Time-Series
+  Forecasting.
+\newblock \APACjournalVolNumPages{Proceedings of the AAAI Conference on
+  Artificial Intelligence}{35}{12}{11106--11115}.
+\newblock {\url{https://doi.org/10.1609/aaai.v35i12.17325}}.
+
+\end{thebibliography}

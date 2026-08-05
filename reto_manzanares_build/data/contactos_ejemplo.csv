@@ -1,0 +1,2 @@
+external_id,name,phone,email,segment,status,monthly_value,days_since_purchase,purchase_frequency,interest_score,assigned_advisor,consent_status
+cliente-001,Restaurante Ejemplo,3000000000,,restaurante,prospect,3500000,0,0,75,Asesor Demo,unknown

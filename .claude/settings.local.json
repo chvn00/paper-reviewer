@@ -522,7 +522,12 @@
       "Bash(curl -s http://localhost:8000)",
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('API:', d['api'], '| Ollama:', d['groq'].get\\('ollama_running'\\)\\)\")",
       "Bash(curl -s http://localhost:8000/models)",
-      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('Models endpoint OK:', d['current']\\)\")"
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('Models endpoint OK:', d['current']\\)\")",
+      "Bash(curl -s http://localhost:8000/config)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('Modelo actual:', d['model']\\)\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('✅ Modelo actual:', d['model']\\)\")",
+      "Bash(python3 -c \"import sys,json; print\\('✅ Server ready'\\)\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('✅ API:', d['api']\\)\")"
     ]
   }
 }

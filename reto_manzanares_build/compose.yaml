@@ -1,0 +1,24 @@
+services:
+  growth-agent:
+    build: .
+    environment:
+      ENVIRONMENT: production
+      API_HOST: 0.0.0.0
+      API_PORT: 8080
+      API_TOKEN: ${API_TOKEN:?Defina API_TOKEN}
+      LLM_PROVIDER: disabled
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - manzanares_data:/app/data
+      - manzanares_backups:/app/backups
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  manzanares_data:
+  manzanares_backups:

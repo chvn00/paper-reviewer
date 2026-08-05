@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Certificados — USTA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/certificados/styles.css"/>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     LOGIN
+══════════════════════════════════════════════════════════════════════════ -->
+<div id="view-login" class="view active">
+  <div class="login-card">
+    <div class="login-logo">🎓</div>
+    <div class="login-title">Sistema de Certificados</div>
+    <div class="login-subtitle">Universidad Santo Tomás — Secretaría</div>
+
+    <div class="field-group">
+      <label>Usuario</label>
+      <input id="login-user" type="text" placeholder="usuario" autocomplete="username"
+             onkeydown="if(event.key==='Enter') doLogin()"/>
+    </div>
+    <div class="field-group">
+      <label>Contraseña</label>
+      <input id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password"
+             onkeydown="if(event.key==='Enter') doLogin()"/>
+    </div>
+    <button class="btn btn-primary btn-full" id="login-btn" onclick="doLogin()">Iniciar sesión</button>
+    <div class="error-msg" id="login-error"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     APP
+══════════════════════════════════════════════════════════════════════════ -->
+<div id="view-app" class="view">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <span>🎓</span> Sistema de Certificados
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-user">
+        <span>👤</span>
+        <span id="topbar-username">—</span>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <!-- Alert banner -->
+  <div id="alert-banner">
+    <div class="alert-banner-inner">
+      <span class="alert-banner-title" id="alert-banner-title">⚠️ Certificados urgentes</span>
+      <div id="alert-banner-items" style="display:flex;gap:0.5rem;flex-wrap:wrap;"></div>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="main-content">
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Activos</div>
+        <div class="stat-value" id="stat-active">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Urgentes / Vencidos</div>
+        <div class="stat-value red" id="stat-overdue">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Completados este mes</div>
+        <div class="stat-value green" id="stat-completed">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total histórico</div>
+        <div class="stat-value" id="stat-total">—</div>
+      </div>
+    </div>
+
+    <!-- Table panel -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">📋 Certificados en trámite</div>
+        <div class="panel-actions">
+          <select class="filter-select" id="filter-status" onchange="loadCertificates()">
+            <option value="">Todos</option>
+            <option value="active" selected>Activos</option>
+            <option value="completed">Completados</option>
+            <option value="cancelled">Cancelados</option>
+            <option value="cancelled_no_payment">Sin pago</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="openNewCertModal()">+ Nueva solicitud</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Estudiante</th>
+              <th>Tipo(s)</th>
+              <th>Etapa actual</th>
+              <th>Tiempo</th>
+              <th>Estado</th>
+              <th>Fecha solicitud</th>
+            </tr>
+          </thead>
+          <tbody id="cert-table-body">
+            <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text2);">Cargando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     MODAL — Nueva solicitud
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-new-cert">
+  <div class="modal">
+    <div class="modal-title">📝 Nueva solicitud de certificado</div>
+
+    <div class="field-group">
+      <label>Nombre completo del estudiante *</label>
+      <input id="nc-name" type="text" placeholder="Ej: Juan Carlos Pérez Gómez"/>
+    </div>
+    <div class="field-group">
+      <label>Número de documento *</label>
+      <input id="nc-id" type="text" placeholder="Cédula / TI / Pasaporte"/>
+    </div>
+    <div class="field-group">
+      <label>Correo electrónico *</label>
+      <input id="nc-email" type="email" placeholder="estudiante@correo.com"/>
+    </div>
+    <div class="field-group">
+      <label>Teléfono / WhatsApp</label>
+      <input id="nc-phone" type="text" placeholder="Opcional"/>
+    </div>
+    <div class="field-group">
+      <label>Tipo(s) de certificado solicitado(s) *</label>
+      <div id="cert-types-list" style="display:flex;flex-direction:column;gap:0.4rem;margin-bottom:0.5rem;"></div>
+      <div style="display:flex;gap:0.5rem;">
+        <input id="nc-type-input" type="text" placeholder="Ej: certificado de notas"
+               onkeydown="if(event.key==='Enter'){event.preventDefault();addCertType();}"
+               style="flex:1"/>
+        <button class="btn btn-ghost btn-sm" onclick="addCertType()">+ Agregar</button>
+      </div>
+    </div>
+    <div class="field-group">
+      <label>Observaciones</label>
+      <textarea id="nc-notes" placeholder="Notas adicionales sobre la solicitud…"></textarea>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-new-cert')">Cancelar</button>
+      <button class="btn btn-primary" id="btn-create-cert" onclick="createCertificate()">Crear solicitud</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     MODAL — Completar etapa
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-complete-stage">
+  <div class="modal">
+    <div class="modal-title" id="complete-stage-title">✅ Completar etapa</div>
+
+    <div class="field-group">
+      <label>Fecha en que ocurrió</label>
+      <input id="stage-date" type="date"/>
+    </div>
+    <div class="field-group">
+      <label>Notas u observaciones</label>
+      <textarea id="stage-notes" placeholder="Opcional — detalles de esta etapa…"></textarea>
+    </div>
+
+    <div id="stage-extra-info" style="display:none;"></div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-complete-stage')">Cancelar</button>
+      <button class="btn btn-success" onclick="confirmCompleteStage()">✅ Marcar como completada</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     MODAL — Registrar correo
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-email">
+  <div class="modal">
+    <div class="modal-title">📧 Registrar correo en trazabilidad</div>
+
+    <div class="field-group">
+      <label>Dirección</label>
+      <select id="email-direction">
+        <option value="inbound">📥 Recibido (del estudiante)</option>
+        <option value="outbound">📤 Enviado (a estudiante/unidad)</option>
+      </select>
+    </div>
+    <div class="field-group">
+      <label>Asunto</label>
+      <input id="email-subject" type="text" placeholder="Asunto del correo"/>
+    </div>
+    <div class="field-group">
+      <label>De</label>
+      <input id="email-from" type="text" placeholder="remitente@correo.com"/>
+    </div>
+    <div class="field-group">
+      <label>Para</label>
+      <input id="email-to" type="text" placeholder="destinatario@correo.com"/>
+    </div>
+    <div class="field-group">
+      <label>Resumen / Cuerpo del correo</label>
+      <textarea id="email-body" placeholder="Pega aquí el contenido o resumen del correo…" style="min-height:100px;"></textarea>
+    </div>
+    <div class="field-group">
+      <label>Etapa relacionada</label>
+      <select id="email-stage">
+        <option value="">— General (sin etapa específica)</option>
+        <option value="1">Etapa 1 — Solicitud recibida</option>
+        <option value="2">Etapa 2 — Polígrafo enviado</option>
+        <option value="3">Etapa 3 — Comprobante de pago</option>
+        <option value="4">Etapa 4 — Certificado elaborado</option>
+        <option value="5">Etapa 5 — Sec. División</option>
+        <option value="6">Etapa 6 — Sec. General</option>
+        <option value="7">Etapa 7 — Recibido de Sec. División</option>
+        <option value="8">Etapa 8 — Enviado al estudiante</option>
+      </select>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-email')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveEmailLog()">Registrar correo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     MODAL — Subir archivo
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-upload">
+  <div class="modal">
+    <div class="modal-title">📎 Adjuntar archivo</div>
+
+    <div class="field-group">
+      <label>Archivo (PDF, imagen, .eml)</label>
+      <label class="upload-area" for="upload-file-input">
+        <div id="upload-area-text">Haz clic para seleccionar o arrastra el archivo aquí</div>
+      </label>
+      <input id="upload-file-input" type="file" style="display:none"
+             accept=".pdf,.png,.jpg,.jpeg,.eml,.msg,.docx"
+             onchange="onFileSelected(this)"/>
+    </div>
+    <div class="field-group">
+      <label>Descripción</label>
+      <input id="upload-desc" type="text" placeholder="Ej: Comprobante de pago PSE"/>
+    </div>
+    <div class="field-group">
+      <label>Etapa relacionada</label>
+      <select id="upload-stage">
+        <option value="">— General</option>
+        <option value="1">Etapa 1 — Solicitud recibida</option>
+        <option value="2">Etapa 2 — Polígrafo enviado</option>
+        <option value="3">Etapa 3 — Comprobante de pago</option>
+        <option value="4">Etapa 4 — Certificado elaborado</option>
+        <option value="5">Etapa 5 — Sec. División</option>
+        <option value="6">Etapa 6 — Sec. General</option>
+        <option value="7">Etapa 7 — Recibido de Sec. División</option>
+        <option value="8">Etapa 8 — Enviado al estudiante</option>
+      </select>
+    </div>
+    <div class="field-group">
+      <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+        <input id="upload-is-cert" type="checkbox" style="width:auto;"/>
+        Este archivo ES el certificado oficial
+      </label>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-upload')">Cancelar</button>
+      <button class="btn btn-primary" id="btn-upload" onclick="doUpload()">Subir archivo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     DETAIL PANEL
+══════════════════════════════════════════════════════════════════════════ -->
+<div id="detail-panel">
+  <div class="detail-backdrop" onclick="closeDetail()"></div>
+  <div class="detail-body">
+
+    <div class="detail-header">
+      <div class="detail-header-info">
+        <div class="detail-code" id="dp-code">—</div>
+        <div class="detail-name" id="dp-name">—</div>
+        <div class="detail-meta">
+          <span id="dp-student-id">—</span>
+          <span id="dp-email">—</span>
+          <span id="dp-phone" style="display:none;"></span>
+        </div>
+        <div style="margin-top:0.5rem;" id="dp-cert-types"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;">
+        <button class="detail-close" onclick="closeDetail()">✕</button>
+        <span id="dp-status-badge"></span>
+      </div>
+    </div>
+
+    <!-- Deadline box -->
+    <div id="dp-deadline-box" style="display:none;margin:1rem 1.5rem 0;"></div>
+
+    <div style="padding:0 1.5rem;">
+      <div class="tabs" style="margin-top:1rem;">
+        <button class="tab-btn active" onclick="switchTab('tab-stages')">📋 Etapas</button>
+        <button class="tab-btn" onclick="switchTab('tab-attachments')">📎 Archivos (<span id="tab-attach-count">0</span>)</button>
+        <button class="tab-btn" onclick="switchTab('tab-emails')">📧 Correos (<span id="tab-email-count">0</span>)</button>
+      </div>
+    </div>
+
+    <div class="detail-scroll">
+
+      <!-- Tab: Etapas -->
+      <div class="tab-content active" id="tab-stages">
+        <div class="timeline" id="dp-stages-list"></div>
+        <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;" id="dp-actions-bar">
+          <button class="btn btn-ghost btn-sm" onclick="openEmailModal()">📧 Registrar correo</button>
+          <button class="btn btn-ghost btn-sm" onclick="openUploadModal()">📎 Adjuntar archivo</button>
+          <button class="btn btn-danger btn-sm" id="btn-cancel-cert" onclick="cancelCert()">✕ Cancelar trámite</button>
+        </div>
+      </div>
+
+      <!-- Tab: Archivos -->
+      <div class="tab-content" id="tab-attachments">
+        <div style="margin-bottom:1rem;">
+          <button class="btn btn-ghost btn-sm" onclick="openUploadModal()">📎 Adjuntar archivo</button>
+        </div>
+        <div id="dp-attachments-list" class="attachment-list"></div>
+      </div>
+
+      <!-- Tab: Correos -->
+      <div class="tab-content" id="tab-emails">
+        <div style="margin-bottom:1rem;">
+          <button class="btn btn-ghost btn-sm" onclick="openEmailModal()">📧 Registrar correo</button>
+        </div>
+        <div id="dp-emails-list" class="email-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<script src="/static/certificados/app.js"></script>
+</body>
+</html>
