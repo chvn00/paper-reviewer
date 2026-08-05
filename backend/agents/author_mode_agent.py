@@ -197,13 +197,16 @@ PUBLISHER_STYLE[""] = {
 
 
 def _extract_issues(agent_result: dict) -> list[str]:
+    """Extrae problemas: weaknesses, major_comments, specific_recommendations.
+    Filtra comentarios muy cortos (<20 chars) que no aportan."""
     items = []
     for field in ["weaknesses", "major_comments", "specific_recommendations"]:
         for item in (agent_result.get(field) or []):
             text = _fmt(item)
-            if text and text not in items:
+            # Solo incluir comentarios sustanciales (>20 caracteres)
+            if text and len(text) > 20 and text not in items:
                 items.append(text)
-    return items[:5]
+    return items[:8]  # Aumentar a 8 (era 5) para más contexto
 
 
 def _fmt(item) -> str:
@@ -252,17 +255,32 @@ async def generate_author_suggestion(
 
     issues = _extract_issues(agent_result)
 
-    if not issues:
+    # Solo retornar sin LaTeX si score es excelente (>=4.5) Y no hay problemas detectados
+    if not issues and score >= 4.5:
         return {
             "agent_name":    agent_name,
             "section_label": section_label,
             "score":         score,
             "issues":        [],
-            "instruction":   "No se detectaron problemas significativos. Esta sección cumple los estándares.",
+            "instruction":   "Excelente — no se detectaron problemas significativos en esta sección.",
             "latex_code":    "",
             "publisher":     publisher,
             "skipped":       False,
         }
+
+    # Si score < 3 pero no hay issues listadas, extraer del texto de la revisión
+    if not issues and score < 3.0:
+        for field in ["strengths", "weaknesses", "major_comments", "minor_comments"]:
+            comments = agent_result.get(field, [])
+            if isinstance(comments, list):
+                for c in comments[:3]:  # Tomar los primeros 3
+                    text = _fmt(c)
+                    if text and len(text) > 15:
+                        issues.append(text)
+                    if len(issues) >= 3:
+                        break
+            if len(issues) >= 3:
+                break
 
     # Texto de la sección (fallback al texto completo si el parser no separó secciones)
     section_keys = AGENT_SECTION_MAP.get(agent_name, ["abstract"])
@@ -281,25 +299,28 @@ async def generate_author_suggestion(
     pub_name = style["name"]
     paper_type_str = f" ({paper_type.replace('_', ' ').title()})" if paper_type else ""
 
-    issues_text = "\n".join(f"- {iss}" for iss in issues)
+    issues_text = "\n".join(f"- {iss}" for iss in issues) if issues else f"(Review score: {score}/5 — reviewers suggested general improvements)"
 
     prompt = f"""Help an author revise their paper section for submission to {pub_name}{paper_type_str}.
 
+SCORE FROM PEER REVIEW: {score}/5.0
 TARGET PUBLISHER STYLE ({pub_name}):
 {style["writing_style"]}
-LaTeX format: {style["latex_format"]}
 
-CURRENT SECTION TEXT:
+CURRENT SECTION:
 {section_text}
 
-REVIEWER ISSUES TO FIX:
+REVIEWER FINDINGS:
 {issues_text}
 
-Respond with JSON containing exactly these two keys — BOTH are mandatory and must be non-empty:
-1. "instruction": 3-5 sentences telling the author WHAT to change and HOW, referencing {pub_name} requirements.
-2. "latex_code": the REWRITTEN section as complete LaTeX code in {pub_name} format, fixing ALL the issues above. Never leave this empty — always produce the full rewritten LaTeX for the section.
+TASK:
+1. "instruction": Give 2-4 specific, actionable suggestions for improving this section to meet {pub_name} standards. Focus on: clarity, completeness, structure, and {pub_name} formatting requirements. Be concrete.
+2. "latex_code": Provide an improved version of this section in {pub_name} LaTeX format. Keep it professional and publication-ready. Must be non-empty.
 
-JSON format:
+CRITICAL: Always generate both fields with substantial content. Do NOT leave latex_code empty.
+Even if the section is well-written, suggest ways to strengthen it further.
+
+Respond ONLY with valid JSON:
 {{"instruction": "...", "latex_code": "\\\\section{{...}} ..."}}"""
 
     system = (
