@@ -276,7 +276,8 @@ function renderDetectedFields(data) {
   ];
   box.innerHTML = fields.map(([label, value]) => {
     const text = (value || "").trim();
-    const short = text.length > 420 ? `${text.slice(0, 420)}...` : text;
+    // Aumentado de 420 a 1500 para mostrar abstractos completos
+    const short = text.length > 1500 ? `${text.slice(0, 1500)}...` : text;
     return `<div class="detected-field ${text ? "ok" : "missing"}">
       <div class="detected-label">${label}</div>
       <div class="detected-text">${short || "Not detected"}</div>
