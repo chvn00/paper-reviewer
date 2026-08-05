@@ -473,33 +473,39 @@ class ParserAgent:
         if "abstract" in sections:
             return
 
-        # Shared stop markers (English + Spanish keywords and numbered sections)
+        # More lenient stop markers — only hard section headers (not keywords inline)
         _STOP = (
             r"(?:"
-            r"\b(?:Index\s+Terms|Keywords?|Key\s+words|Palabras\s+clave|Palabras-clave)\b"
-            r"|\n\s*I\.?\s+INTRODUCTION"
-            r"|\n\s*\d+\.\s+[A-ZÁÉÍÓÚÑ]"   # numbered section: "1. Introducción"
-            r"|\n\s*[A-ZÁÉÍÓÚÑ]{4,}\n"      # ALL-CAPS section header on own line
+            r"(?:\n\s*)?(?:Index\s+Terms|Keywords?|Key\s+words|Palabras\s+clave)\s*[—–\-:]"
+            r"|\n\s*(?:I\.?\s+|1\.?\s+)(?:INTRODUCTION|Introducci[oó]n)"
+            r"|\n\s*[A-Z]+\s*(?:\n|$)"  # All-caps header on own line
             r")"
         )
 
         patterns = [
-            # IEEE dash style: Abstract— or Resumen— (increased max to 3500 chars)
-            rf"(?:Abstract|Resumen)\s*[—–\-:]\s*(.{{50,3500}}?){_STOP}",
-            # Abstract followed by newline then body text (increased min/max)
-            rf"[Aa]bstract\s*[—–\-\.]?\s*(.{{50,3000}}?){_STOP}",
-            # ABSTRACT all caps (increased max)
-            rf"ABSTRACT\s*[—–\-\.]?\s*(.{{50,3000}}?){_STOP}",
-            # RESUMEN all caps (Spanish) (increased max)
-            rf"RESUMEN\s*[—–\-\.]?\s*(.{{50,3000}}?){_STOP}",
+            # IEEE dash style: Abstract— or Resumen— (very greedy, max 5000)
+            rf"(?:Abstract|Resumen)\s*[—–\-:]\s*(.{{50,5000}}?){_STOP}",
+            # Abstract followed by newline then body text
+            rf"[Aa]bstract\s*[—–\-\.]?\s*(.{{50,4000}}?){_STOP}",
+            # ABSTRACT all caps
+            rf"ABSTRACT\s*[—–\-\.]?\s*(.{{50,4000}}?){_STOP}",
+            # RESUMEN all caps (Spanish)
+            rf"RESUMEN\s*[—–\-\.]?\s*(.{{50,4000}}?){_STOP}",
         ]
 
         for pat in patterns:
             m = re.search(pat, text, re.DOTALL | re.IGNORECASE)
             if m:
-                sections["abstract"] = m.group(1).strip()
-                logger.info("[Parser] Inline abstract detected")
-                return
+                abstract_text = m.group(1).strip()
+                # Remove trailing author/submission metadata
+                abstract_text = re.sub(
+                    r'\s*(?:--\s*Manuscript|Manuscript\s+Number|Number:).*$',
+                    '', abstract_text, flags=re.IGNORECASE | re.DOTALL
+                )
+                if abstract_text and len(abstract_text) > 50:
+                    sections["abstract"] = abstract_text
+                    logger.info("[Parser] Inline abstract detected")
+                    return
 
         # Fallback: first large paragraph before Introduction (EN or ES, Roman or numbered)
         intro_match = re.search(
@@ -522,10 +528,16 @@ class ParserAgent:
             s = line.strip()
             if not s:
                 continue
+            # Stop at structural markers
             if re.match(r"^(abstract|index terms|keywords|resumen|palabras clave)\b", s, re.IGNORECASE):
                 break
             if re.match(r"^(I|II|III|IV|V|VI|VII)\.?\s+", s, re.IGNORECASE):
                 break
+            # Skip metadata lines (Manuscript Number, DOI, etc.)
+            if re.match(r"^(?:Manuscript|Number:|DOI|doi|authors?|author|received|revised)", s, re.IGNORECASE):
+                continue
+            if len(s) < 10:  # Skip very short lines
+                continue
             # Allow titles up to 60 words (increased from 25)
             if len(s.split()) <= 60:
                 lines.append(s)
@@ -533,7 +545,10 @@ class ParserAgent:
             if len(lines) == 5:
                 break
         if lines:
-            sections["title"] = " ".join(lines).strip()
+            title = " ".join(lines).strip()
+            # Remove trailing metadata like "-- Manuscript Draft"
+            title = re.sub(r'\s*--\s*Manuscript.*$', '', title, flags=re.IGNORECASE)
+            sections["title"] = title
 
     def _extract_inline_keywords(self, text: str, sections: dict):
         """
